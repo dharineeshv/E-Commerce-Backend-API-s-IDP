@@ -1,0 +1,290 @@
+{
+  "info": {
+    "name": "Cart Service API",
+    "description": "Complete Cart Service API with product validation from Product Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Cart Operations",
+      "item": [
+        {
+          "name": "Add Product to Cart",
+          "request": {
+            "method": "POST",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"productId\": \"7e5e7385-0866-4574-8d6f-bc804a72d50f\",\n  \"quantity\": 2\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/cart/cust-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api", "cart", "cust-001"]
+            },
+            "description": "Add a product to customer's cart. Validates product exists in Product Service and checks stock availability."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "POST",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"productId\": \"7e5e7385-0866-4574-8d6f-bc804a72d50f\",\n  \"quantity\": 2\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:5001/api/cart/cust-001",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "5001",
+                  "path": ["api", "cart", "cust-001"]
+                }
+              },
+              "status": "Created",
+              "code": 201,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Product added to cart successfully\",\n  \"data\": {\n    \"customerId\": \"cust-001\",\n    \"cartItemId\": \"a7354a61-ae99-4af0-b150-20f5eba129a5\",\n    \"productId\": \"7e5e7385-0866-4574-8d6f-bc804a72d50f\",\n    \"productName\": \"Wireless Mouse\",\n    \"price\": 29.99,\n    \"quantity\": 2,\n    \"totalPrice\": 59.98,\n    \"addedAt\": \"2026-06-24T09:14:01.862Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "View Cart",
+          "request": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5001/api/cart/cust-001",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api", "cart", "cust-001"]
+            },
+            "description": "Get all items in customer's cart with totals and item count."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "GET",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:5001/api/cart/cust-001",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "5001",
+                  "path": ["api", "cart", "cust-001"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Cart retrieved successfully\",\n  \"data\": {\n    \"customerId\": \"cust-001\",\n    \"items\": [\n      {\n        \"customerId\": \"cust-001\",\n        \"cartItemId\": \"a7354a61-ae99-4af0-b150-20f5eba129a5\",\n        \"productId\": \"7e5e7385-0866-4574-8d6f-bc804a72d50f\",\n        \"productName\": \"Wireless Mouse\",\n        \"price\": 29.99,\n        \"quantity\": 2,\n        \"totalPrice\": 59.98,\n        \"addedAt\": \"2026-06-24T09:14:01.862Z\"\n      },\n      {\n        \"customerId\": \"cust-001\",\n        \"cartItemId\": \"b8465b72-bf00-5185-9c261-31f6fcb23bd6\",\n        \"productId\": \"8f6f8496-1977-5685-9d372-42g7gdc34ce7\",\n        \"productName\": \"USB-C Cable\",\n        \"price\": 12.99,\n        \"quantity\": 3,\n        \"totalPrice\": 38.97,\n        \"addedAt\": \"2026-06-24T10:25:15.512Z\"\n      }\n    ],\n    \"itemCount\": 2,\n    \"cartTotal\": 98.95\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Update Quantity",
+          "request": {
+            "method": "PUT",
+            "header": [
+              {
+                "key": "Content-Type",
+                "value": "application/json"
+              }
+            ],
+            "body": {
+              "mode": "raw",
+              "raw": "{\n  \"quantity\": 5\n}"
+            },
+            "url": {
+              "raw": "http://localhost:5001/api/cart/cust-001/a7354a61-ae99-4af0-b150-20f5eba129a5",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api", "cart", "cust-001", "a7354a61-ae99-4af0-b150-20f5eba129a5"]
+            },
+            "description": "Update quantity of a specific cart item. Validates new quantity against available product stock."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "PUT",
+                "header": [
+                  {
+                    "key": "Content-Type",
+                    "value": "application/json"
+                  }
+                ],
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"quantity\": 5\n}"
+                },
+                "url": {
+                  "raw": "http://localhost:5001/api/cart/cust-001/a7354a61-ae99-4af0-b150-20f5eba129a5",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "5001",
+                  "path": ["api", "cart", "cust-001", "a7354a61-ae99-4af0-b150-20f5eba129a5"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Product quantity updated successfully\",\n  \"data\": {\n    \"customerId\": \"cust-001\",\n    \"cartItemId\": \"a7354a61-ae99-4af0-b150-20f5eba129a5\",\n    \"productId\": \"7e5e7385-0866-4574-8d6f-bc804a72d50f\",\n    \"productName\": \"Wireless Mouse\",\n    \"price\": 29.99,\n    \"quantity\": 5,\n    \"totalPrice\": 149.95,\n    \"addedAt\": \"2026-06-24T09:14:01.862Z\"\n  }\n}"
+            }
+          ]
+        },
+        {
+          "name": "Delete Cart Item",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5001/api/cart/cust-001/a7354a61-ae99-4af0-b150-20f5eba129a5",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api", "cart", "cust-001", "a7354a61-ae99-4af0-b150-20f5eba129a5"]
+            },
+            "description": "Remove a specific item from customer's cart."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:5001/api/cart/cust-001/a7354a61-ae99-4af0-b150-20f5eba129a5",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "5001",
+                  "path": ["api", "cart", "cust-001", "a7354a61-ae99-4af0-b150-20f5eba129a5"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Product removed from cart successfully\"\n}"
+            }
+          ]
+        },
+        {
+          "name": "Clear Cart",
+          "request": {
+            "method": "DELETE",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5001/api/cart/cust-001/cart/clear",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": ["api", "cart", "cust-001", "cart", "clear"]
+            },
+            "description": "Remove all items from customer's cart."
+          },
+          "response": [
+            {
+              "name": "Success Response",
+              "originalRequest": {
+                "method": "DELETE",
+                "header": [],
+                "url": {
+                  "raw": "http://localhost:5001/api/cart/cust-001/cart/clear",
+                  "protocol": "http",
+                  "host": ["localhost"],
+                  "port": "5001",
+                  "path": ["api", "cart", "cust-001", "cart", "clear"]
+                }
+              },
+              "status": "OK",
+              "code": 200,
+              "header": [
+                {
+                  "key": "Content-Type",
+                  "value": "application/json; charset=utf-8"
+                }
+              ],
+              "body": "{\n  \"success\": true,\n  \"message\": \"Cart cleared successfully\",\n  \"data\": {\n    \"itemsRemoved\": 2\n  }\n}"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "Health Check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:5001/",
+          "protocol": "http",
+          "host": ["localhost"],
+          "port": "5001",
+          "path": [""]
+        },
+        "description": "Check if Cart Service is running."
+      },
+      "response": [
+        {
+          "name": "Success Response",
+          "originalRequest": {
+            "method": "GET",
+            "header": [],
+            "url": {
+              "raw": "http://localhost:5001/",
+              "protocol": "http",
+              "host": ["localhost"],
+              "port": "5001",
+              "path": [""]
+            }
+          },
+          "status": "OK",
+          "code": 200,
+          "header": [
+            {
+              "key": "Content-Type",
+              "value": "application/json; charset=utf-8"
+            }
+          ],
+          "body": "{\n  \"message\": \"Cart service is running\"\n}"
+        }
+      ]
+    }
+  ]
+}
