@@ -9,9 +9,25 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import dynamodb from "../config/dynamodb.js";
 import { v4 as uuidv4 } from "uuid";
+import { publishEvent } from "./snsService.js";
 
 const ORDER_TABLE = process.env.ORDER_TABLE || "Orders";
 const CART_TABLE = process.env.CART_TABLE || "Cart";
+
+const buildOrderPlacedPayload = (order) => ({
+  orderId: order.orderId,
+  customerId: order.customerId,
+  items: order.items,
+  orderTotal: order.orderTotal,
+  status: order.status,
+  createdAt: order.createdAt,
+});
+
+const buildOrderCancelledPayload = (order, cancelledAt) => ({
+  orderId: order.orderId,
+  items: order.items || [],
+  cancelledAt,
+});
 
 // Fetch all cart items for a customer — Cart table has only customerId as HASH key (no sort key)
 // Each customer row stores a single cart item, so we scan and filter by customerId
@@ -73,6 +89,16 @@ const placeOrder = async (customerId, shippingAddress) => {
       Item: order,
     })
   );
+
+  try {
+    await publishEvent("ORDER_PLACED", buildOrderPlacedPayload(order));
+  } catch (error) {
+    console.error("Failed to publish ORDER_PLACED event", {
+      orderId: order.orderId,
+      message: error.message,
+      stack: error.stack,
+    });
+  }
 
   // Clear cart after successful order placement
   await clearCartItems(customerId);
@@ -185,11 +211,47 @@ const cancelOrder = async (customerId, orderId) => {
 
   const updated = await dynamodb.send(new UpdateCommand(updateParams));
 
+  const cancelledAt = updated.Attributes?.updatedAt || new Date().toISOString();
+
+  try {
+    await publishEvent(
+      "ORDER_CANCELLED",
+      buildOrderCancelledPayload(updated.Attributes || order, cancelledAt)
+    );
+  } catch (error) {
+    console.error("Failed to publish ORDER_CANCELLED event", {
+      orderId,
+      message: error.message,
+      stack: error.stack,
+    });
+  }
+
   return {
     success: true,
     message: "Order cancelled successfully",
     data: updated.Attributes,
   };
+};
+
+// Raw DynamoDB status write — no allowedStatuses guard, reused by both the admin API and event handlers
+const setOrderStatus = async (orderId, status) => {
+  const updated = await dynamodb.send(
+    new UpdateCommand({
+      TableName: ORDER_TABLE,
+      Key: { orderId },
+      UpdateExpression: "SET #status = :status, #updatedAt = :updatedAt",
+      ExpressionAttributeNames: {
+        "#status": "status",
+        "#updatedAt": "updatedAt",
+      },
+      ExpressionAttributeValues: {
+        ":status": status,
+        ":updatedAt": new Date().toISOString(),
+      },
+      ReturnValues: "ALL_NEW",
+    })
+  );
+  return updated.Attributes;
 };
 
 // Update order status (admin only — PENDING, SHIPPED, DELIVERED, CANCELLED)
@@ -202,38 +264,18 @@ const updateOrderStatus = async (orderId, status) => {
     );
   }
 
-  const getParams = {
-    TableName: ORDER_TABLE,
-    Key: { orderId },
-  };
-
-  const response = await dynamodb.send(new GetCommand(getParams));
+  const response = await dynamodb.send(new GetCommand({ TableName: ORDER_TABLE, Key: { orderId } }));
 
   if (!response.Item) {
     throw new Error("Order not found");
   }
 
-  const updateParams = {
-    TableName: ORDER_TABLE,
-    Key: { orderId },
-    UpdateExpression: "SET #status = :status, #updatedAt = :updatedAt",
-    ExpressionAttributeNames: {
-      "#status": "status",
-      "#updatedAt": "updatedAt",
-    },
-    ExpressionAttributeValues: {
-      ":status": status,
-      ":updatedAt": new Date().toISOString(),
-    },
-    ReturnValues: "ALL_NEW",
-  };
-
-  const updated = await dynamodb.send(new UpdateCommand(updateParams));
+  const attributes = await setOrderStatus(orderId, status);
 
   return {
     success: true,
     message: `Order status updated to ${status}`,
-    data: updated.Attributes,
+    data: attributes,
   };
 };
 
@@ -244,4 +286,5 @@ export {
   getAllOrders,
   cancelOrder,
   updateOrderStatus,
+  setOrderStatus,
 };

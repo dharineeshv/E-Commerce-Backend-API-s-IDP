@@ -7,12 +7,17 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import dynamodb from "../config/dynamodb.js";
+import { publishEvent } from "./snsService.js";
 
 const PAYMENT_TABLE = process.env.DYNAMODB_TABLE || 'Payments';
 const ORDER_TABLE = process.env.ORDER_TABLE || 'Dharineesh_orders';
 
 const allowedPaymentMethods = ['UPI', 'COD'];
 const allowedStatuses = ['PENDING', 'SUCCESS', 'FAILED', 'REFUNDED'];
+
+const buildPaymentPayload = ({ paymentId, orderId, customerId, amount, paymentMethod, status, paymentDate }) => ({
+  paymentId, orderId, customerId, amount, paymentMethod, status, paymentDate,
+});
 
 const verifyOrder = async (orderId, customerId) => {
   const response = await dynamodb.send(
@@ -77,6 +82,16 @@ const processPayment = async (paymentData) => {
       Item: payment,
     })
   );
+
+  const eventType = paymentMethod === 'UPI' ? 'PAYMENT_SUCCESS' : 'PAYMENT_PENDING';
+  try {
+    await publishEvent(eventType, buildPaymentPayload(payment));
+  } catch (error) {
+    console.error(`[paymentService] Failed to publish ${eventType}`, {
+      paymentId: payment.paymentId,
+      message: error.message,
+    });
+  }
 
   return payment;
 };
@@ -156,6 +171,15 @@ const refundPayment = async (paymentId) => {
       ReturnValues: 'ALL_NEW',
     })
   );
+
+  try {
+    await publishEvent('PAYMENT_REFUNDED', buildPaymentPayload(result.Attributes));
+  } catch (error) {
+    console.error('[paymentService] Failed to publish PAYMENT_REFUNDED', {
+      paymentId,
+      message: error.message,
+    });
+  }
 
   return result.Attributes;
 };
