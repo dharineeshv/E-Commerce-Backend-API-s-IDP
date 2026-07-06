@@ -9,9 +9,55 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 import dynamodb from "../config/dynamodb.js";
 import { v4 as uuidv4 } from "uuid";
+import { publishEvent } from "./snsService.js";
 
 const ORDER_TABLE = process.env.ORDER_TABLE || "Orders";
 const CART_TABLE = process.env.CART_TABLE || "Cart";
+
+const getCustomerEmail = (shippingAddress) => {
+  return (
+    shippingAddress?.customerEmail ||
+    shippingAddress?.email ||
+    shippingAddress?.contactEmail ||
+    shippingAddress?.contact?.email ||
+    null
+  );
+};
+
+const getCustomerMobile = (shippingAddress) => {
+  return (
+    shippingAddress?.customerMobile ||
+    shippingAddress?.mobile ||
+    shippingAddress?.phone ||
+    shippingAddress?.contactMobile ||
+    shippingAddress?.contact?.mobile ||
+    shippingAddress?.contact?.phone ||
+    null
+  );
+};
+
+const buildOrderPlacedPayload = (order, shippingAddress) => {
+  return {
+    eventType: "ORDER_PLACED",
+    orderId: order.orderId,
+    customerId: order.customerId,
+    customerEmail: getCustomerEmail(shippingAddress),
+    customerMobile: getCustomerMobile(shippingAddress),
+    products: order.items,
+    totalAmount: order.orderTotal,
+    orderStatus: order.status,
+    createdAt: order.createdAt,
+  };
+};
+
+const buildOrderCancelledPayload = (order, cancelledAt) => {
+  return {
+    eventType: "ORDER_CANCELLED",
+    orderId: order.orderId,
+    products: order.items || [],
+    cancelledAt,
+  };
+};
 
 // Fetch all cart items for a customer — Cart table has only customerId as HASH key (no sort key)
 // Each customer row stores a single cart item, so we scan and filter by customerId
@@ -73,6 +119,24 @@ const placeOrder = async (customerId, shippingAddress) => {
       Item: order,
     })
   );
+
+  try {
+    const publishResponse = await publishEvent(
+      "ORDER_PLACED",
+      buildOrderPlacedPayload(order, shippingAddress)
+    );
+
+    console.log("ORDER_PLACED event published successfully", {
+      orderId: order.orderId,
+      messageId: publishResponse?.MessageId,
+    });
+  } catch (error) {
+    console.error("Failed to publish ORDER_PLACED event", {
+      orderId: order.orderId,
+      message: error.message,
+      stack: error.stack,
+    });
+  }
 
   // Clear cart after successful order placement
   await clearCartItems(customerId);
@@ -184,6 +248,26 @@ const cancelOrder = async (customerId, orderId) => {
   };
 
   const updated = await dynamodb.send(new UpdateCommand(updateParams));
+
+  const cancelledAt = updated.Attributes?.updatedAt || new Date().toISOString();
+
+  try {
+    const publishResponse = await publishEvent(
+      "ORDER_CANCELLED",
+      buildOrderCancelledPayload(updated.Attributes || order, cancelledAt)
+    );
+
+    console.log("ORDER_CANCELLED event published successfully", {
+      orderId,
+      messageId: publishResponse?.MessageId,
+    });
+  } catch (error) {
+    console.error("Failed to publish ORDER_CANCELLED event", {
+      orderId,
+      message: error.message,
+      stack: error.stack,
+    });
+  }
 
   return {
     success: true,
