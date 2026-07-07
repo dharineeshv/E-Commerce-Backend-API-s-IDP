@@ -1,0 +1,25 @@
+service: notification-service
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  stage: dev
+
+  environment:
+    GMAIL_EMAIL: ${env:GMAIL_EMAIL}
+    GMAIL_APP_PASSWORD: ${env:GMAIL_APP_PASSWORD}
+    STORE_OWNER_EMAIL: ${env:STORE_OWNER_EMAIL}
+
+functions:
+  app:
+    handler: lambda.handler
+
+    events:
+      - http:
+          path: /{proxy+}
+          method: any
+
+      - sqs:
+          arn: arn:aws:sqs:ap-southeast-1:726101441380:Dharineesh_Notification_Queue
+          batchSize: 1

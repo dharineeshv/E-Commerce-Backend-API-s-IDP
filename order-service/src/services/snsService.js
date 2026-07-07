@@ -134,10 +134,13 @@ const publishEvent = async (eventType, payload) => {
   try {
 
     const command = new PublishCommand({
-      TopicArn: SNS_TOPIC_ARN,
-      Subject: eventType.replace(/_/g, " "),
-      Message: formatMessage(eventType, payload),
-    });
+  TopicArn: SNS_TOPIC_ARN,
+  Subject: eventType.replace(/_/g, " "),
+  Message: JSON.stringify({
+    eventType,
+    payload,
+  }),
+});
 
     const response = await snsClient.send(command);
 

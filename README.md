@@ -263,3 +263,6 @@ Possible next improvements:
 
 
 - sns and sqs implemented in this and notification with email also implemented
+
+- Notification service implemented
+
