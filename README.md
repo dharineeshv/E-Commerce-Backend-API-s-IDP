@@ -260,3 +260,6 @@ Possible next improvements:
 - Docker-based local orchestration
 - Automated tests for each service
 - CI/CD for Lambda deployment
+
+
+- sns and sqs implemented in this and notification with email also implemented
