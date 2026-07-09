@@ -1,26 +1,52 @@
 import * as paymentService from "../services/paymentService.js";
+import "../config/env.js";
+import axios from "axios";
+
+const USER_PROFILE_SERVICE_URL = process.env.USER_PROFILE_SERVICE_URL;
+
+const getCustomerIdFromSub = async (cognitoSub) => {
+  const response = await axios.get(
+    `${USER_PROFILE_SERVICE_URL}/api/profile/me/${cognitoSub}`
+  );
+
+  return response.data.data.customerId;
+};
 
 const processPayment = async (req, res) => {
   try {
-    const payment = await paymentService.processPayment(req.body);
+
+    const cognitoSub = req.user.sub;
+
+    const customerId = await getCustomerIdFromSub(cognitoSub);
+
+    const payment = await paymentService.processPayment({
+      ...req.body,
+      customerId,
+    });
+
     return res.status(201).json({
-      message: 'Payment Processed Successfully',
+      message: "Payment Processed Successfully",
       payment,
     });
-  } catch (error) {
-    console.error('Error processing payment:', error);
-    const status = error.statusCode
-      || error.response?.status
-      || (error.message.includes('required') || error.message.includes('Invalid') ? 400
-      : error.message.includes('not found') ? 404
-      : error.message.includes('cancelled') ? 400
-      : 500);
 
-    const message = error.response?.data?.message || error.message;
+  } catch (error) {
+    console.error("Error processing payment:", error);
+
+    const status =
+      error.statusCode ||
+      error.response?.status ||
+      (error.message.includes("required") ||
+      error.message.includes("Invalid")
+        ? 400
+        : error.message.includes("not found")
+        ? 404
+        : error.message.includes("cancelled")
+        ? 400
+        : 500);
 
     return res.status(status).json({
       success: false,
-      message,
+      message: error.response?.data?.message || error.message,
     });
   }
 };
@@ -37,7 +63,13 @@ const getAllPayments = async (req, res) => {
 
 const getPaymentById = async (req, res) => {
   try {
-    const payment = await paymentService.getPaymentById(req.params.paymentId);
+    const cognitoSub = req.user.sub;
+const customerId = await getCustomerIdFromSub(cognitoSub);
+
+const payment = await paymentService.getPaymentById(
+  req.params.paymentId,
+  customerId
+);
     if (!payment) {
       return res.status(404).json({ success: false, message: 'Payment not found' });
     }
@@ -50,7 +82,14 @@ const getPaymentById = async (req, res) => {
 
 const getPaymentByOrderId = async (req, res) => {
   try {
-    const payment = await paymentService.getPaymentByOrderId(req.params.orderId);
+    const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
+
+const payment = await paymentService.getPaymentByOrderId(
+  req.params.orderId,
+  customerId
+);
     if (!payment) {
       return res.status(404).json({ success: false, message: 'Payment not found' });
     }
@@ -80,7 +119,13 @@ const updatePaymentStatus = async (req, res) => {
 
 const refundPayment = async (req, res) => {
   try {
-    const payment = await paymentService.refundPayment(req.params.paymentId);
+    const cognitoSub = req.user.sub;
+const customerId = await getCustomerIdFromSub(cognitoSub);
+
+const payment = await paymentService.refundPayment(
+  req.params.paymentId,
+  customerId
+);
     return res.status(200).json({ success: true, message: 'Payment Refunded Successfully', payment });
   } catch (error) {
     console.error('Error refunding payment:', error);

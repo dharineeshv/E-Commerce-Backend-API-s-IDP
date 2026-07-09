@@ -76,8 +76,8 @@ const getCartItem = async (customerId, cartItemId) => {
   try {
     const params = {
       TableName: CART_TABLE,
-      KeyConditionExpression: "customerId = :customerId",
-      FilterExpression: "cartItemId = :cartItemId",
+      KeyConditionExpression:
+  "customerId = :customerId AND cartItemId = :cartItemId",
       ExpressionAttributeValues: {
         ":customerId": String(customerId),
         ":cartItemId": String(cartItemId),
@@ -95,14 +95,14 @@ const getCartItem = async (customerId, cartItemId) => {
 const deleteProductFromCart = async (customerId, cartItemId) => {
   try {
     const queryParams = {
-      TableName: CART_TABLE,
-      KeyConditionExpression: "customerId = :customerId",
-      FilterExpression: "cartItemId = :cartItemId",
-      ExpressionAttributeValues: {
-        ":customerId": String(customerId),
-        ":cartItemId": String(cartItemId),
-      },
-    };
+  TableName: CART_TABLE,
+  KeyConditionExpression:
+    "customerId = :customerId AND cartItemId = :cartItemId",
+  ExpressionAttributeValues: {
+    ":customerId": String(customerId),
+    ":cartItemId": String(cartItemId),
+  },
+};
 
     const queryResponse = await dynamodb.send(new QueryCommand(queryParams));
     
@@ -135,8 +135,8 @@ const updateProductQuantity = async (customerId, cartItemId, quantity) => {
     // Fetch existing item using QueryCommand
     const queryParams = {
       TableName: CART_TABLE,
-      KeyConditionExpression: "customerId = :customerId",
-      FilterExpression: "cartItemId = :cartItemId",
+      KeyConditionExpression:
+  "customerId = :customerId AND cartItemId = :cartItemId",
       ExpressionAttributeValues: {
         ":customerId": String(customerId),
         ":cartItemId": String(cartItemId),

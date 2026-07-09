@@ -4,9 +4,21 @@ import * as cartService from "../services/cartService.js";
 
 const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || "http://localhost:5000";
 const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(/\/api\/products\/?$/i, "");
+const USER_PROFILE_SERVICE_URL =
+  process.env.USER_PROFILE_SERVICE_URL;
 
 const getProductServiceItemUrl = (productId) => {
   return `${PRODUCT_SERVICE_BASE_URL}/api/products/${productId}`;
+};
+
+const getCustomerIdFromSub = async (cognitoSub) => {
+
+  const response = await axios.get(
+    `${USER_PROFILE_SERVICE_URL}/api/profile/me/${cognitoSub}`
+  );
+
+  return response.data.data.customerId;
+
 };
 
 const sendErrorResponse = (res, error, fallbackMessage) => {
@@ -29,11 +41,15 @@ const sendErrorResponse = (res, error, fallbackMessage) => {
 // Add product to cart
 const addToCart = async (req, res) => {
   try {
-    const { customerId } = req.params;
+    
     const { productId, quantity } = req.body;
 
+const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
+
     // Validation
-    if (!customerId || !productId || quantity === undefined) {
+    if (!productId || quantity === undefined)  {
       return res.status(400).json({
         success: false,
         message: "Missing required fields: customerId, productId, quantity",
@@ -87,17 +103,15 @@ const addToCart = async (req, res) => {
 // Get cart products
 const getCart = async (req, res) => {
   try {
-    const { customerId } = req.params;
 
-    if (!customerId) {
-      return res.status(400).json({
-        success: false,
-        message: "customerId is required",
-      });
-    }
+    const cognitoSub = req.user.sub;
+
+    const customerId = await getCustomerIdFromSub(cognitoSub);
 
     const result = await cartService.getCartProducts(customerId);
+
     return res.status(200).json(result);
+
   } catch (error) {
     return sendErrorResponse(res, error, "Failed to retrieve cart");
   }
@@ -106,9 +120,13 @@ const getCart = async (req, res) => {
 // Delete product from cart
 const deleteFromCart = async (req, res) => {
   try {
-    const { customerId, cartItemId } = req.params;
+    const { cartItemId } = req.params;
 
-    if (!customerId || !cartItemId) {
+const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
+
+    if (!cartItemId)  {
       return res.status(400).json({
         success: false,
         message: "customerId and cartItemId are required",
@@ -125,10 +143,14 @@ const deleteFromCart = async (req, res) => {
 // Update product quantity
 const updateQuantity = async (req, res) => {
   try {
-    const { customerId, cartItemId } = req.params;
+    const { cartItemId } = req.params;
+
+const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
     const { quantity } = req.body;
 
-    if (!customerId || !cartItemId) {
+    if (!cartItemId)  {
       return res.status(400).json({
         success: false,
         message: "customerId and cartItemId are required",
@@ -181,17 +203,15 @@ const updateQuantity = async (req, res) => {
 // Clear cart
 const clearCart = async (req, res) => {
   try {
-    const { customerId } = req.params;
 
-    if (!customerId) {
-      return res.status(400).json({
-        success: false,
-        message: "customerId is required",
-      });
-    }
+    const cognitoSub = req.user.sub;
+
+    const customerId = await getCustomerIdFromSub(cognitoSub);
 
     const result = await cartService.clearCart(customerId);
+
     return res.status(200).json(result);
+
   } catch (error) {
     return sendErrorResponse(res, error, "Failed to clear cart");
   }

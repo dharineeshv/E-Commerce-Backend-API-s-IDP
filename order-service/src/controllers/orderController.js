@@ -1,9 +1,25 @@
+import "../config/env.js";
+import axios from "axios";
 import * as orderService from "../services/orderService.js";
+
+const USER_PROFILE_SERVICE_URL = process.env.USER_PROFILE_SERVICE_URL;
+
+const getCustomerIdFromSub = async (cognitoSub) => {
+  const response = await axios.get(
+    `${USER_PROFILE_SERVICE_URL}/api/profile/me/${cognitoSub}`
+  );
+
+  return response.data.data.customerId;
+};
+
 
 // Place order from cart
 const placeOrder = async (req, res) => {
   try {
-    const { customerId } = req.params;
+    const cognitoSub = req.user.sub;
+
+     const customerId = await getCustomerIdFromSub(cognitoSub);
+
     const { shippingAddress } = req.body;
 
     if (!customerId) {
@@ -28,12 +44,15 @@ const placeOrder = async (req, res) => {
 // Get single order by orderId (customer)
 const getOrderById = async (req, res) => {
   try {
-    const { customerId, orderId } = req.params;
+    const { orderId } = req.params;
 
-    if (!customerId || !orderId) {
+const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
+     if (!orderId){
       return res.status(400).json({
         success: false,
-        message: "customerId and orderId are required",
+        message: "orderId is required",
       });
     }
 
@@ -56,7 +75,9 @@ const getOrderById = async (req, res) => {
 // Get all orders for a customer
 const getMyOrders = async (req, res) => {
   try {
-    const { customerId } = req.params;
+    const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
 
     if (!customerId) {
       return res.status(400).json({
@@ -93,12 +114,16 @@ const getAllOrders = async (req, res) => {
 // Cancel order (customer)
 const cancelOrder = async (req, res) => {
   try {
-    const { customerId, orderId } = req.params;
+    const { orderId } = req.params;
 
-    if (!customerId || !orderId) {
+const cognitoSub = req.user.sub;
+
+const customerId = await getCustomerIdFromSub(cognitoSub);
+
+    if (!orderId) {
       return res.status(400).json({
         success: false,
-        message: "customerId and orderId are required",
+        message: "orderId is required",
       });
     }
 

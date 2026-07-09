@@ -7,6 +7,7 @@ import {
   UpdateCommand,
   ScanCommand,
 } from "@aws-sdk/lib-dynamodb";
+
 import dynamodb from "../config/dynamodb.js";
 import { v4 as uuidv4 } from "uuid";
 import { publishEvent } from "./snsService.js";
@@ -78,12 +79,19 @@ const getCartItems = async (customerId) => {
 
 // Clear cart — delete the customer's cart row using only customerId (the only key)
 const clearCartItems = async (customerId) => {
-  await dynamodb.send(
-    new DeleteCommand({
-      TableName: CART_TABLE,
-      Key: { customerId },
-    })
-  );
+  const cartItems = await getCartItems(customerId);
+
+  for (const item of cartItems) {
+    await dynamodb.send(
+      new DeleteCommand({
+        TableName: CART_TABLE,
+        Key: {
+          customerId: item.customerId,
+          cartItemId: item.cartItemId,
+        },
+      })
+    );
+  }
 };
 
 // Place a new order from cart items

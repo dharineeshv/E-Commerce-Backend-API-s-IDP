@@ -1,30 +1,56 @@
 import express from "express";
 import * as cartController from "../controllers/cartController.js";
+import cognitoAuthMiddleware from "../middlewares/cognitoAuthMiddleware.js";
+import authorizeRoles from "../middlewares/authorizeRoles.js";
 
 const router = express.Router();
 
 // Health check
-router.get("/health", (req, res) => {
-  res.json({
-    message: "Cart Service Working",
-    status: "healthy",
-    timestamp: new Date().toISOString(),
-  });
-});
+router.get(
+  "/health",
+  cognitoAuthMiddleware,
+  (req, res) => {
+    res.json({
+      success: true,
+      message: "Cart Service Working",
+      user: req.user,
+    });
+  }
+);
 
 // Add product to cart
-router.post("/:customerId", cartController.addToCart);
+router.post(
+  "/",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  cartController.addToCart
+);
 
-// Get cart for customer
-router.get("/:customerId", cartController.getCart);
+router.get(
+  "/",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  cartController.getCart
+);
 
-// Update product quantity in cart
-router.put("/:customerId/:cartItemId", cartController.updateQuantity);
+router.put(
+  "/:cartItemId",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  cartController.updateQuantity
+);
 
-// Delete product from cart
-router.delete("/:customerId/:cartItemId", cartController.deleteFromCart);
+router.delete(
+  "/clear",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  cartController.clearCart
+);
 
-// Clear entire cart
-router.delete("/:customerId/cart/clear", cartController.clearCart);
-
+router.delete(
+  "/:cartItemId",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  cartController.deleteFromCart
+);
 export default router;

@@ -10,8 +10,16 @@ app.use(cors());
 
 app.use("/api/cart", cartRoutes);
 
-app.get("/", (req, res) => {
-  res.json({ message: "Cart service is running" });
+app.get("/health", (req, res) => {
+  res.json({
+    success: true,
+    service: "cart-service",
+  });
 });
 
+app.get("/", (req, res) => {
+  res.json({
+    message: "Cart service is running",
+  });
+});
 export default app;
