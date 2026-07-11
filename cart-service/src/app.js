@@ -8,7 +8,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-app.use("/api/cart", cartRoutes);
+app.use("/api/v1/cart", cartRoutes);
 
 app.get("/health", (req, res) => {
   res.json({
@@ -22,4 +22,5 @@ app.get("/", (req, res) => {
     message: "Cart service is running",
   });
 });
+
 export default app;

@@ -22,7 +22,84 @@ const getProfileBySub = async (req, res, next) => {
   }
 };
 
+
+const getMyProfile = async (req, res, next) => {
+  try {
+    console.log("JWT Payload:", req.user);
+
+    const cognitoSub = req.user.sub;
+
+    console.log("JWT Sub:", cognitoSub);
+
+    const result = await userProfileService.getMyProfile(cognitoSub);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+
+const updateMyProfile = async (req, res, next) => {
+  try {
+    const cognitoSub = req.user.sub;
+
+    const result = await userProfileService.updateMyProfile(
+      cognitoSub,
+      req.body
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const getProfileByCustomerId = async (req, res, next) => {
+  try {
+    const { customerId } = req.params;
+
+    const result = await userProfileService.getProfileByCustomerId(customerId);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const updateProfile = async (req, res, next) => {
+  try {
+    const { customerId } = req.params;
+
+    const result = await userProfileService.updateProfile(
+      customerId,
+      req.body
+    );
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
+const deleteProfile = async (req, res, next) => {
+  try {
+    const { customerId } = req.params;
+
+    const result = await userProfileService.deleteProfile(customerId);
+
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   createProfile,
   getProfileBySub,
+  getMyProfile,
+  updateMyProfile,
+  getProfileByCustomerId,
+  updateProfile,
+  deleteProfile,
 };

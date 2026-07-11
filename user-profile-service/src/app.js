@@ -1,5 +1,5 @@
 import "./config/env.js";
-
+import { API_VERSION } from "./constants/api.js";
 import express from "express";
 import cors from "cors";
 
@@ -10,7 +10,7 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-app.use("/api/profile", userProfileRoutes);
+app.use(`${API_VERSION}/profile`, userProfileRoutes);
 
 app.get("/health", (req, res) => {
   res.json({

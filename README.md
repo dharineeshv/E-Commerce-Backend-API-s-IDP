@@ -394,4 +394,4 @@ cd order-service; node createTable.js
 
 
 
-- till now implemented upto JWT Auth
+- till now implemented upto verisoning

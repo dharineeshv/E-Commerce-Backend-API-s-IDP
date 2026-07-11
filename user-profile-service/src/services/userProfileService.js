@@ -3,6 +3,7 @@ import {
   UpdateCommand,
   QueryCommand,
   GetCommand,
+  DeleteCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 import docClient from "../config/dynamoDb.js";
@@ -76,6 +77,148 @@ const getProfileBySub = async (cognitoSub) => {
   };
 };
 
+const getProfileByCustomerId = async (customerId) => {
+
+  const response = await docClient.send(
+    new GetCommand({
+      TableName: process.env.USER_PROFILE_TABLE,
+      Key: {
+        customerId,
+      },
+    })
+  );
+
+  if (!response.Item) {
+    const error = new Error("User profile not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  return {
+    success: true,
+    data: response.Item,
+  };
+
+};
+
+const getMyProfile = async (cognitoSub) => {
+
+  // Find profile using Cognito Sub
+  const profile = await getProfileByCognitoSub(cognitoSub);
+
+  if (!profile) {
+    const error = new Error("User profile not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Reuse existing method
+  return await getProfileByCustomerId(profile.customerId);
+
+};
+
+const updateMyProfile = async (cognitoSub, updates) => {
+
+  // Find profile using Cognito Sub
+  const profile = await getProfileByCognitoSub(cognitoSub);
+
+  if (!profile) {
+    const error = new Error("User profile not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  // Reuse existing update method
+  return await updateProfile(profile.customerId, updates);
+
+};
+
+const updateProfile = async (customerId, updates) => {
+
+  const existingProfile = await docClient.send(
+    new GetCommand({
+      TableName: process.env.USER_PROFILE_TABLE,
+      Key: {
+        customerId,
+      },
+    })
+  );
+
+  if (!existingProfile.Item) {
+    const error = new Error("User profile not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  const response = await docClient.send(
+    new UpdateCommand({
+      TableName: process.env.USER_PROFILE_TABLE,
+
+      Key: {
+        customerId,
+      },
+
+      UpdateExpression:
+        "SET fullName = :fullName, phoneNumber = :phoneNumber, updatedAt = :updatedAt",
+
+      ExpressionAttributeValues: {
+        ":fullName":
+          updates.fullName ??
+          existingProfile.Item.fullName,
+
+        ":phoneNumber":
+          updates.phoneNumber ??
+          existingProfile.Item.phoneNumber,
+
+        ":updatedAt":
+          new Date().toISOString(),
+      },
+
+      ReturnValues: "ALL_NEW",
+    })
+  );
+
+  return {
+    success: true,
+    message: "Profile updated successfully.",
+    data: response.Attributes,
+  };
+
+};
+
+const deleteProfile = async (customerId) => {
+
+  const existingProfile = await docClient.send(
+    new GetCommand({
+      TableName: process.env.USER_PROFILE_TABLE,
+      Key: {
+        customerId,
+      },
+    })
+  );
+
+  if (!existingProfile.Item) {
+    const error = new Error("User profile not found.");
+    error.statusCode = 404;
+    throw error;
+  }
+
+  await docClient.send(
+    new DeleteCommand({
+      TableName: process.env.USER_PROFILE_TABLE,
+      Key: {
+        customerId,
+      },
+    })
+  );
+
+  return {
+    success: true,
+    message: "User profile deleted successfully.",
+  };
+
+};
+
 const createProfile = async (profileData) => {
   const {
     cognitoSub,
@@ -121,4 +264,9 @@ if (existingProfile) {
 export {
   createProfile,
   getProfileBySub,
+  getMyProfile,
+  updateMyProfile,
+  getProfileByCustomerId,
+  updateProfile,
+  deleteProfile,
 };

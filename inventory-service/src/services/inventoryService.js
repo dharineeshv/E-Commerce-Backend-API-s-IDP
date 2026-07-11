@@ -11,12 +11,17 @@ import {
 
 const INVENTORY_TABLE = process.env.INVENTORY_TABLE;
 const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL;
-const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(/\/api\/products\/?$/i, "");
+const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(
+  /\/api\/v1\/products\/?$/i,
+  ""
+);
 
 async function verifyProductExists(productId) {
   try {
     // Fixed: was /products/${productId}, correct path is /api/products/${productId}
-    const response = await axios.get(`${PRODUCT_SERVICE_BASE_URL}/api/products/${productId}`);
+    const response = await axios.get(
+  `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${productId}`
+);
     return response.status === 200 && response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
