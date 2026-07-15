@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CloudBasket | Login</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/login.css">
+
+    <!-- Font Awesome (Eye Icon) -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+</head>
+
+<body>
+
+    <!-- Background -->
+
+    <div class="background-blur"></div>
+
+    <!-- Main Container -->
+
+    <main class="login-container">
+
+        <!-- Left Side -->
+
+        <section class="left-panel">
+
+            <img
+                src="assets/login-illustration.png"
+                alt="Shopping Illustration"
+                class="illustration">
+
+            <div class="welcome-text">
+
+                <h1>Welcome Back</h1>
+
+                <p>
+
+                    Securely access your account to continue shopping
+                    with the best deals in the cloud.
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- Right Side -->
+
+        <section class="right-panel">
+
+            <div class="login-card">
+
+                <img
+                    src="assets/logo.png"
+                    class="logo"
+                    alt="CloudBasket Logo">
+
+                <h2>Login</h2>
+
+                <p class="subtitle">
+
+                    Login to continue shopping.
+
+                </p>
+
+                <form id="loginForm">
+
+                    <div class="input-group">
+
+                        <label>Email Address</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="name@example.com"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>Password</label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Enter Password"
+                                required>
+
+                            <i
+                                class="fa-solid fa-eye toggle-password"
+                                id="togglePassword"></i>
+
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="forgot-password.html"
+                        class="forgot-password">
+
+                        Forgot Password?
+
+                    </a>
+
+                    <button
+                        class="login-btn"
+                        id="loginBtn">
+
+                        Login
+
+                    </button>
+
+                </form>
+
+                <div class="divider">
+
+                    <span></span>
+
+                    <p>OR</p>
+
+                    <span></span>
+
+                </div>
+
+                <div class="register-link">
+
+                    Don't have an account?
+
+                    <a href="register.html">
+
+                        Register Now
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+
+    <footer>
+
+        © 2026 CloudBasket.
+        All Rights Reserved.
+
+    </footer>
+
+    <!-- Toast -->
+
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+
+    <script src="js/api.js"></script>
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/toast.js"></script>
+
+    <script src="js/validation.js"></script>
+
+    <script src="js/login.js"></script>
+
+</body>
+
+</html>

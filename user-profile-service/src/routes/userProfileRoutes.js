@@ -27,12 +27,11 @@ router.get("/me/:cognitoSub", getProfileBySub);
 // -------------------------
 // Customer APIs
 // -------------------------
-
 router.get(
-  "/me",
-  cognitoAuthMiddleware,
-  authorizeRoles("Customer"),
-  getMyProfile
+    "/me",
+    cognitoAuthMiddleware,
+    authorizeRoles("Customer", "Admin"),
+    getMyProfile
 );
 
 router.put(

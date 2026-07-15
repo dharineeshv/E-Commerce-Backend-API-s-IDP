@@ -1,0 +1,129 @@
+/* ==========================================================
+                    DASHBOARD CARDS
+========================================================== */
+
+.dashboard-cards{
+
+    display:grid;
+
+    grid-template-columns:repeat(5,1fr);
+
+    gap:20px;
+
+    margin-bottom:35px;
+
+}
+
+.dashboard-card{
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:24px;
+
+    display:flex;
+
+    align-items:center;
+
+    gap:18px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+    transition:.3s;
+
+}
+
+.dashboard-card:hover{
+
+    transform:translateY(-4px);
+
+}
+
+.card-icon{
+
+    width:65px;
+
+    height:65px;
+
+    border-radius:18px;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+/* Individual Colors */
+
+.products-icon{
+
+    background:#E8F1FF;
+
+    color:#2563EB;
+
+}
+
+.inventory-icon{
+
+    background:#ECFDF5;
+
+    color:#10B981;
+
+}
+
+.orders-icon{
+
+    background:#FFF7ED;
+
+    color:#F97316;
+
+}
+
+.revenue-icon{
+
+    background:#F3E8FF;
+
+    color:#9333EA;
+
+}
+
+.festival-icon{
+
+    background:#FEF2F2;
+
+    color:#DC2626;
+
+}
+
+/* Card Text */
+
+.card-details{
+
+    display:flex;
+
+    flex-direction:column;
+
+}
+
+.card-details span{
+
+    font-size:14px;
+
+    color:#6B7280;
+
+    margin-bottom:8px;
+
+}
+
+.card-details h2{
+
+    font-size:28px;
+
+    color:#111827;
+
+    font-weight:700;
+
+}

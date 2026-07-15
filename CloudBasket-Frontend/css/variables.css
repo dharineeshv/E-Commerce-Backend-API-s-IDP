@@ -1,0 +1,87 @@
+/* ==========================================
+   CloudBasket Design System
+   ========================================== */
+
+:root {
+
+    /* Primary Colors */
+
+    --primary-color: #2563eb;
+    --primary-dark: #1d4ed8;
+    --primary-light: #60a5fa;
+
+    /* Accent */
+
+    --accent-color: #f97316;
+    --accent-hover: #ea580c;
+
+    /* Background */
+
+    --background: #eef5ff;
+    --card-bg: rgba(255,255,255,0.82);
+
+    /* Text */
+
+    --text-dark: #1f2937;
+    --text-light: #6b7280;
+    --text-white: #ffffff;
+
+    /* Borders */
+
+    --border-color: #dbeafe;
+
+    /* Success */
+
+    --success: #16a34a;
+
+    /* Error */
+
+    --danger: #ef4444;
+
+    /* Warning */
+
+    --warning: #f59e0b;
+
+    /* Info */
+
+    --info: #2563eb;
+
+    /* Shadow */
+
+    --shadow-sm: 0 4px 10px rgba(0,0,0,.08);
+
+    --shadow-md: 0 12px 25px rgba(0,0,0,.12);
+
+    --shadow-lg: 0 25px 50px rgba(0,0,0,.18);
+
+    /* Glass */
+
+    --glass-bg: rgba(255,255,255,.72);
+
+    --glass-border: rgba(255,255,255,.45);
+
+    --blur: blur(18px);
+
+    /* Radius */
+
+    --radius-sm:8px;
+
+    --radius-md:14px;
+
+    --radius-lg:22px;
+
+    --radius-xl:30px;
+
+    /* Font */
+
+    --font-family:"Poppins",sans-serif;
+
+    /* Transition */
+
+    --transition:.35s ease;
+
+    /* Layout */
+
+    --container-width:1200px;
+
+}

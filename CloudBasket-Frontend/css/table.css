@@ -1,0 +1,115 @@
+/* ==========================================================
+                    CONTENT GRID
+========================================================== */
+
+.dashboard-content-grid{
+
+    display:grid;
+
+    grid-template-columns:2fr 1fr;
+
+    gap:24px;
+
+    margin-bottom:35px;
+
+}
+
+/* ==========================================================
+                    PANEL
+========================================================== */
+
+.dashboard-panel{
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    padding:24px;
+
+    box-shadow:0 8px 20px rgba(0,0,0,.06);
+
+}
+
+/* ==========================================================
+                    PANEL HEADER
+========================================================== */
+
+.panel-header{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+    margin-bottom:20px;
+
+}
+
+.panel-header h2{
+
+    font-size:20px;
+
+    color:#111827;
+
+}
+
+.panel-button{
+
+    border:none;
+
+    background:#2563EB;
+
+    color:#ffffff;
+
+    padding:10px 18px;
+
+    border-radius:10px;
+
+    cursor:pointer;
+
+}
+
+/* ==========================================================
+                    TABLE
+========================================================== */
+
+.dashboard-table{
+
+    width:100%;
+
+    border-collapse:collapse;
+
+}
+
+.dashboard-table th{
+
+    text-align:left;
+
+    padding:14px;
+
+    background:#F9FAFB;
+
+    color:#6B7280;
+
+    font-size:14px;
+
+}
+
+.dashboard-table td{
+
+    padding:16px 14px;
+
+    border-bottom:1px solid #F3F4F6;
+
+}
+
+.empty-table{
+
+    text-align:center;
+
+    color:#9CA3AF;
+
+    padding:40px !important;
+
+}

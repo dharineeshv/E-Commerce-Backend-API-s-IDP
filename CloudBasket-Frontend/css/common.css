@@ -1,0 +1,163 @@
+/* ==========================================
+   Reset
+   ========================================== */
+
+*{
+
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+
+}
+
+html{
+
+    scroll-behavior:smooth;
+
+}
+
+body{
+
+    font-family:var(--font-family);
+
+    background:var(--background);
+
+    color:var(--text-dark);
+
+    overflow-x:hidden;
+
+}
+
+/* ==========================================
+   Background
+   ========================================== */
+
+.background-blur{
+
+    position:fixed;
+
+    inset:0;
+
+    background:
+
+    radial-gradient(circle at top left,#dbeafe 0%,transparent 45%),
+
+    radial-gradient(circle at bottom right,#bfdbfe 0%,transparent 45%),
+
+    linear-gradient(135deg,#eef5ff,#ffffff);
+
+    z-index:-2;
+
+}
+
+/* ==========================================
+   Images
+   ========================================== */
+
+img{
+
+    max-width:100%;
+
+    display:block;
+
+}
+
+/* ==========================================
+   Buttons
+   ========================================== */
+
+button{
+
+    cursor:pointer;
+
+    border:none;
+
+    transition:var(--transition);
+
+    font-family:inherit;
+
+}
+
+button:hover{
+
+    transform:translateY(-2px);
+
+}
+
+/* ==========================================
+   Inputs
+   ========================================== */
+
+input{
+
+    font-family:inherit;
+
+}
+
+input:focus{
+
+    outline:none;
+
+}
+
+/* ==========================================
+   Links
+   ========================================== */
+
+a{
+
+    text-decoration:none;
+
+}
+
+/* ==========================================
+   Footer
+   ========================================== */
+
+footer{
+
+    text-align:center;
+
+    padding:25px;
+
+    color:var(--text-light);
+
+    font-size:.92rem;
+
+    display:flex;
+
+    justify-content:center;
+
+    gap:30px;
+
+    flex-wrap:wrap;
+
+}
+
+footer span{
+
+    cursor:pointer;
+
+}
+
+footer span:hover{
+
+    color:var(--primary-color);
+
+}
+
+/* ==========================================
+   Responsive
+   ========================================== */
+
+@media(max-width:768px){
+
+footer{
+
+gap:15px;
+
+font-size:.82rem;
+
+}
+
+}

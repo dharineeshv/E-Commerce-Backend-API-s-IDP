@@ -1,21 +1,41 @@
-import express from 'express';
+import express from "express";
 import {
   addProduct,
   getProducts,
   getProductById,
   updateProduct,
   deleteProduct,
-} from '../controllers/productController.js';
+  uploadProductImage,
+} from "../controllers/productController.js";
+
 import cognitoAuthMiddleware from "../middlewares/cognitoAuthMiddleware.js";
 import authorizeRoles from "../middlewares/authorizeRoles.js";
+import upload from "../middlewares/uploadMiddleware.js";
 
 const router = express.Router();
 
+// ==========================================================
 // Public APIs
+// ==========================================================
+
 router.get("/", getProducts);
+
 router.get("/:id", getProductById);
 
+// ==========================================================
 // Admin APIs
+// ==========================================================
+
+// Upload Product Image
+router.post(
+  "/upload-image",
+  cognitoAuthMiddleware,
+  authorizeRoles("Admin"),
+  upload.single("image"),
+  uploadProductImage
+);
+
+// Create Product
 router.post(
   "/",
   cognitoAuthMiddleware,
@@ -23,6 +43,7 @@ router.post(
   addProduct
 );
 
+// Update Product
 router.put(
   "/:id",
   cognitoAuthMiddleware,
@@ -30,6 +51,7 @@ router.put(
   updateProduct
 );
 
+// Delete Product
 router.delete(
   "/:id",
   cognitoAuthMiddleware,

@@ -1,0 +1,127 @@
+*{
+
+    margin:0;
+
+    padding:0;
+
+    box-sizing:border-box;
+
+    font-family:"Poppins",sans-serif;
+
+}
+
+body{
+
+    background:#F5F7FB;
+
+}
+
+.dashboard{
+
+    width:100%;
+
+    min-height:100vh;
+
+}
+
+.dashboard-main{
+
+    margin-top:75px;
+
+    margin-left:260px;
+
+    padding:30px;
+
+}
+
+/* ===========================
+   Payment Badge
+=========================== */
+
+.payment-badge{
+
+    display:inline-block;
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.payment-badge.success{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+.payment-badge.pending{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+/* ===========================
+   Order Status Badge
+=========================== */
+
+.status-badge{
+
+    display:inline-block;
+
+    padding:6px 14px;
+
+    border-radius:20px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.status-badge.success{
+
+    background:#dcfce7;
+
+    color:#15803d;
+
+}
+
+.status-badge.pending{
+
+    background:#fef3c7;
+
+    color:#b45309;
+
+}
+
+.status-badge.cancelled{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
+/* ==========================================================
+                    MAIN CONTENT
+========================================================== */
+
+.dashboard-main{
+
+    transition:margin-left .35s ease;
+
+}
+
+.dashboard-main.expanded{
+
+    margin-left:90px;
+
+}

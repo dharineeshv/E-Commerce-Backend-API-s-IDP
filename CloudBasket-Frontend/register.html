@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CloudBasket | Register</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="css/variables.css">
+
+    <link rel="stylesheet" href="css/common.css">
+
+    <link rel="stylesheet" href="css/animations.css">
+
+    <link rel="stylesheet" href="css/toast.css">
+
+    <link rel="stylesheet" href="css/register.css">
+
+    <!-- Google Font -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+    <div class="background-blur"></div>
+
+    <main class="register-container">
+
+        <!-- LEFT -->
+
+        <section class="left-panel">
+
+          <img
+    src="assets/register-illustration.png"
+    class="illustration"
+    alt="Register Illustration">
+
+
+            <div class="welcome-text">
+
+                <h1>
+
+                    Join <span>CloudBasket</span>
+
+                </h1>
+
+                <p>
+
+                    Create your account and unlock a seamless shopping experience powered by cloud technology.
+
+                </p>
+
+            </div>
+
+        </section>
+
+        <!-- RIGHT -->
+
+        <section class="right-panel">
+
+            <div class="register-card">
+
+                <img
+    src="assets/logo.png"
+    class="logo"
+    alt="CloudBasket Logo">
+
+                <h2>
+
+                    Create Account
+
+                </h2>
+
+                <p class="subtitle">
+
+                    Start shopping in just a few seconds.
+
+                </p>
+
+                <form id="registerForm">
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Email Address
+
+                        </label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="cloudbasket@gmail.com"
+                            required>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Password
+
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                required>
+
+                            <i
+                                class="fa-solid fa-eye toggle-password"
+                                id="togglePassword"></i>
+
+                        </div>
+
+                    </div>
+
+                    <!-- PASSWORD RULES -->
+
+                    <div class="password-rules">
+
+                        <div id="lengthRule">
+
+                            <i class="fa-regular fa-circle"></i>
+
+                            8+ Characters
+
+                        </div>
+
+                        <div id="upperRule">
+
+                            <i class="fa-regular fa-circle"></i>
+
+                            Uppercase
+
+                        </div>
+
+                        <div id="lowerRule">
+
+                            <i class="fa-regular fa-circle"></i>
+
+                            Lowercase
+
+                        </div>
+
+                        <div id="numberRule">
+
+                            <i class="fa-regular fa-circle"></i>
+
+                            Number
+
+                        </div>
+
+                        <div id="specialRule">
+
+                            <i class="fa-regular fa-circle"></i>
+
+                            Special Character
+
+                        </div>
+
+                    </div>
+
+                    <div class="input-group">
+
+                        <label>
+
+                            Confirm Password
+
+                        </label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="confirmPassword"
+                                required>
+
+                            <i
+                                class="fa-solid fa-eye toggle-password"
+                                id="toggleConfirmPassword"></i>
+
+                        </div>
+
+                        <small id="passwordMatch"></small>
+
+                    </div>
+
+                    <button
+                        class="register-btn"
+                        id="registerBtn">
+
+                        Create Account
+
+                    </button>
+
+                </form>
+
+                <div class="login-link">
+
+                    Already have an account?
+
+                    <a href="login.html">
+
+                        Login Now
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer>
+
+        © 2026 CloudBasket. All Rights Reserved.
+
+    </footer>
+
+    <div id="toastContainer"></div>
+
+    <script src="js/api.js"></script>
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/toast.js"></script>
+
+    <script src="js/validation.js"></script>
+
+    <script src="js/register.js"></script>
+
+</body>
+
+</html>

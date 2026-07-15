@@ -1,0 +1,186 @@
+/* ==========================================================
+                        SIDEBAR
+========================================================== */
+
+.dashboard-sidebar{
+
+    position:fixed;
+
+    top:75px;
+
+    left:0;
+
+    width:260px;
+
+    height:calc(100vh - 75px);
+
+    background:#ffffff;
+
+    border-right:1px solid #E5E7EB;
+
+    display:flex;
+
+    flex-direction:column;
+
+    justify-content:space-between;
+
+}
+
+/* Navigation */
+
+.sidebar-navigation{
+
+    padding:25px 18px;
+
+}
+
+/* Title */
+
+.navigation-title{
+
+    display:block;
+
+    margin-bottom:20px;
+
+    font-size:12px;
+
+    font-weight:600;
+
+    color:#9CA3AF;
+
+    letter-spacing:1px;
+
+}
+
+/* Menu */
+
+.sidebar-item{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    text-decoration:none;
+
+    color:#374151;
+
+    padding:14px 16px;
+
+    border-radius:14px;
+
+    margin-bottom:10px;
+
+    transition:.3s;
+
+}
+
+/* Icon Box */
+
+.sidebar-icon{
+
+    width:42px;
+
+    height:42px;
+
+    border-radius:12px;
+
+    background:#F3F4F6;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+}
+
+/* Text */
+
+.sidebar-text{
+
+    font-size:15px;
+
+    font-weight:500;
+
+}
+
+/* Hover */
+
+.sidebar-item:hover{
+
+    background:#EEF5FF;
+
+}
+
+/* Active */
+
+.sidebar-item.active{
+
+    background:#2563EB;
+
+    color:#ffffff;
+
+}
+
+.sidebar-item.active .sidebar-icon{
+
+    background:rgba(255,255,255,.20);
+
+}
+
+/* Footer */
+
+.sidebar-footer{
+
+    padding:20px;
+
+    border-top:1px solid #E5E7EB;
+
+}
+
+.logout{
+
+    color:#DC2626;
+
+}
+/* ==========================================================
+                    COLLAPSED SIDEBAR
+========================================================== */
+
+.dashboard-sidebar{
+
+    transition:.35s ease;
+
+}
+
+.dashboard-sidebar.collapsed{
+
+    width:90px;
+
+}
+
+/* Hide Text */
+
+.dashboard-sidebar.collapsed .sidebar-text{
+
+    display:none;
+
+}
+
+/* Hide Title */
+
+.dashboard-sidebar.collapsed .navigation-title{
+
+    display:none;
+
+}
+
+/* Center Icons */
+
+.dashboard-sidebar.collapsed .sidebar-item{
+
+    justify-content:center;
+
+}

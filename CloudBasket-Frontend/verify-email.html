@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>CloudBasket | Verify Email</title>
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="css/variables.css">
+
+    <link rel="stylesheet" href="css/common.css">
+
+    <link rel="stylesheet" href="css/animations.css">
+
+    <link rel="stylesheet" href="css/toast.css">
+
+    <link rel="stylesheet" href="css/verify-email.css">
+
+    <!-- Google Font -->
+
+    <link rel="preconnect"
+          href="https://fonts.googleapis.com">
+
+    <link rel="preconnect"
+          href="https://fonts.gstatic.com"
+          crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+          rel="stylesheet">
+
+    <!-- Font Awesome -->
+
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+</head>
+
+<body>
+
+<div class="background-blur"></div>
+
+<main class="verify-container">
+
+    <!-- LEFT -->
+
+    <section class="left-panel">
+
+        <img
+            src="assets/verify-email-illustration.png"
+            class="illustration"
+            alt="Verify Email">
+
+        <div class="welcome-text">
+
+            <h1>
+
+                Verify Your Email
+
+            </h1>
+
+            <p>
+
+                We've sent a verification code to your registered email
+                address.
+
+                Enter the code below to activate your CloudBasket account
+                and start shopping securely.
+
+            </p>
+
+        </div>
+
+    </section>
+
+    <!-- RIGHT -->
+
+    <section class="right-panel">
+
+        <div class="verify-card">
+
+            <img
+                src="assets/logo.png"
+                class="logo"
+                alt="CloudBasket Logo">
+
+            <h2>
+
+                Email Verification
+
+            </h2>
+
+            <p class="subtitle">
+
+                Enter the 6-digit verification code.
+
+            </p>
+
+            <form id="verifyForm">
+
+                <!-- Registered Email -->
+
+                <div class="input-group">
+
+                    <label>
+
+                        Registered Email
+
+                    </label>
+
+                    <div class="email-display">
+
+                        <i class="fa-solid fa-envelope"></i>
+
+                        <span id="registeredEmail">
+
+                            Loading...
+
+                        </span>
+
+                    </div>
+
+                </div>
+
+                <!-- Verification Code -->
+
+                <div class="input-group">
+
+                    <label>
+
+                        Verification Code
+
+                    </label>
+
+                    <input
+
+                        type="text"
+
+                        id="verificationCode"
+
+                        maxlength="6"
+
+                        placeholder="Enter 6-digit verification code"
+
+                        required>
+
+                </div>
+
+                <button
+
+                    class="verify-btn"
+
+                    id="verifyBtn">
+
+                    Verify Email
+
+                </button>
+
+            </form>
+
+            <div class="login-link">
+
+                Already verified?
+
+                <a href="login.html">
+
+                    Login Now
+
+                </a>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+<footer>
+
+    © 2026 CloudBasket. All Rights Reserved.
+
+</footer>
+
+<div id="toastContainer"></div>
+
+<script src="js/api.js"></script>
+
+<script src="js/auth.js"></script>
+
+<script src="js/toast.js"></script>
+
+<script src="js/verify-email.js"></script>
+
+</body>
+
+</html>

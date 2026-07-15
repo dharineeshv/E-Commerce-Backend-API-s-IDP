@@ -1,0 +1,141 @@
+/* ==========================================================
+                    PROFILE CARD
+========================================================== */
+
+.profile-card{
+
+    position:absolute;
+
+    top:80px;
+
+    right:25px;
+
+    width:330px;
+
+    background:#ffffff;
+
+    border-radius:20px;
+
+    overflow:hidden;
+
+    box-shadow:0 20px 45px rgba(0,0,0,.15);
+
+    display:none;
+
+    z-index:9999;
+
+}
+
+.profile-card.show{
+
+    display:block;
+
+}
+
+/* Header */
+
+.profile-card-header{
+
+    text-align:center;
+
+    padding:30px;
+
+    background:#F8FAFC;
+
+}
+
+.profile-card-avatar{
+
+    width:70px;
+
+    height:70px;
+
+    border-radius:50%;
+
+    background:#2563EB;
+
+    color:white;
+
+    display:flex;
+
+    justify-content:center;
+
+    align-items:center;
+
+    margin:auto;
+
+    font-size:28px;
+
+    font-weight:bold;
+
+}
+
+.profile-card-header h3{
+
+    margin-top:18px;
+
+    font-size:22px;
+
+}
+
+.profile-card-header span{
+
+    color:#6B7280;
+
+}
+
+/* Body */
+
+.profile-card-body{
+
+    padding:20px;
+
+}
+
+.profile-row{
+
+    display:flex;
+
+    align-items:center;
+
+    gap:15px;
+
+    padding:14px 0;
+
+    border-bottom:1px solid #F1F5F9;
+
+}
+
+.profile-row:last-child{
+
+    border:none;
+
+}
+
+/* Footer */
+
+.profile-card-footer{
+
+    padding:20px;
+
+}
+
+.profile-card-footer button{
+
+    width:100%;
+
+    padding:14px;
+
+    background:#DC2626;
+
+    color:white;
+
+    border:none;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+}
