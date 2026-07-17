@@ -29,3 +29,37 @@ export async function getAllInventory() {
     }
 
 }
+
+export async function getInventoryById(inventoryId) {
+    try {
+        const response = await fetch(`${API.inventoryService}/api/v1/inventory/${inventoryId}`);
+        if (!response.ok) {
+            throw new Error(`Failed to fetch inventory with ID: ${inventoryId}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error in getInventoryById:", error);
+        return null;
+    }
+}
+
+export async function updateInventory(inventoryId, payload) {
+    try {
+        const response = await fetch(`${API.inventoryService}/api/v1/inventory/${inventoryId}`, {
+            method: "PUT",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) {
+            const errBody = await response.json().catch(() => ({}));
+            throw new Error(errBody.message || `Failed to update inventory with ID: ${inventoryId}`);
+        }
+        return await response.json();
+    } catch (error) {
+        console.error("Error in updateInventory:", error);
+        return { success: false, message: error.message };
+    }
+}

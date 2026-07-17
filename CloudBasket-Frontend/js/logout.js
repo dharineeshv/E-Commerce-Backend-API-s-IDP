@@ -4,24 +4,18 @@
 
 export function initializeLogout() {
 
-    const logoutButton =
-        document.getElementById("logout-button");
+    const logoutButtons = document.querySelectorAll('[id="logout-button"], .logout');
 
-    const modal =
-        document.getElementById("logout-modal");
+    const modal = document.getElementById("logout-modal");
+    const cancel = document.getElementById("cancel-logout");
+    const confirm = document.getElementById("confirm-logout");
 
-    const cancel =
-        document.getElementById("cancel-logout");
-
-    const confirm =
-        document.getElementById("confirm-logout");
-
-    logoutButton.addEventListener("click", (event) => {
-
-        event.stopPropagation();
-
-        modal.classList.add("show");
-
+    logoutButtons.forEach(btn => {
+        btn.addEventListener("click", (event) => {
+            event.preventDefault(); // In case it's a link
+            event.stopPropagation();
+            if (modal) modal.classList.add("show");
+        });
     });
 
     cancel.addEventListener("click", () => {

@@ -8,11 +8,14 @@ import {
     uploadProductImage,
     createProduct
 } from "./api/addProductApi.js";
+import { getProductById, updateProductApi } from "./api/productApi.js";
 
 import { showToast } from "./utils/toast.js";
 
 import { validateProduct } from "./utils/validation.js";
 
+
+import { initializeLogout } from "./logout.js";
 
 // ==========================================================
 // DOM Ready
@@ -23,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
     console.log("✅ Add Product Loaded");
 
     initialize();
+    initializeLogout();
 
 });
 
@@ -31,8 +35,11 @@ document.addEventListener("DOMContentLoaded", () => {
 // ==========================================================
 
 let selectedImage = null;
-
 let uploadedImage = null;
+let isEditMode = false;
+let editProductId = null;
+let existingProductImageKey = null;
+let existingProductImageUrl = null;
 
 // ==========================================================
 // Cached DOM
@@ -70,13 +77,140 @@ const cancelButton =
 // ==========================================================
 
 function initialize() {
-
     initializeImageUpload();
-
     initializeDragAndDrop();
-
+    
+    const urlParams = new URLSearchParams(window.location.search);
+    editProductId = urlParams.get('id');
+    if (editProductId) {
+        isEditMode = true;
+        document.querySelector('h1').textContent = 'Edit Product';
+        publishButton.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"></path>
+                <polyline points="17 21 17 13 7 13 7 21"></polyline>
+                <polyline points="7 3 7 8 15 8"></polyline>
+            </svg>
+            Save Changes
+        `;
+        loadProductForEditing();
+    }
+    
     console.log("✅ Initialization Complete");
+}
 
+async function loadProductForEditing() {
+    try {
+        const response = await getProductById(editProductId);
+        if (response && response.product) {
+            populateForm(response.product);
+        }
+    } catch (error) {
+        console.error('Failed to load product details:', error);
+        showToast('Failed to load product details.', 'error');
+    }
+}
+
+function populateForm(product) {
+    productName.value = product.name || '';
+    productBrand.value = product.brand || '';
+    productCategory.value = product.category || '';
+    productDescription.value = product.description || '';
+    skuInput.value = product.sku || '';
+    mrpInput.value = product.mrp !== undefined ? product.mrp : '';
+    discountInput.value = product.discountPercentage !== undefined ? product.discountPercentage : '';
+    sellingPriceInput.value = product.sellingPrice !== undefined ? product.sellingPrice : '';
+    quantityInput.value = product.quantity !== undefined ? product.quantity : '';
+    thresholdInput.value = product.lowStockThreshold !== undefined ? product.lowStockThreshold : '';
+    
+    if (product.status) {
+        const statusRadio = document.querySelector(`input[name="prodStatus"][value="${product.status.toLowerCase()}"]`);
+        if (statusRadio) statusRadio.checked = true;
+    }
+    
+    // Existing image handling
+    if (product.imageUrl) {
+        existingProductImageKey = product.imageKey || null;
+        existingProductImageUrl = product.imageUrl;
+        previewImage.src = product.imageUrl;
+        previewImage.style.display = 'block';
+        defaultPreviewItem.style.display = 'none';
+        
+        // Setup remove existing image
+        removeImageButton.classList.add("show");
+        removeImageButton.addEventListener("click", () => {
+            existingProductImageUrl = null;
+            existingProductImageKey = null;
+            previewImage.src = '';
+            previewImage.style.display = 'none';
+            defaultPreviewItem.style.display = 'flex';
+            removeImageButton.classList.remove("show");
+        });
+    }
+    
+    // Specifications
+    if (product.specifications) {
+        const specsContainer = document.getElementById("specsList");
+        if (specsContainer) {
+            specsContainer.innerHTML = '';
+            
+            let specsObj = {};
+            if (typeof product.specifications === 'string') {
+                if (product.specifications.startsWith('@{')) {
+                    const inner = product.specifications.slice(2, -1);
+                    const pairs = inner.split(';');
+                    pairs.forEach(p => {
+                        const parts = p.split('=');
+                        if (parts.length === 2) {
+                            specsObj[parts[0].trim()] = parts[1].trim();
+                        }
+                    });
+                } else {
+                    try { specsObj = JSON.parse(product.specifications); } catch(e){}
+                }
+            } else if (typeof product.specifications === 'object') {
+                specsObj = product.specifications;
+            }
+
+            Object.entries(specsObj).forEach(([key, value]) => {
+                const row = document.createElement("div");
+                row.className = "spec-row";
+                row.innerHTML = `
+                    <div class="form-group">
+                        <input type="text" class="spec-key" placeholder="Specification Name" value="${key}">
+                    </div>
+                    <div class="form-group">
+                        <input type="text" class="spec-value" placeholder="Value" value="${value}">
+                    </div>
+                    <button type="button" class="delete-spec-btn">
+                        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/>
+                        </svg>
+                    </button>
+                `;
+                
+                const removeBtn = row.querySelector(".delete-spec-btn");
+                removeBtn.addEventListener("click", () => {
+                    row.remove();
+                    if(typeof renderSpecificationPreview === 'function') renderSpecificationPreview();
+                });
+                specsContainer.appendChild(row);
+                
+                const inputs = row.querySelectorAll("input");
+                inputs.forEach(input => input.addEventListener("input", () => {
+                    if(typeof renderSpecificationPreview === 'function') renderSpecificationPreview();
+                }));
+            });
+        }
+    }
+    
+    // Force preview update
+    setTimeout(() => {
+        if(typeof updatePreview === 'function') updatePreview();
+        if(typeof calculatePrice === 'function') calculatePrice();
+        if(typeof updateStatusPreview === 'function') updateStatusPreview();
+        if(typeof renderSpecificationPreview === 'function') renderSpecificationPreview();
+    }, 100);
 }
 
 // ==========================================================
@@ -466,10 +600,10 @@ function calculatePrice() {
         sellingPrice.toFixed(2);
 
     previewSellingPrice.textContent =
-        `$${sellingPrice.toFixed(2)}`;
+        `₹${sellingPrice.toFixed(2)}`;
 
     previewMrp.textContent =
-        `$${mrp.toFixed(2)}`;
+        `₹${mrp.toFixed(2)}`;
 
     previewDiscount.textContent =
         `-${discount}%`;
@@ -768,51 +902,23 @@ Publishing...
         // Validation
         // ===============================
 
-        if (!selectedImage) {
-
-            showToast(
-
-                "Please select a product image.",
-
-                "error"
-
-            );
-
+        if (!selectedImage && !existingProductImageUrl) {
+            showToast("Please select a product image.", "error");
             resetPublishButton();
-
             return;
-
         }
 
         // ===============================
         // Upload Image
         // ===============================
 
-        const uploadResponse =
-
-            await uploadProductImage(
-
-                selectedImage
-
-            );
-
-        if (
-
-            !uploadResponse.success
-
-        ) {
-
-            throw new Error(
-
-                uploadResponse.message ||
-
-                "Image upload failed."
-
-            );
-
+        if (selectedImage) {
+            const uploadResponse = await uploadProductImage(selectedImage);
+            if (!uploadResponse || !uploadResponse.success) {
+                throw new Error(uploadResponse?.message || "Image upload failed.");
+            }
+            uploadedImage = uploadResponse;
         }
-
-        uploadedImage = uploadResponse;
 
         // ===============================
         // Product Object
@@ -882,13 +988,8 @@ Publishing...
 
                 ),
 
-            imageKey:
-
-                uploadResponse.imageKey,
-
-            imageUrl:
-
-                uploadResponse.imageUrl,
+            imageKey: uploadedImage ? uploadedImage.imageKey : existingProductImageKey,
+            imageUrl: uploadedImage ? uploadedImage.imageUrl : existingProductImageUrl,
 
             specifications:
 
@@ -920,17 +1021,12 @@ Publishing...
 
         }
 
-        // ===============================
-        // Create Product
-        // ===============================
-
-        const response =
-
-            await createProduct(
-
-                product
-
-            );
+        let response;
+        if (isEditMode) {
+            response = await updateProductApi(editProductId, product);
+        } else {
+            response = await createProduct(product);
+        }
 
         if (
 
@@ -952,15 +1048,17 @@ Publishing...
         // Success
         // ===============================
 
-        modalProductName.textContent =
-
-            product.name;
-
-        successModal.classList.add(
-
-            "show"
-
-        );
+        const modalProductName = document.getElementById('modalProductName');
+        if (modalProductName) modalProductName.textContent = `"${product.name}"`;
+        
+        const modalHeading = document.querySelector('#successModal h3');
+        if (modalHeading) modalHeading.textContent = isEditMode ? 'Changes Saved Successfully' : 'Product Created Successfully';
+        
+        const modalPara = document.querySelector('#successModal p');
+        if (modalPara) modalPara.innerHTML = isEditMode ? `Your product <span class="modal-product-name" id="modalProductName">"${product.name}"</span> has been successfully updated.` : `Your new product <span class="modal-product-name" id="modalProductName">"${product.name}"</span> is now live.`;
+        
+        const modal = document.getElementById('successModal');
+        if (modal) modal.classList.add('active');
 
         showToast(
 

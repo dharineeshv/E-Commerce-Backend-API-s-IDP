@@ -25,7 +25,7 @@ body{
     color:var(--text-dark);
 
     overflow-x:hidden;
-
+    zoom: 0.67;
 }
 
 /* ==========================================

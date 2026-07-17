@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket Admin - Marketing</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/logout.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="../../css/marketing.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; }
+        .main-content { padding: 30px; }
+    </style>
+    <link rel="stylesheet" href="../../css/chatbot.css">
+</head>
+<body>
+<div class="dashboard">
+
+    <header class="dashboard-header">
+        <div class="header-left">
+            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Sidebar">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="logo-section">
+                <img src="../../assets/logo.png" alt="CloudBasket Logo" class="logo">
+                <div class="logo-text">
+                    <h2>CloudBasket</h2>
+                    <span>Enterprise Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-avatar" id="header-profile-avatar">D</div>
+                <div class="profile-info">
+                    <h4 id="admin-name">Dharineesh</h4>
+                    <span>Admin</span>
+                </div>
+                <button class="profile-dropdown" id="profile-dropdown">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card" id="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-avatar" id="profile-avatar">D</div>
+                    <h3 id="profile-full-name">Loading...</h3>
+                    <span>Admin</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16v16H4z"/>
+                            <polyline points="4 6 12 13 20 6"/>
+                        </svg>
+                        <p id="profile-email">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72l.45 3a2 2 0 0 1-.57 1.74l-1.27 1.27a16 16 0 0 0 6.36 6.36l1.27-1.27a2 2 0 0 1 1.74-.57l3 .45A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <p id="profile-phone">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21a8 8 0 0 0-16 0"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <p id="profile-username">Loading...</p>
+                    </div>
+                </div>
+                <div class="profile-card-footer">
+                    <button id="logout-button">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+        
+        <aside class="dashboard-sidebar" id="sidebar">
+        <nav class="sidebar-navigation">
+            <span class="navigation-title">MAIN MENU</span>
+
+            <a href="../../pages/dashboard/dashboard.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+
+            <!-- Products -->
+            <div class="sidebar-item-group">
+                <a href="../../pages/inventory/inventory.html" class="sidebar-item group-toggle" id="productsMenuToggle" onclick="
+                    event.preventDefault();
+                    const group = this.closest('.sidebar-item-group');
+                    const submenu = group.querySelector('.sidebar-submenu');
+                    if (group.classList.contains('open')) {
+                        group.classList.remove('open');
+                        submenu.style.display = 'none';
+                    } else {
+                        group.classList.add('open');
+                        submenu.style.display = 'block';
+                    }
+                ">
+                    <span class="sidebar-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8"></path><path d="M3 8v8"></path><path d="M1 6l11 6 11-6"></path><path d="M12 22V12"></path></svg>
+                    </span>
+                    <span class="sidebar-text">Products</span>
+                    <span class="chevron-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                </a>
+                <div class="sidebar-submenu" style="display: none;">
+                    <a href="../../pages/products/manage-products.html" class="submenu-item">Manage Products</a>
+                    <a href="../../pages/products/add-product.html" class="submenu-item">Add Product</a>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <a href="../../pages/inventory/inventory.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="4"></rect>
+                        <path d="M5 8v11h14V8"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Inventory</span>
+            </a>
+
+            <!-- Orders (ACTIVE) -->
+            <a href="../../pages/orders/orders.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="20" cy="20" r="1"></circle>
+                        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 6H6"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Orders</span>
+            </a>
+
+            <!-- Payments -->
+            <a href="../../pages/payments/payments.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16"></path>
+                        <path d="M18 11h4v4h-4z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Payments</span>
+            </a>
+
+            <!-- Marketing -->
+            <a href="../../pages/marketing/marketing.html" class="sidebar-item active">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 11v2"></path>
+                        <path d="M7 9l10-4v14L7 15H3V9z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Marketing</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-item logout" id="logout-button">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+        <main class="dashboard-main create-campaign-main">
+            
+        
+
+        <div class="create-header" style="display: flex; justify-content: space-between; align-items: flex-end;">
+            <div>
+                <h1>Create Festival Sale</h1>
+                <p>Initialize a high-impact promotional campaign across the platform.</p>
+            </div>
+            <button class="btn-primary" id="publish-campaign-btn" style="background: #1e3a8a;">Publish Campaign</button>
+        </div>
+
+        <div class="create-layout">
+            <!-- Left Column -->
+            <div class="form-columns">
+                <!-- Campaign Details -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                        Campaign Details
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Campaign Name</label>
+                        <input type="text" id="campaign-name" placeholder="e.g. Summer Solstice Mega Sale 2024">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Description</label>
+                        <textarea id="campaign-desc" placeholder="Describe the objectives and terms of this sale..."></textarea>
+                    </div>
+                </div>
+
+                <!-- Offer Logic -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+                        Offer Logic
+                    </div>
+                    
+                    <div class="form-row" style="margin-bottom: 0;">
+                        <div class="form-group">
+                            <label>Discount Type</label>
+                            <select id="discount-type">
+                                <option value="percentage">Percentage (%)</option>
+                                <option value="fixed">Fixed Amount (₹)</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Value</label>
+                            <input type="number" id="discount-value" value="0.00">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Timeframe -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><polyline points="12 6 12 12 16 14"></polyline></svg>
+                        Timeframe
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Start Date</label>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="date" id="start-date" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label>End Date</label>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                            <input type="date" id="end-date" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Marketing Assets -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"></rect><circle cx="8.5" cy="8.5" r="1.5"></circle><polyline points="21 15 16 10 5 21"></polyline></svg>
+                        Marketing Assets
+                    </div>
+                    
+                    <div class="upload-box">
+                        <svg class="icon" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="17 8 12 3 7 8"></polyline>
+                            <line x1="12" y1="3" x2="12" y2="15"></line>
+                        </svg>
+                        <input type="file" id="campaign-banner" accept="image/*" style="display: none;">
+                        <p style="cursor: pointer;" onclick="document.getElementById('campaign-banner').click()">Click to upload or drag and drop</p>
+                        <span>Recommended: 1376×768px, PNG or JPG (Max 5MB)</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-sidebar">
+                <div class="summary-card" style="padding-bottom: 20px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 15px;">
+                        <h3 style="margin:0; display:flex; align-items:center; gap:8px;">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                            Live Preview
+                        </h3>
+                        <span style="background:#dcfce7; color:#166534; font-size:0.75rem; padding:4px 10px; border-radius:20px; font-weight:600;">Desktop View</span>
+                    </div>
+
+                    <p style="font-size:0.9rem; color:#475569; margin-bottom: 20px;">
+                        This is how your banner will appear in the main slider of the CloudBasket consumer app.
+                    </p>
+                    
+                    <div class="live-preview-box" id="preview-box" style="position: relative; width: 100%; height: 200px; border-radius: 8px; overflow: hidden; background: #e2e8f0; background-image: url('https://images.unsplash.com/photo-1441984904996-e0b6ba687e04?auto=format&fit=crop&w=800&q=80'); background-size: cover; background-position: center;">
+                        <div class="slide-content" style="position: absolute; bottom: 20px; left: 20px; color: #fff; max-width: 90%;">
+                            <h2 id="preview-title" style="font-size: 1.5rem; font-weight: 800; margin-bottom: 5px; text-shadow: 0 2px 4px rgba(0,0,0,0.5);">Summer Solstice Mega Sale 2024</h2>
+                            <p id="preview-desc" style="font-size: 0.8rem; margin-bottom: 10px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); line-height: 1.2;">Describe the objectives and terms of this sale...</p>
+                            <div style="font-size: 1.5rem; font-weight: 800; text-shadow: 0 2px 4px rgba(0,0,0,0.5);" id="preview-discount-display">
+                                FLAT 0% <span style="color:#ef4444; font-size:0.9rem; margin-left: 10px;"><i class="icon-clock"></i> Limited Time</span>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </div>
+
+                <div class="pro-tip orange">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                    <div>
+                        <h4>Pro Tip</h4>
+                        <p>Using high-contrast lifestyle imagery with "fashion forward" themes typically increases click-through rates by 22% during festival periods.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <footer style="margin-top: 40px; text-align: left; color: #64748b; font-size: 0.9rem;">
+            © 2026 Cloud Basket.
+        </footer>
+    
+        </main>
+        
+    </div>
+<!-- Logout Modal Overlay -->
+<div class="modal-overlay" id="logout-modal">
+    <div class="logout-modal">
+        <div class="logout-icon">
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </div>
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to logout from CloudBasket?</p>
+        <div class="logout-buttons">
+            <button id="cancel-logout">Cancel</button>
+            <button id="confirm-logout">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="../../js/createFestivalSale.js"></script>
+    <script src="../../js/components/chatbot.js"></script>
+</body>
+</html>

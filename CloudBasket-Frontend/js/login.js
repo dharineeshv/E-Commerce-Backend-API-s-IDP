@@ -2,6 +2,20 @@
 // CloudBasket Login
 // ==========================================
 
+function parseJwt(token) {
+    try {
+        const base64Url = token.split('.')[1];
+        const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+        const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
+            return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
+        }).join(''));
+
+        return JSON.parse(jsonPayload);
+    } catch (e) {
+        return null;
+    }
+}
+
 const loginForm = document.getElementById("loginForm");
 
 const loginButton = document.getElementById("loginBtn");
@@ -137,11 +151,18 @@ showToast(
     "Login Successful",
     response.message
 );
+
+        const decodedToken = parseJwt(response.data.accessToken);
+        const groups = (decodedToken && decodedToken['cognito:groups']) ? decodedToken['cognito:groups'] : [];
+        
+        let redirectUrl = "index.html"; // Default Customer route
+        if (groups.includes('Admin')) {
+            redirectUrl = "pages/dashboard/dashboard.html"; // Admin route
+        }
+
         setTimeout(() => {
-
-            window.location.href = "pages/dashboard/dashboard.html";
-
-        },2500);
+            window.location.href = redirectUrl;
+        }, 2500);
 
     }
 

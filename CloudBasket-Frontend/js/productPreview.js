@@ -72,11 +72,11 @@ export function updatePreview(data) {
 
     if (previewPriceSelling) {
         if (mrpVal > 0) {
-            previewPriceSelling.innerText = `$${sellingVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            previewPriceSelling.innerText = `₹${sellingVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
             
             if (discountVal > 0) {
                 if (previewPriceMrp) {
-                    previewPriceMrp.innerText = `$${mrpVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                    previewPriceMrp.innerText = `₹${mrpVal.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
                     previewPriceMrp.style.display = 'inline';
                 }
                 if (previewPriceDiscount) {

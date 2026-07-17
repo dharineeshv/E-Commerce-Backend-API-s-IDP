@@ -1,0 +1,274 @@
+.payment-success-page {
+    background-color: #f8fafc;
+    min-height: calc(100vh - 70px);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 60px 20px;
+}
+
+.success-container {
+    background: transparent;
+    max-width: 650px;
+    width: 100%;
+    text-align: center;
+}
+
+.success-icon-wrap {
+    width: 80px;
+    height: 80px;
+    background-color: #22c55e;
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 0 auto 20px;
+    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+}
+
+.success-icon-wrap svg {
+    color: white;
+}
+
+.success-title {
+    font-size: 28px;
+    font-weight: 700;
+    color: #0f4a8a;
+    margin-bottom: 15px;
+}
+
+.success-message {
+    color: #64748b;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 40px;
+}
+
+.success-message strong {
+    color: #334155;
+    font-weight: 700;
+}
+
+/* Card details block */
+.transaction-card {
+    display: flex;
+    background: white;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: left;
+    margin-bottom: 20px;
+}
+
+.transaction-left {
+    flex: 1;
+    padding: 30px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+
+.detail-group {
+    margin-bottom: 25px;
+}
+
+.detail-group:last-child {
+    margin-bottom: 0;
+}
+
+.detail-label {
+    font-size: 12px;
+    font-weight: 700;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 8px;
+}
+
+.detail-value {
+    font-size: 15px;
+    font-weight: 600;
+    color: #334155;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.transaction-right {
+    background-color: #0f4a8a;
+    color: white;
+    padding: 30px;
+    width: 250px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.amount-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 8px;
+}
+
+.amount-value {
+    font-size: 32px;
+    font-weight: 800;
+    margin-bottom: 25px;
+}
+
+.date-label {
+    font-size: 12px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: rgba(255, 255, 255, 0.8);
+    margin-bottom: 5px;
+}
+
+.date-value {
+    font-size: 14px;
+    font-weight: 600;
+}
+
+/* Receipt Block */
+.receipt-block {
+    background: #f1f5f9;
+    border-radius: 12px;
+    padding: 20px 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+    text-align: left;
+}
+
+.receipt-info {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.receipt-icon {
+    color: #0f4a8a;
+}
+
+.receipt-text h4 {
+    font-size: 14px;
+    font-weight: 700;
+    color: #334155;
+    margin: 0 0 4px 0;
+}
+
+.receipt-text p {
+    font-size: 13px;
+    color: #64748b;
+    margin: 0;
+}
+
+.btn-download {
+    background: white;
+    border: 1px solid #cbd5e1;
+    color: #0f4a8a;
+    padding: 10px 18px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 13px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    transition: all 0.2s;
+}
+
+.btn-download:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+}
+
+/* Action Buttons */
+.action-buttons {
+    display: flex;
+    gap: 15px;
+    justify-content: center;
+}
+
+.btn-view-order {
+    background: #ff9800;
+    color: #111827;
+    border: none;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-weight: 700;
+    font-size: 15px;
+    cursor: pointer;
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: transform 0.2s;
+    text-decoration: none;
+}
+
+.btn-view-order:hover {
+    transform: translateY(-2px);
+}
+
+.btn-continue {
+    background: white;
+    color: #0f4a8a;
+    border: 2px solid #0f4a8a;
+    padding: 14px 24px;
+    border-radius: 30px;
+    font-weight: 600;
+    font-size: 15px;
+    cursor: pointer;
+    flex: 1;
+    transition: all 0.2s;
+    text-decoration: none;
+}
+
+.btn-continue:hover {
+    background: #f8fafc;
+}
+
+.support-text {
+    margin-top: 25px;
+    font-size: 13px;
+    color: #64748b;
+}
+
+.support-text a {
+    color: #0f4a8a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.support-text a:hover {
+    text-decoration: underline;
+}
+
+@media (max-width: 768px) {
+    .transaction-card {
+        flex-direction: column;
+    }
+    .transaction-right {
+        width: 100%;
+        text-align: center;
+        padding: 25px;
+    }
+    .action-buttons {
+        flex-direction: column;
+    }
+    .receipt-block {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 15px;
+    }
+    .btn-download {
+        justify-content: center;
+    }
+}

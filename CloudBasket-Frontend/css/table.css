@@ -6,7 +6,7 @@
 
     display:grid;
 
-    grid-template-columns:2fr 1fr;
+    grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
 
     gap:24px;
 
@@ -79,6 +79,8 @@
     width:100%;
 
     border-collapse:collapse;
+    
+    table-layout: fixed;
 
 }
 
@@ -101,6 +103,8 @@
     padding:16px 14px;
 
     border-bottom:1px solid #F3F4F6;
+    
+    word-wrap: break-word;
 
 }
 

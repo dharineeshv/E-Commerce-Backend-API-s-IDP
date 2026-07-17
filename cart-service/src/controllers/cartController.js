@@ -102,7 +102,7 @@ const product = productResponse.data?.product;
     const result = await cartService.addProductToCart(customerId, {
       productId,
       productName: product.name,
-      price: product.price,
+      price: product.sellingPrice || product.price,
       quantity,
     });
 
