@@ -120,12 +120,18 @@ const updatePaymentStatus = async (req, res) => {
 const refundPayment = async (req, res) => {
   try {
     const cognitoSub = req.user.sub;
-const customerId = await getCustomerIdFromSub(cognitoSub);
+    const userGroups = req.user["cognito:groups"] || [];
+    const isAdmin = userGroups.includes("Admin");
+    
+    let customerId = null;
+    if (!isAdmin) {
+      customerId = await getCustomerIdFromSub(cognitoSub);
+    }
 
-const payment = await paymentService.refundPayment(
-  req.params.paymentId,
-  customerId
-);
+    const payment = await paymentService.refundPayment(
+      req.params.paymentId,
+      customerId
+    );
     return res.status(200).json({ success: true, message: 'Payment Refunded Successfully', payment });
   } catch (error) {
     console.error('Error refunding payment:', error);

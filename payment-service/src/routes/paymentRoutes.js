@@ -38,7 +38,7 @@ router.get(
 router.put(
   "/:paymentId/refund",
   cognitoAuthMiddleware,
-  authorizeRoles("Customer"),
+  authorizeRoles("Customer", "Admin"),
   refundPayment
 );
 

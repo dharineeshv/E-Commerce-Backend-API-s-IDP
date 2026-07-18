@@ -2,6 +2,10 @@
 <html lang="en">
 
 <head>
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
 
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -28,7 +32,6 @@
         href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
         rel="stylesheet">
 
-    <link rel="stylesheet" href="css/chatbot.css">
 </head>
 
 <body>
@@ -137,14 +140,15 @@
                 </form>
 
                 <div class="divider">
-
                     <span></span>
-
                     <p>OR</p>
-
                     <span></span>
-
                 </div>
+
+                <button id="googleLoginBtn" class="google-login-btn">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="google-icon">
+                    Continue with Google
+                </button>
 
                 <div class="register-link">
 
@@ -185,11 +189,8 @@
 
     <script src="js/toast.js"></script>
 
-    <script src="js/validation.js"></script>
-
     <script src="js/login.js"></script>
 
-    <script src="js/components/chatbot.js"></script>
 </body>
 
 </html>

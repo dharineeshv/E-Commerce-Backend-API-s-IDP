@@ -99,6 +99,17 @@ document.addEventListener('DOMContentLoaded', async () => {
             document.getElementById('pdf-customer-email').textContent = custEmail;
             document.getElementById('pdf-customer-id').textContent = order.customerId || 'Not Provided';
 
+            // Populate Shipping Address
+            let shippingText = "Not Provided";
+            if (order.shippingAddress) {
+                const addr = order.shippingAddress;
+                shippingText = `${addr.addressLine1 || addr.street || ''} <br>
+                                ${addr.addressLine2 || ''} <br>
+                                ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || addr.postalCode || ''} <br>
+                                ${addr.country || ''}`.replace(/<br>\s*<br>/g, '<br>').trim();
+            }
+            document.getElementById('pdf-shipping-address').innerHTML = shippingText;
+
             // Populate Items Table
             const pdfItemsContainer = document.getElementById('pdf-items-container');
             pdfItemsContainer.innerHTML = '';
@@ -150,16 +161,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 window.downloadReceipt = function() {
     const element = document.getElementById('invoice-template');
     
-    // Temporarily display block to allow html2pdf to render it, but position it offscreen
+    // Safely position it behind the UI so html2canvas renders it properly without cropping
     element.style.display = 'block';
     element.style.position = 'absolute';
-    element.style.left = '-9999px';
+    element.style.top = '0';
+    element.style.left = '0';
+    element.style.zIndex = '-9999';
     
     const opt = {
-        margin:       0,
+        margin:       0.3,
         filename:     'CloudBasket-Receipt.pdf',
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2 },
+        html2canvas:  { scale: 2, windowWidth: 1000 },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     
@@ -168,7 +181,7 @@ window.downloadReceipt = function() {
         // Hide again after generation
         element.style.display = 'none';
         element.style.position = 'static';
-        element.style.left = 'auto';
+        element.style.zIndex = 'auto';
     }).catch(err => {
         console.error("PDF Generation Error:", err);
         element.style.display = 'none';

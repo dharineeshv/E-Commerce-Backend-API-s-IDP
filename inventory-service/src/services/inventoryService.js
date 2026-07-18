@@ -78,8 +78,7 @@ async function getInventoryItemByProductId(productId) {
     TableName: INVENTORY_TABLE,
     FilterExpression: '#productId = :productId',
     ExpressionAttributeNames: { '#productId': 'productId' },
-    ExpressionAttributeValues: { ':productId': productId },
-    Limit: 1,
+    ExpressionAttributeValues: { ':productId': productId }
   }));
   return result.Items && result.Items.length > 0 ? result.Items[0] : null;
 }

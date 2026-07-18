@@ -21,7 +21,8 @@ export async function refundPayment(paymentId) {
         const response = await apiFetch(
             `${API.paymentService}/api/v1/payment/${paymentId}/refund`,
             {
-                method: "PUT"
+                method: "PUT",
+                body: JSON.stringify({})
             }
         );
         if (!response.ok) {

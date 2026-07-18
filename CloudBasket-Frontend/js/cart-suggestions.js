@@ -1,59 +1,102 @@
+import { apiFetch } from "./api/apiClient.js";
+
 document.addEventListener("DOMContentLoaded", () => {
     loadSuggestedProducts();
 });
 
-function loadSuggestedProducts() {
+async function loadSuggestedProducts() {
     const grid = document.getElementById('suggested-products-grid');
     if (!grid) return;
 
-    // Use mock data matching the mockup
-    const suggested = [
-        {
-            id: "CB-NET-PRO",
-            title: "Network Nexus Pro",
-            price: 3299.00,
-            imageUrl: "https://images.unsplash.com/photo-1551288049-bebda4e38f71?auto=format&fit=crop&w=500&q=80"
-        },
-        {
-            id: "CB-DATA-MK2",
-            title: "DataPulse Server Mk II",
-            price: 4150.00,
-            imageUrl: "https://images.unsplash.com/photo-1558494949-ef010cbdcc31?auto=format&fit=crop&w=500&q=80"
-        },
-        {
-            id: "CB-QUANTUM",
-            title: "Quantum Core Node",
-            price: 2899.00,
-            imageUrl: "https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=500&q=80"
-        },
-        {
-            id: "CB-AERO-SW",
-            title: "AeroStream Switch",
-            price: 1599.00,
-            imageUrl: "https://images.unsplash.com/photo-1544197150-b99a580bb7a8?auto=format&fit=crop&w=500&q=80"
+    try {
+        // 1. Fetch Cart to know what's inside
+        const cartRes = await apiFetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart');
+        let cartItems = [];
+        if (cartRes.ok) {
+            const data = await cartRes.json();
+            cartItems = data.data && data.data.items ? data.data.items : (data.items || []);
         }
-    ];
 
-    grid.innerHTML = '';
+        const cartProductIds = cartItems.map(item => item.productId || item.id);
 
-    suggested.forEach(product => {
-        const card = document.createElement('div');
-        card.className = 'product-card';
-        card.style.textAlign = 'center';
+        // 2. Fetch all products
+        const productsRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        if (!productsRes.ok) throw new Error("Failed to fetch products");
         
-        card.innerHTML = `
-            <div class="card-img-container" style="background: white; padding: 15px; border-bottom: 1px solid #f1f5f9;">
-                <img src="${product.imageUrl}" alt="${product.title}" style="max-height: 180px; object-fit: contain;">
-            </div>
-            <div class="card-body" style="padding: 20px;">
-                <h3 class="card-title" style="margin-bottom: 15px; font-size: 16px; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis; color: #0f172a; text-align: left;">${product.title}</h3>
-                <div style="font-size: 16px; font-weight: 700; color: #0f4a8a; margin-bottom: 15px; text-align: left;">₹${Number(product.price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                <button class="btn" style="width: 100%; background: white; border: 1px solid #cbd5e1; color: #0f4a8a; padding: 10px; border-radius: 6px; font-weight: 500; cursor: pointer; transition: background 0.2s;" onmouseover="this.style.background='#f8fafc';" onmouseout="this.style.background='white';" onclick="window.location.href='product.html?id=${product.id}'">
-                    View Details
-                </button>
-            </div>
-        `;
-        
-        grid.appendChild(card);
-    });
+        const productsData = await productsRes.json();
+        let allProducts = productsData.products || productsData.data || productsData;
+        if (!Array.isArray(allProducts)) {
+            allProducts = [];
+        }
+
+        // 3. Find categories of items currently in cart
+        const cartCategories = new Set();
+        cartItems.forEach(cartItem => {
+            // Check if cart item has category directly
+            if (cartItem.category) {
+                cartCategories.add(cartItem.category);
+            } else {
+                // Find in allProducts
+                const fullProduct = allProducts.find(p => (p.productId || p.id) === (cartItem.productId || cartItem.id));
+                if (fullProduct && fullProduct.category) {
+                    cartCategories.add(fullProduct.category);
+                }
+            }
+        });
+
+        // 4. Filter products based on categories (excluding items already in cart)
+        let suggested = allProducts.filter(p => {
+            const id = p.productId || p.id;
+            return cartCategories.has(p.category) && !cartProductIds.includes(id);
+        });
+
+        // 5. If no specific category matches or cart is empty, fallback to the top products from the DB
+        if (suggested.length === 0) {
+            suggested = allProducts.filter(p => {
+                const id = p.productId || p.id;
+                return !cartProductIds.includes(id);
+            });
+            // DO NOT shuffle so it matches the top 4 products in the categories page
+        }
+
+        // Display up to 4 items
+        suggested = suggested.slice(0, 4);
+        grid.innerHTML = '';
+
+        if (suggested.length === 0) {
+            grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #64748b; padding: 20px;">No suggestions available right now.</p>';
+            return;
+        }
+
+        suggested.forEach(product => {
+            const id = product.productId || product.id;
+            const title = product.name || product.title;
+            const price = product.sellingPrice || product.price;
+            const imageUrl = product.imageUrl || product.image || 'https://via.placeholder.com/250';
+
+            const card = document.createElement('div');
+            card.className = 'product-card';
+            
+            card.innerHTML = `
+                <div class="card-img-container">
+                    <img src="${imageUrl}" alt="${title}">
+                </div>
+                <div class="card-body">
+                    <h3 class="card-title">${title}</h3>
+                    <div class="price-block">
+                        <span class="new-price">₹${Number(price).toFixed(2)}</span>
+                    </div>
+                    <button class="view-details-btn" onclick="window.location.href='product.html?id=${id}'">
+                        View Details
+                    </button>
+                </div>
+            `;
+            
+            grid.appendChild(card);
+        });
+
+    } catch (error) {
+        console.error("Failed to load suggested products from DB:", error);
+        grid.innerHTML = '<p style="grid-column: 1/-1; text-align: center; color: #ef4444; padding: 20px;">Failed to load suggestions. Please try again later.</p>';
+    }
 }

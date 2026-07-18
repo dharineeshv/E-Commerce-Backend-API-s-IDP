@@ -129,12 +129,12 @@
     box-shadow: var(--inv-shadow-sm);
 }
 
-.stat-card.blue .stat-icon { color: #3b82f6; }
-.stat-card.purple .stat-icon { color: #8b5cf6; }
-.stat-card.orange .stat-icon { color: #f97316; }
-.stat-card.red .stat-icon { color: #ef4444; }
-.stat-card.green .stat-icon { color: #10b981; }
-.stat-card.indigo .stat-icon { color: #6366f1; }
+.stat-card.blue .stat-icon, .stat-card.blue .stat-bg-icon { color: #3b82f6; }
+.stat-card.purple .stat-icon, .stat-card.purple .stat-bg-icon { color: #8b5cf6; }
+.stat-card.orange .stat-icon, .stat-card.orange .stat-bg-icon { color: #f97316; }
+.stat-card.red .stat-icon, .stat-card.red .stat-bg-icon { color: #ef4444; }
+.stat-card.green .stat-icon, .stat-card.green .stat-bg-icon { color: #10b981; }
+.stat-card.indigo .stat-icon, .stat-card.indigo .stat-bg-icon { color: #6366f1; }
 
 .stat-trend {
     font-size: 0.75rem;
@@ -167,12 +167,27 @@
     line-height: 1.2;
 }
 
-/* Micro Chart Overlay */
-.stat-chart {
-    margin-top: 1rem;
-    height: 30px;
+/* Micro Chart Overlay (Replaced by Background Icon) */
+.stat-bg-icon {
+    position: absolute;
+    bottom: -15px;
+    right: -10px;
+    width: 120px;
+    height: 120px;
+    opacity: 0.15;
+    pointer-events: none;
+    z-index: 0;
+}
+.stat-bg-icon svg {
     width: 100%;
-    opacity: 0.6;
+    height: 100%;
+    stroke: currentColor;
+}
+
+/* Ensure content sits above the absolute positioned background icon */
+.stat-card-header, .stat-title, .stat-value {
+    position: relative;
+    z-index: 1;
 }
 
 /* ==========================================================

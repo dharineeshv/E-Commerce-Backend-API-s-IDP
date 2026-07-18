@@ -1,38 +1,90 @@
 import { getAllOrders } from '../api/orderApi.js';
+import { getAllAdminPayments } from '../api/paymentApi.js';
+import { getProfile } from '../api/userProfileApi.js';
 
 export async function fetchAndLoadOrders() {
-    const response = await getAllOrders();
-    if (response && response.success && response.data) {
-        state.allOrders = response.data.map(order => {
+    const [ordersRes, paymentsRes] = await Promise.all([
+        getAllOrders(),
+        getAllAdminPayments()
+    ]);
+
+    let payments = [];
+    if (paymentsRes && paymentsRes.success && paymentsRes.payments) {
+        payments = paymentsRes.payments;
+    }
+
+    // Create a map for fast lookup
+    const paymentMap = {};
+    payments.forEach(p => {
+        if (p.orderId) paymentMap[p.orderId] = p;
+    });
+
+    const missingEmailCustomerIds = new Set();
+    if (ordersRes && ordersRes.success && ordersRes.data) {
+        ordersRes.data.forEach(order => {
+            const shipping = order.shippingAddress || {};
+            const customerEmail = shipping.email || shipping.customerEmail;
+            if (!customerEmail && order.customerId) {
+                missingEmailCustomerIds.add(order.customerId);
+            }
+        });
+        
+        const profiles = await Promise.all([...missingEmailCustomerIds].map(id => getProfile(id)));
+        const profileMap = {};
+        profiles.forEach(p => {
+            if (p && p.success && p.data) {
+                profileMap[p.data.customerId] = p.data.email;
+            }
+        });
+
+        state.allOrders = ordersRes.data.map(order => {
             const dateObj = new Date(order.createdAt || order.updatedAt || Date.now());
             
             // Safe fallbacks for nested properties
             const shipping = order.shippingAddress || {};
-            const customerName = shipping.fullName || "Unknown Customer";
-            const customerEmail = shipping.email || "No Email";
+            const customerEmail = shipping.email || shipping.customerEmail || profileMap[order.customerId] || "No Email";
             
-            // Generate avatar initials
-            const initials = customerName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
+            // As requested, use customer email alone in the customer field
+            const customerName = customerEmail;
+            
+            // Generate avatar initials from email
+            let initials = "U";
+            if (customerEmail && customerEmail !== "No Email") {
+                initials = customerEmail.substring(0, 2).toUpperCase();
+            }
             
             // Items
             const items = order.items || [];
             const productName = items.length > 0 ? items[0].name || items[0].productId : "Unknown Product";
             
+            const payment = paymentMap[order.orderId] || {};
+
             return {
                 id: order.orderId,
                 customerName,
                 customerEmail,
-                customerAvatar: initials || "U",
-                amount: order.totalAmount || 0,
-                status: order.status || "PENDING",
-                paymentStatus: order.paymentStatus || "Pending",
-                paymentMethod: order.paymentMethod || "Credit Card",
+                customerAvatar: initials,
+                amount: order.orderTotal || order.totalAmount || 0,
+                status: (() => {
+                    const s = order.status || "PENDING";
+                    return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
+                })(),
+                paymentStatus: payment.status || order.paymentStatus || "Pending",
+                paymentMethod: payment.paymentMethod || order.paymentMethod || "Credit Card",
                 date: dateObj.toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
                 rawDate: dateObj.toISOString(),
                 productName: items.length > 1 ? `${productName} +${items.length - 1}` : productName,
                 // store raw data for modals
                 _raw: order 
             };
+        });
+        
+        // Apply mocked statuses
+        const mockedStatuses = JSON.parse(localStorage.getItem('mockedOrderStatuses') || '{}');
+        state.allOrders.forEach(o => {
+            if (mockedStatuses[o.id]) {
+                o.status = mockedStatuses[o.id];
+            }
         });
         
         // Sort by date descending

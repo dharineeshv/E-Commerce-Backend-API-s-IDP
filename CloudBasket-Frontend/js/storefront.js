@@ -60,6 +60,7 @@ function setupFilters() {
     const searchInput = document.getElementById('search-input');
     const categoryFilter = document.getElementById('category-filter');
     const sortFilter = document.getElementById('sort-filter');
+    const priceFilter = document.getElementById('price-filter');
     const clearBtn = document.getElementById('clear-filters');
 
     if (searchInput) {
@@ -73,12 +74,17 @@ function setupFilters() {
     if (sortFilter) {
         sortFilter.addEventListener('change', applyFilters);
     }
+    
+    if (priceFilter) {
+        priceFilter.addEventListener('change', applyFilters);
+    }
 
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if(searchInput) searchInput.value = '';
             if(categoryFilter) categoryFilter.value = '';
             if(sortFilter) sortFilter.value = 'relevance';
+            if(priceFilter) priceFilter.value = '';
             applyFilters();
         });
     }
@@ -103,6 +109,12 @@ function applyFilters() {
         sortBy = sortFilter.value;
     }
 
+    let priceRange = '';
+    const priceFilter = document.getElementById('price-filter');
+    if (priceFilter) {
+        priceRange = priceFilter.value;
+    }
+
     filteredProducts = allProducts.filter(product => {
         const title = (product.name || product.title || '').toLowerCase();
         const desc = (product.description || '').toLowerCase();
@@ -111,7 +123,22 @@ function applyFilters() {
         const prodCategory = (product.category || 'CATEGORY').toLowerCase();
         const matchesCategory = category === '' || prodCategory === category.toLowerCase();
 
-        return matchesSearch && matchesCategory;
+        let matchesPrice = true;
+        if (priceRange !== '') {
+            const productPrice = Number(product.sellingPrice || product.price) || 0;
+            if (priceRange === '10000+') {
+                matchesPrice = productPrice >= 10000;
+            } else {
+                const parts = priceRange.split('-');
+                if (parts.length === 2) {
+                    const min = Number(parts[0]);
+                    const max = Number(parts[1]);
+                    matchesPrice = productPrice >= min && productPrice <= max;
+                }
+            }
+        }
+
+        return matchesSearch && matchesCategory && matchesPrice;
     });
     
     if (sortBy === 'price-low') {
@@ -152,36 +179,20 @@ function renderProducts(products) {
         card.className = 'product-card';
         card.innerHTML = `
             <div class="card-img-container">
-                <span class="discount-badge">-${discount}%</span>
                 <img src="${imageUrl}" alt="${title}">
-                <button class="quick-view-btn" data-product-id="${id}">Quick View</button>
             </div>
             <div class="card-body">
-                <span class="card-category">${category}</span>
                 <h3 class="card-title">${title}</h3>
-                <div class="card-footer" style="display: flex; justify-content: space-between; align-items: center; margin-top: 15px;">
-                    <div class="price-block">
-                        <span class="old-price">₹${originalPrice}</span>
-                        <span class="new-price">₹${Number(price).toFixed(2)}</span>
-                    </div>
-                    <button class="cart-btn" aria-label="Add to cart" data-product-id="${id}">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <circle cx="9" cy="21" r="1"></circle>
-                            <circle cx="20" cy="21" r="1"></circle>
-                            <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
-                        </svg>
-                    </button>
+                <div class="price-block">
+                    <span class="new-price">₹${Number(price).toFixed(2)}</span>
                 </div>
+                <button class="view-details-btn" data-product-id="${id}">View Details</button>
             </div>
         `;
         
-        // Add To Cart Event Listener
-        const btn = card.querySelector('.cart-btn');
-        btn.addEventListener('click', () => addToCart(id, title));
-        
-        // Add View Product Event Listener
-        const quickViewBtn = card.querySelector('.quick-view-btn');
-        quickViewBtn.addEventListener('click', () => viewProduct(product));
+        // Add View Details Event Listener
+        const viewDetailsBtn = card.querySelector('.view-details-btn');
+        viewDetailsBtn.addEventListener('click', () => viewProduct(product));
         
         grid.appendChild(card);
     });

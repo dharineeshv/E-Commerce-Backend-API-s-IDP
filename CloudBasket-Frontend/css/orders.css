@@ -4,9 +4,9 @@ body {
 }
 
 .orders-page-container {
-    max-width: 1200px;
+    max-width: 100%;
     margin: 0 auto;
-    padding: 40px 20px 80px;
+    padding: 40px 40px 80px; /* Aligns perfectly with the 40px header padding */
 }
 
 .page-header {
@@ -194,8 +194,8 @@ body {
 
 .details-layout {
     display: grid;
-    grid-template-columns: 1fr 350px;
-    gap: 30px;
+    grid-template-columns: 1fr 380px; /* Slightly wider right column like mockup */
+    gap: 40px; /* Larger gap for cleaner spacing */
 }
 
 /* Delivery Tracker */
@@ -224,8 +224,8 @@ body {
     content: '';
     position: absolute;
     top: 15px;
-    left: 40px;
-    right: 40px;
+    left: 20px;
+    right: 20px;
     height: 2px;
     background-color: #e2e8f0;
     z-index: 1;
@@ -577,3 +577,5 @@ body {
 .footer-legal a:hover {
     color: #ffffff;
 }
+
+@media print { body * { visibility: hidden; } #invoice-print-container, #invoice-print-container * { visibility: visible; } #invoice-print-container { position: absolute; left: 0; top: 0; width: 100%; padding: 20px; font-family: sans-serif; display: block !important; } }

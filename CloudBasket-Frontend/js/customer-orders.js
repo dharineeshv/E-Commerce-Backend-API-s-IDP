@@ -104,24 +104,32 @@ function renderOrders(container, orders) {
         if (status.toUpperCase() === 'CANCELLED') statusClass = 'status-cancelled';
         
         const id = order.orderId || order.id || 'N/A';
+        
+        let dateText = `Ordered on ${formattedDate}`;
+        if (status.toUpperCase() === 'DELIVERED') {
+            dateText = `Delivered on ${formattedDate}`;
+        } else if (status.toUpperCase() === 'CANCELLED') {
+            dateText = `Cancelled on ${formattedDate}`;
+        }
+
+        let firstItemImg = 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80';
+        if (order.items && order.items.length > 0) {
+            firstItemImg = order.items[0].imageUrl || order.items[0].image || firstItemImg;
+        }
 
         const card = document.createElement('div');
         card.className = 'order-card';
         card.innerHTML = `
-            <div class="order-icon-box">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
+            <div class="order-icon-box" style="padding: 0; overflow: hidden; background: none;">
+                <img src="${firstItemImg}" alt="Product" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" onerror="this.src='https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80'">
             </div>
             <div class="order-details">
                 <div class="order-id-row">
-                    <span class="order-id">#${id}</span>
+                    <span class="order-id" style="font-weight: 500;">${dateText}</span>
                     <span class="status-badge ${statusClass}">${status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()}</span>
                 </div>
                 <div class="order-price">${formattedAmount}</div>
-                <div class="order-meta">Placed on ${formattedDate} • ${itemText}</div>
+                <div class="order-meta">${itemText}</div>
             </div>
             <div class="order-actions">
                 <a href="order-details.html?id=${id}" class="btn-solid-orange" style="text-decoration: none;">View Details</a>

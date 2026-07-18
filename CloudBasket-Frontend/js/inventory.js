@@ -79,37 +79,8 @@ async function loadInventoryPageData() {
             };
         });
 
-        // Fetch missing products individually if they weren't in the getAll list
-        const missingIds = [...new Set(combinedInventoryData.filter(i => i.missingProductId).map(i => i.missingProductId))];
-        if (missingIds.length > 0) {
-            try {
-                const missingProductsRes = await Promise.all(
-                    missingIds.map(id => getProductById(id).catch(err => null))
-                );
-                
-                missingProductsRes.forEach(res => {
-                    if (res && res.success && res.product) {
-                        const p = res.product;
-                        productMapById[p.productId || p.id || p._id] = p;
-                    } else if (res && (res.productId || res.id)) {
-                        productMapById[res.productId || res.id || res._id] = res;
-                    }
-                });
-
-                // re-map to apply the newly fetched products
-                combinedInventoryData = combinedInventoryData.map(inv => {
-                    if (inv.missingProductId && productMapById[inv.missingProductId]) {
-                        return {
-                            ...inv,
-                            product: productMapById[inv.missingProductId]
-                        };
-                    }
-                    return inv;
-                });
-            } catch (err) {
-                console.error("Failed to fetch missing products individually", err);
-            }
-        }
+        // Filter out orphaned inventory records (where product was deleted)
+        combinedInventoryData = combinedInventoryData.filter(inv => inv.product && inv.product.name);
 
         filteredData = [...combinedInventoryData];
 

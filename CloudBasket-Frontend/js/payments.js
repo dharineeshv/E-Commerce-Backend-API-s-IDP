@@ -1,12 +1,15 @@
-import { getAllAdminPayments, refundPayment } from "./api/paymentApi.js";
-import { getAllOrders } from "./api/orderApi.js";
-import { initializeProfileCard } from "./profile.js";
-import { initializeLogout } from "./logout.js";
+import { getAllAdminPayments, refundPayment } from "./api/paymentApi.js?v=2";
+import { getAllOrders } from "./api/orderApi.js?v=2";
+import { initializeProfileCard } from "./profile.js?v=2";
+import { initializeLogout } from "./logout.js?v=2";
+import { getProfile } from "./api/userProfileApi.js?v=2";
 
 const state = {
     allPayments: [],
     allOrders: [],
-    filteredPayments: []
+    filteredPayments: [],
+    currentPage: 1,
+    itemsPerPage: 10
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -35,11 +38,28 @@ document.addEventListener('DOMContentLoaded', async () => {
 
         if (paymentsRes && paymentsRes.success && paymentsRes.payments) {
             // Map payment data with order data to get customer info
-            state.allPayments = paymentsRes.payments.map(payment => {
+            state.allPayments = await Promise.all(paymentsRes.payments.map(async payment => {
                 const order = state.allOrders.find(o => o.orderId === payment.orderId);
                 const shipping = order?.shippingAddress || {};
-                const customerName = shipping.fullName || "Unknown Customer";
-                const customerEmail = shipping.email || "No Email";
+                
+                let customerName = order?.customerName || order?.customer?.name || order?.customer?.fullName || shipping.fullName || shipping.name || (shipping.firstName ? `${shipping.firstName} ${shipping.lastName || ''}`.trim() : null) || "";
+                let customerEmail = order?.customerEmail || shipping.email || "";
+                
+                if (order?.customerId) {
+                    try {
+                        const profileResponse = await getProfile(order.customerId);
+                        if (profileResponse) {
+                            customerName = profileResponse?.data?.fullName || profileResponse?.fullName || profileResponse?.data?.name || profileResponse?.name || customerName;
+                            customerEmail = profileResponse?.data?.email || profileResponse?.email || customerEmail;
+                        }
+                    } catch (error) {
+                        console.error("Failed to fetch profile for customer:", order.customerId, error);
+                    }
+                }
+                
+                customerName = customerName || "Unknown Customer";
+                customerEmail = customerEmail || "No Email";
+                
                 const items = order?.items || [];
                 const initials = customerName.split(" ").map(n => n[0]).join("").substring(0, 2).toUpperCase();
 
@@ -52,7 +72,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                     amountFormatted: formatCurrency(payment.amount),
                     dateFormatted: new Date(payment.paymentDate).toLocaleString("en-US", { month: "short", day: "numeric", year: "numeric", hour: "2-digit", minute: "2-digit" })
                 };
-            });
+            }));
             // Sort by date descending
             state.allPayments.sort((a, b) => new Date(b.paymentDate) - new Date(a.paymentDate));
         }
@@ -67,6 +87,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     
     renderAll();
     setupFilters();
+    setupPagination();
     setupModals();
     initializeProfileCard();
     initializeLogout();
@@ -144,10 +165,15 @@ function renderTable() {
 
     if (state.filteredPayments.length === 0) {
         renderEmpty();
+        renderPagination();
         return;
     }
 
-    tbody.innerHTML = state.filteredPayments.map(payment => {
+    const startIdx = (state.currentPage - 1) * state.itemsPerPage;
+    const endIdx = startIdx + state.itemsPerPage;
+    const paginatedPayments = state.filteredPayments.slice(startIdx, endIdx);
+
+    tbody.innerHTML = paginatedPayments.map(payment => {
         let statusClass = "pending";
         let statusText = "Pending";
         if (payment.status?.toUpperCase() === "SUCCESS") {
@@ -197,6 +223,61 @@ function renderTable() {
             }
         });
     });
+
+    renderPagination();
+}
+
+function setupPagination() {
+    const controlsEl = document.getElementById('pagination-controls');
+    if (!controlsEl) return;
+    
+    controlsEl.addEventListener('click', (e) => {
+        const btn = e.target.closest('.page-btn');
+        if (!btn || btn.disabled) return;
+        
+        const newPage = parseInt(btn.getAttribute('data-page'));
+        if (newPage && newPage !== state.currentPage) {
+            state.currentPage = newPage;
+            renderTable();
+        }
+    });
+}
+
+function renderPagination() {
+    const infoEl = document.getElementById('pagination-info');
+    const controlsEl = document.getElementById('pagination-controls');
+    if (!infoEl || !controlsEl) return;
+
+    const totalItems = state.filteredPayments.length;
+    const totalPages = Math.ceil(totalItems / state.itemsPerPage) || 1;
+    
+    if (totalItems === 0) {
+        infoEl.textContent = 'Showing 0 to 0 of 0 payments';
+        controlsEl.innerHTML = '';
+        return;
+    }
+
+    const startIdx = (state.currentPage - 1) * state.itemsPerPage + 1;
+    const endIdx = Math.min(state.currentPage * state.itemsPerPage, totalItems);
+    infoEl.textContent = `Showing ${startIdx} to ${endIdx} of ${totalItems} payments`;
+
+    let html = '';
+    
+    html += `<button class="page-btn" data-page="${state.currentPage - 1}" ${state.currentPage === 1 ? 'disabled' : ''}>Previous</button>`;
+
+    for (let i = 1; i <= totalPages; i++) {
+        if (totalPages <= 5 || i === 1 || i === totalPages || (i >= state.currentPage - 1 && i <= state.currentPage + 1)) {
+            html += `<button class="page-btn ${i === state.currentPage ? 'active' : ''}" data-page="${i}">${i}</button>`;
+        } else if (i === 2 && state.currentPage > 3) {
+            html += `<span style="padding: 0 0.5rem;">...</span>`;
+        } else if (i === totalPages - 1 && state.currentPage < totalPages - 2) {
+            html += `<span style="padding: 0 0.5rem;">...</span>`;
+        }
+    }
+
+    html += `<button class="page-btn" data-page="${state.currentPage + 1}" ${state.currentPage === totalPages ? 'disabled' : ''}>Next</button>`;
+
+    controlsEl.innerHTML = html;
 }
 
 function renderStats() {
@@ -265,6 +346,7 @@ function setupFilters() {
 
             return matchesSearch && matchesStatus && matchesMethod;
         });
+        state.currentPage = 1;
         renderTable();
     };
 
@@ -282,6 +364,7 @@ function setupFilters() {
             if(statusSelect) statusSelect.value = "";
             if(methodSelect) methodSelect.value = "";
             state.filteredPayments = [...state.allPayments];
+            state.currentPage = 1;
             renderTable();
         });
     }
@@ -337,7 +420,20 @@ function setupModals() {
                     const res = await refundPayment(currentViewedPayment.paymentId);
                     if (res && res.success) {
                         alert("Payment refunded successfully.");
-                        location.reload(); // Reload to refresh everything easily
+                        currentViewedPayment.status = 'REFUNDED';
+                        
+                        // Dynamically update the table row
+                        renderTable();
+                        
+                        // Dynamically update stats
+                        renderStats();
+                        
+                        // Dynamically update the details panel status pill
+                        const statusPill = detailsPanel.querySelector('.panel-header-right .status-pill');
+                        if (statusPill) {
+                            statusPill.textContent = 'REFUNDED';
+                            statusPill.className = 'status-pill blue';
+                        }
                     } else {
                         alert("Failed to refund payment.");
                     }
@@ -346,32 +442,6 @@ function setupModals() {
             } else {
                 alert("Only successful payments can be refunded.");
             }
-        });
-    }
-
-    const printBtn = document.querySelector('.btn-print');
-    if (printBtn) {
-        printBtn.addEventListener('click', () => {
-            if (!currentViewedPayment) return;
-            const element = document.querySelector('.receipt-content');
-            if (!element) return;
-
-            // Temporarily hide buttons for the PDF
-            const actions = element.querySelector('.receipt-actions');
-            if (actions) actions.style.display = 'none';
-
-            const opt = {
-                margin:       0.5,
-                filename:     `receipt_${currentViewedPayment.paymentId}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2 },
-                jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restore buttons
-                if (actions) actions.style.display = 'flex';
-            });
         });
     }
 }

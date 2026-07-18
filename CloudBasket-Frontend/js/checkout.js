@@ -163,14 +163,81 @@ document.addEventListener('DOMContentLoaded', () => {
                 const data = await response.json();
 
                 if (response.ok && data.success) {
-                    if(window.showCustomAlert) window.showCustomAlert("Order placed successfully!");
-                    else alert("Order placed successfully!");
-                    
-                    // Redirect to payment success page
                     const orderId = data.data?.orderId || data.data?.id || '';
-                    setTimeout(() => {
-                        window.location.href = `payment-success.html?orderId=${orderId}`;
-                    }, 500);
+                    const orderTotal = data.data?.orderTotal || 0;
+                    
+                    // Create Razorpay Order
+                    const amountInPaise = Math.round(orderTotal * 100);
+                    const razorpayResponse = await apiFetch(`${API.paymentService}/api/v1/payment/razorpay/create-order`, {
+                        method: 'POST',
+                        body: JSON.stringify({ amount: amountInPaise, receipt: orderId })
+                    });
+                    
+                    const razorpayData = await razorpayResponse.json();
+                    
+                    if (razorpayResponse.ok && razorpayData.success) {
+                        const rzpOptions = {
+                            key: "rzp_test_TEuRJimbaRgE8y", // Replace with env variable in build if possible, but safe for frontend test
+                            amount: razorpayData.data.amount,
+                            currency: razorpayData.data.currency,
+                            name: "CloudBasket",
+                            description: "Order Payment",
+                            order_id: razorpayData.data.id,
+                            handler: async function (response) {
+                                try {
+                                    // Verify Payment Signature
+                                    const verifyRes = await apiFetch(`${API.paymentService}/api/v1/payment/razorpay/verify-payment`, {
+                                        method: 'POST',
+                                        body: JSON.stringify({
+                                            razorpay_order_id: response.razorpay_order_id,
+                                            razorpay_payment_id: response.razorpay_payment_id,
+                                            razorpay_signature: response.razorpay_signature,
+                                            orderId: orderId,
+                                            amount: orderTotal
+                                        })
+                                    });
+                                    
+                                    const verifyData = await verifyRes.json();
+                                    
+                                    if (verifyRes.ok && verifyData.success) {
+                                        window.location.href = `payment-success.html?orderId=${orderId}`;
+                                    } else {
+                                        alert("Payment verification failed.");
+                                        btnPurchase.disabled = false;
+                                        btnPurchase.innerHTML = originalBtnText;
+                                    }
+                                } catch (err) {
+                                    console.error("Verification Error:", err);
+                                    alert("Error verifying payment.");
+                                    btnPurchase.disabled = false;
+                                    btnPurchase.innerHTML = originalBtnText;
+                                }
+                            },
+                            prefill: {
+                                name: fullName,
+                                email: shippingAddress.email,
+                                contact: shippingAddress.phone
+                            },
+                            theme: {
+                                color: "#2563eb"
+                            },
+                            modal: {
+                                ondismiss: function() {
+                                    btnPurchase.disabled = false;
+                                    btnPurchase.innerHTML = originalBtnText;
+                                }
+                            }
+                        };
+                        const rzp = new window.Razorpay(rzpOptions);
+                        rzp.on('payment.failed', function (response){
+                            alert(response.error.description);
+                            btnPurchase.disabled = false;
+                            btnPurchase.innerHTML = originalBtnText;
+                        });
+                        rzp.open();
+                    } else {
+                        throw new Error(razorpayData.message || 'Failed to initialize payment gateway');
+                    }
                 } else {
                     throw new Error(data.message || 'Failed to place order');
                 }

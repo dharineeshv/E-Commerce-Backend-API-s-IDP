@@ -30,11 +30,25 @@ document.addEventListener('DOMContentLoaded', async () => {
     // 4. Setup Table Row Listeners (View Modal)
     setupTableListeners();
 
-    // 5. Setup Sub-modal Logic Listeners
-    setupSubModalLogic();
-
+    // 5. (Removed duplicate Sub-modal Logic Listeners)
+    
     // 6. Header/Sidebar Basic Logic
     setupLayoutLogic();
+
+    // 7. Listen for order updates from modals to re-render the table
+    document.addEventListener('orders-updated', async () => {
+        try {
+            await fetchAndLoadOrders();
+            renderAll();
+        } catch (e) {
+            console.error("Failed to reload orders", e);
+        }
+    });
+
+    document.addEventListener('local-orders-updated', () => {
+        applyFilters();
+        renderAll();
+    });
 });
 
 function renderAll() {

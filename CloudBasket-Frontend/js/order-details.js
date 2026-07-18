@@ -26,7 +26,20 @@ document.addEventListener('DOMContentLoaded', async () => {
             return;
         }
 
-        renderOrderDetails(order);
+        // Fetch products to map UUIDs to actual names and S3 images
+        let allProducts = [];
+        try {
+            const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+            if (prodRes.ok) {
+                const pData = await prodRes.json();
+                allProducts = pData.products || pData.data || pData || [];
+                if (!Array.isArray(allProducts)) allProducts = [];
+            }
+        } catch (e) {
+            console.error("Failed to fetch products for mapping", e);
+        }
+
+        renderOrderDetails(order, allProducts);
 
     } catch (error) {
         console.error("Error fetching order details:", error);
@@ -34,7 +47,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
-function renderOrderDetails(order) {
+function renderOrderDetails(order, allProducts = []) {
     const orderId = order.orderId || order.id || 'UNKNOWN';
     document.getElementById('breadcrumb-order-id').textContent = `Order History > Order #${orderId}`;
 
@@ -51,6 +64,19 @@ function renderOrderDetails(order) {
     statusBadge.className = `status-badge ${statusClass}`;
     statusBadge.innerHTML = `<span style="display:inline-block; width:6px; height:6px; background:${statusColor}; border-radius:50%; margin-right:4px;"></span>${status.charAt(0) + status.slice(1).toLowerCase()}`;
 
+    // Update Delivery Tracker
+    const trackerSteps = document.querySelectorAll('.tracker-step');
+    const stepIcons = document.querySelectorAll('.step-icon');
+    
+    if (status === 'SHIPPED' || status === 'DELIVERED') {
+        if (trackerSteps[1]) trackerSteps[1].classList.add('completed');
+        if (stepIcons[1]) stepIcons[1].classList.add('completed');
+    }
+    if (status === 'DELIVERED') {
+        if (trackerSteps[2]) trackerSteps[2].classList.add('completed');
+        if (stepIcons[2]) stepIcons[2].classList.add('completed');
+    }
+
     // Item Summary
     const items = order.items || [];
     document.getElementById('item-summary-title').textContent = `Item Summary (${items.length})`;
@@ -60,8 +86,10 @@ function renderOrderDetails(order) {
     
     if (items.length > 0) {
         items.forEach(item => {
-            const name = item.name || item.productId || 'Unknown Item';
-            const sku = item.productId ? `SKU: ${item.productId}` : 'SKU: N/A';
+            // Find actual product details from the Product API array
+            const realProduct = allProducts.find(p => (p.productId || p.id) === (item.productId || item.id));
+            
+            const name = realProduct ? (realProduct.name || realProduct.title) : (item.name || item.productId || 'Unknown Item');
             const qty = item.quantity || 1;
             const price = item.price || 0;
             const itemTotal = qty * price;
@@ -69,18 +97,15 @@ function renderOrderDetails(order) {
             const itemDiv = document.createElement('div');
             itemDiv.className = 'ordered-item';
             
-            // Generate a random image based on product name/id or use a placeholder
-            // Using unsplash source with a random seed based on name to keep it consistent
-            const encodedName = encodeURIComponent(name);
-            const imgUrl = item.imageUrl || item.image || `https://source.unsplash.com/150x150/?product,${encodedName}`;
+            // Generate S3 image or fallback
+            const imgUrl = realProduct ? (realProduct.imageUrl || realProduct.image) : (item.imageUrl || item.image || `https://via.placeholder.com/150`);
 
             itemDiv.innerHTML = `
                 <div class="item-image">
                     <img src="${imgUrl}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80'">
                 </div>
                 <div class="item-info">
-                    <div class="item-name">${name}</div>
-                    <div class="item-sku">${sku}</div>
+                    <div class="item-name" style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">${name}</div>
                     <div class="item-qty-price">Qty: ${qty} &nbsp;&nbsp; ₹${Number(price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                 </div>
                 <div class="item-total">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>

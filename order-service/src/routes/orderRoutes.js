@@ -22,6 +22,13 @@ router.get(
   orderController.getAllOrders
 );
 
+router.put(
+  "/admin/:orderId/status",
+  cognitoAuthMiddleware,
+  authorizeRoles("Admin"),
+  orderController.updateOrderStatus
+);
+
 router.patch(
   "/admin/:orderId/status",
   cognitoAuthMiddleware,

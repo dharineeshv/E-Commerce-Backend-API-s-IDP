@@ -47,13 +47,7 @@ export function renderOrdersTable() {
             </td>
             <td><strong>${order.id}</strong></td>
             <td>
-                <div class="customer-cell">
-                    <div class="avatar-sm ${colorClass}">${order.customerAvatar}</div>
-                    <div>
-                        <div class="customer-name-sm">${order.customerName}</div>
-                        <div class="customer-email-sm">${order.customerEmail}</div>
-                    </div>
-                </div>
+                <span class="customer-email-alone">${order.customerName}</span>
             </td>
             <td class="amount-text">₹${order.amount.toFixed(2)}</td>
             <td>
@@ -115,7 +109,7 @@ export function renderPagination() {
 export function renderStats(stats) {
     document.getElementById('stat-total-orders').textContent = stats.total.toLocaleString();
     document.getElementById('stat-pending-orders').textContent = stats.pending.toLocaleString();
-    document.getElementById('stat-shipped-orders').textContent = stats.shipped.toLocaleString();
+    // Shipped card removed
     document.getElementById('stat-delivered-orders').textContent = stats.delivered.toLocaleString();
     document.getElementById('stat-cancelled-orders').textContent = stats.cancelled.toLocaleString();
     document.getElementById('stat-today-revenue').textContent = '₹' + stats.todayRev.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});

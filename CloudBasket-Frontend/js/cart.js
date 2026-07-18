@@ -168,6 +168,12 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
 
+        if (appliedCoupon) {
+            if (window.showCustomAlert) window.showCustomAlert("A coupon has already been applied. Please clear it to use a different one.");
+            else alert("A coupon has already been applied. Please clear it to use a different one.");
+            return;
+        }
+
         const subtotal = cartItems.reduce((sum, item) => sum + ((item.price || 0) * (item.quantity || 1)), 0);
 
         try {
@@ -213,7 +219,8 @@ document.addEventListener('DOMContentLoaded', () => {
             
             if (isPercentage) {
                 discount = (subtotal * coupon.discountValue) / 100;
-                if (coupon.maximumDiscount && coupon.maximumDiscount > 0 && discount > coupon.maximumDiscount) {
+                // Ignore maximumDiscount if it equals discountValue (common admin entry error)
+                if (coupon.maximumDiscount && coupon.maximumDiscount > 0 && coupon.maximumDiscount !== coupon.discountValue && discount > coupon.maximumDiscount) {
                     discount = coupon.maximumDiscount;
                 }
             } else {

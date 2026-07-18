@@ -156,18 +156,16 @@ function renderSimilarProducts(currentProduct, allProducts) {
 
         const card = document.createElement('div');
         card.className = 'product-card';
-        card.style.textAlign = 'center';
-        
         card.innerHTML = `
-            <div class="card-img-container" style="background: white; padding: 15px; border-bottom: 1px solid #f1f5f9;">
-                <img src="${imageUrl}" alt="${title}" style="max-height: 180px; object-fit: contain;">
+            <div class="card-img-container">
+                <img src="${imageUrl}" alt="${title}">
             </div>
-            <div class="card-body" style="padding: 20px;">
-                <h3 class="card-title" style="margin-bottom: 15px; font-size: 16px; min-height: 40px; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; text-overflow: ellipsis;">${title}</h3>
-                <div style="font-size: 22px; font-weight: 700; color: #0f4a8a; margin-bottom: 15px;">₹${Number(price).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
-                <button class="btn" style="width: 100%; background: white; border: 1px solid #cbd5e1; color: #475569; padding: 10px; border-radius: 6px; font-weight: 600; cursor: pointer;" onclick="window.location.href='product.html?id=${id}'">
-                    View Details
-                </button>
+            <div class="card-body">
+                <h3 class="card-title">${title}</h3>
+                <div class="price-block">
+                    <span class="new-price">₹${Number(price).toFixed(2)}</span>
+                </div>
+                <button class="view-details-btn" onclick="window.location.href='product.html?id=${id}'">View Details</button>
             </div>
         `;
         

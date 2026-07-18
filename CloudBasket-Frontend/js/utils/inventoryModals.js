@@ -58,14 +58,14 @@ async function openViewModal(inventoryId) {
     modal.classList.add("show");
 
     const data = await getInventoryById(inventoryId);
-    if (!data || !data.success) {
+    if (!data || data.message) {
         body.innerHTML = `<div style="color: red; text-align: center;">Failed to load inventory details.</div>`;
         return;
     }
 
-    const item = data.data;
+    const item = data.data || data;
     // We try to find the combined product info from our current list to show image/name
-    const cached = currentInventoryData.find(i => i.inventoryId === inventoryId) || {};
+    const cached = currentInventoryData.find(i => i.productId === inventoryId) || {};
     const product = cached.product || {};
     const name = product.name || item.productId;
     const img = product.imageUrl || "https://placehold.co/60x60/f1f5f9/94a3b8?text=Img";
@@ -134,12 +134,22 @@ async function handleActionSubmit(e) {
     btn.textContent = "Processing...";
     btn.disabled = true;
 
-    // Prepare payload based on the backend API schema.
-    // Usually stock actions are sent as deltas or direct updates.
-    // We'll mimic sending an update payload.
+    // The backend expects the absolute final quantity for PUT /:productId
+    // Calculate the new quantity based on the action type.
+    const cached = currentInventoryData.find(i => i.productId === inventoryId) || {};
+    let newQty = cached.quantity || cached.availableQuantity || 0;
+    
+    if (type === "IN") {
+        newQty += qty;
+    } else if (type === "OUT") {
+        newQty -= qty;
+        if (newQty < 0) newQty = 0;
+    } else if (type === "ADJUST") {
+        newQty = qty;
+    }
+
     const payload = {
-        action: type,
-        quantity: qty,
+        quantity: newQty,
         remarks: remarks
     };
 

@@ -2,12 +2,14 @@ import "./config/env.js";
 import express from "express";
 import cors from "cors";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import razorpayRoutes from "./routes/razorpayRoutes.js";
 import { API_VERSION } from "./constants/api.js";
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
+app.use(`${API_VERSION}/payment/razorpay`, razorpayRoutes);
 app.use(`${API_VERSION}/payment`, paymentRoutes);
 
 app.get('/', (req, res) => {

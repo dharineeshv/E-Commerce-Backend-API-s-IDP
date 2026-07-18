@@ -12,7 +12,7 @@ import { publishEvent } from "./snsService.js";
 const PAYMENT_TABLE = process.env.DYNAMODB_TABLE || 'Payments';
 const ORDER_TABLE = process.env.ORDER_TABLE || 'Dharineesh_orders';
 
-const allowedPaymentMethods = ['UPI', 'COD'];
+const allowedPaymentMethods = ['UPI', 'COD', 'Razorpay'];
 const allowedStatuses = ['PENDING', 'SUCCESS', 'FAILED', 'REFUNDED'];
 
 const buildPaymentPayload = ({ paymentId, orderId, customerId, amount, paymentMethod, status, paymentDate }) => ({
@@ -105,7 +105,7 @@ const getAllPayments = async () => {
   return response.Items || [];
 };
 
-const getPaymentById = async (paymentId, customerId) => {
+const getPaymentById = async (paymentId, customerId = null) => {
   const response = await dynamodb.send(
     new GetCommand({
       TableName: PAYMENT_TABLE,
@@ -119,7 +119,7 @@ const getPaymentById = async (paymentId, customerId) => {
     return null;
   }
 
-  if (payment.customerId !== customerId) {
+  if (customerId && payment.customerId !== customerId) {
     throw new Error("Unauthorized: This payment does not belong to you");
   }
 

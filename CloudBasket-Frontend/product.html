@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="css/storefront.css">
     <!-- Product CSS -->
     <link rel="stylesheet" href="css/product.css">
-    <link rel="stylesheet" href="css/chatbot.css">
+    <link rel="stylesheet" href="css/chatbot.css?v=8">
 </head>
 <body>
     <!-- Header -->
@@ -125,15 +125,18 @@
                 </div>
             </section>
 
-            <!-- Similar Products Section -->
-            <section class="similar-products-section">
-                <h2>Similar Products</h2>
-                <div class="product-grid" id="similar-products-grid">
-                    <!-- Related product cards will be injected dynamically -->
-                </div>
-            </section>
         </div>
     </main>
+
+    <!-- Similar Products Section (Full Width) -->
+    <div class="store-main" style="margin-top: 0; padding-top: 40px; border-top: 1px solid #e2e8f0;">
+        <section class="similar-products-section">
+            <h2 style="font-size: 24px; color: #0f172a; margin-bottom: 30px;">Similar Products</h2>
+            <div class="product-grid" id="similar-products-grid">
+                <!-- Related product cards will be injected dynamically -->
+            </div>
+        </section>
+    </div>
 
     <!-- Footer -->
     <footer class="store-footer" style="background: #0f172a; color: white; padding: 60px 0 20px; font-family: 'Inter', sans-serif;">
@@ -178,7 +181,7 @@
 
     
 
-    <script src="js/product.js" type="module"></script>
-    <script src="js/components/chatbot.js"></script>
+    <script src="js/product.js?v=2" type="module"></script>
+    <script src="js/components/chatbot.js?v=3"></script>
 </body>
 </html>

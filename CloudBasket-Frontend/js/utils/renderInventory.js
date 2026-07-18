@@ -79,24 +79,24 @@ export function renderInventoryTable(inventoryItems) {
                 <span class="status-pill ${statusClass}">${statusText}</span>
                 
                 <div class="action-glass-menu" style="position: absolute; right: 2rem; top: 50%; transform: translateY(-50%); display: flex; gap: 0.5rem; opacity: 0; transition: all 0.2s ease;">
-                    <button class="btn-action view-btn" data-id="${item.inventoryId}" data-tooltip="View Inventory">
+                    <button class="btn-action view-btn" data-id="${item.productId}" data-tooltip="View Inventory">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                             <circle cx="12" cy="12" r="3"></circle>
                         </svg>
                     </button>
-                    <button class="btn-action stock-in-btn" data-id="${item.inventoryId}" data-tooltip="Stock In">
+                    <button class="btn-action stock-in-btn" data-id="${item.productId}" data-tooltip="Stock In">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="12" y1="5" x2="12" y2="19"></line>
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                     </button>
-                    <button class="btn-action stock-out-btn" data-id="${item.inventoryId}" data-tooltip="Stock Out">
+                    <button class="btn-action stock-out-btn" data-id="${item.productId}" data-tooltip="Stock Out">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <line x1="5" y1="12" x2="19" y2="12"></line>
                         </svg>
                     </button>
-                    <button class="btn-action adjust-btn" data-id="${item.inventoryId}" data-tooltip="Stock Adjustment">
+                    <button class="btn-action adjust-btn" data-id="${item.productId}" data-tooltip="Stock Adjustment">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 20h9"></path>
                             <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>

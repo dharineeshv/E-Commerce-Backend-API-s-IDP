@@ -18,10 +18,8 @@
     <link rel="stylesheet" href="../../css/sidebar.css">
     <link rel="stylesheet" href="../../css/logout.css">
     <link rel="stylesheet" href="../../css/profile.css">
-    <link rel="stylesheet" href="../../css/payments.css">
+    <link rel="stylesheet" href="../../css/payments.css?v=4">
 
-    <!-- html2pdf for PDF generation -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         /* Base overrides to apply Inter font */
@@ -30,7 +28,6 @@
             background: #f0f4f8; /* slightly cooler background per mockup */
         }
     </style>
-    <link rel="stylesheet" href="../../css/chatbot.css">
 </head>
 <body>
 <div class="dashboard">
@@ -338,7 +335,7 @@
                         <option value="">All Statuses</option>
                         <option value="Success">Success</option>
                         <option value="Pending">Pending</option>
-                        <option value="Failed">Failed</option>
+                        <option value="Refunded">Refunded</option>
                     </select>
                 </div>
 
@@ -447,6 +444,16 @@
                     </tbody>
                 </table>
             </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info" id="pagination-info">
+                    Showing 0 to 0 of 0 payments
+                </div>
+                <div class="pagination-controls" id="pagination-controls">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
 
         </div>
     </main>
@@ -487,19 +494,14 @@
         <div class="section-title">CUSTOMER DETAILS</div>
         <div class="customer-details-card">
             <div class="customer-header-row">
-                <div class="avatar large bg-light-blue text-blue">JS</div>
+                <div class="avatar large bg-light-blue text-blue" style="border-radius: 50%;">JS</div>
                 <div>
                     <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;">John Smith</h3>
-                    <p style="margin: 2px 0 0; font-size: 0.8rem; color: #64748b;">Customer since Oct 2022</p>
                 </div>
             </div>
             <div class="customer-info-row">
                 <span class="info-label">Email</span>
                 <span class="info-value">john.smith@example.com</span>
-            </div>
-            <div class="customer-info-row">
-                <span class="info-label">Phone</span>
-                <span class="info-value">+1 (555) 012-3456</span>
             </div>
         </div>
 
@@ -617,13 +619,12 @@
         <div class="thank-you-msg">THANK YOU FOR YOUR BUSINESS</div>
 
         <div class="receipt-actions">
-            <button class="btn-cancel" id="close-receipt-btn">CANCEL</button>
-            <button class="btn-print">PRINT PDF</button>
+            <button class="btn-cancel" id="close-receipt-btn">CLOSE</button>
         </div>
     </div>
 </div>
 
-<script type="module" src="../../js/payments.js"></script>
+<script type="module" src="../../js/payments.js?v=6"></script>
 <!-- ==========================================================
                     LOGOUT MODAL
 =========================================================== -->
@@ -646,7 +647,5 @@
         </div>
     </div>
 </div>
-
-    <script src="../../js/components/chatbot.js"></script>
 </body>
 </html>
