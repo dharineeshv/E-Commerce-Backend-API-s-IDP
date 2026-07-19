@@ -2,11 +2,16 @@ const authorizeRoles = (...allowedRoles) => {
   return (req, res, next) => {
     const userGroups = req.user["cognito:groups"] || [];
 
-    const hasRole = allowedRoles.some((role) =>
+    let isAuthorized = allowedRoles.some((role) =>
       userGroups.includes(role)
     );
 
-    if (!hasRole) {
+    // If no groups are assigned, and the route allows Customers, assume they are a standard Customer
+    if (userGroups.length === 0 && allowedRoles.includes("Customer")) {
+      isAuthorized = true;
+    }
+
+    if (!isAuthorized) {
       return res.status(403).json({
         success: false,
         message: "Access denied.",

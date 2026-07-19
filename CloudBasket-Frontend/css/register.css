@@ -9,10 +9,10 @@
 }
 
 body {
-
+    zoom: 0.8;
     font-family: "Poppins", sans-serif;
 
-    min-height: 100vh;
+    min-height: 125vh;
 
     background: linear-gradient(135deg,#eef4ff,#f6f8ff,#eef4ff);
 

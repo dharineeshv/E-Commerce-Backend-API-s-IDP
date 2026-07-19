@@ -24,7 +24,7 @@ export async function fetchAndLoadOrders() {
         ordersRes.data.forEach(order => {
             const shipping = order.shippingAddress || {};
             const customerEmail = shipping.email || shipping.customerEmail;
-            if (!customerEmail && order.customerId) {
+            if ((!customerEmail || customerEmail === "customer@example.com") && order.customerId) {
                 missingEmailCustomerIds.add(order.customerId);
             }
         });
@@ -42,7 +42,15 @@ export async function fetchAndLoadOrders() {
             
             // Safe fallbacks for nested properties
             const shipping = order.shippingAddress || {};
-            const customerEmail = shipping.email || shipping.customerEmail || profileMap[order.customerId] || "No Email";
+            let customerEmail = shipping.email || shipping.customerEmail;
+            
+            // Fix for older orders that had the hardcoded placeholder
+            if (!customerEmail || customerEmail === "customer@example.com") {
+                customerEmail = profileMap[order.customerId] || "No Email";
+            }
+            if (customerEmail === "google-sso-user@example.com") {
+                customerEmail = "Google SSO User";
+            }
             
             // As requested, use customer email alone in the customer field
             const customerName = customerEmail;

@@ -201,7 +201,8 @@ const googleLoginBtn = document.getElementById("googleLoginBtn");
 if (googleLoginBtn) {
     googleLoginBtn.addEventListener("click", () => {
         const redirectUri = getRedirectUri();
-        const authUrl = `${COGNITO_DOMAIN}/oauth2/authorize?identity_provider=Google&response_type=code&client_id=${COGNITO_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid+email+profile`;
+        // CHANGED to response_type=token for Implicit Grant
+        const authUrl = `${COGNITO_DOMAIN}/oauth2/authorize?identity_provider=Google&response_type=token&client_id=${COGNITO_CLIENT_ID}&redirect_uri=${encodeURIComponent(redirectUri)}&scope=openid+email+profile`;
         
         googleLoginBtn.disabled = true;
         googleLoginBtn.innerHTML = `
@@ -213,13 +214,16 @@ if (googleLoginBtn) {
     });
 }
 
-// Handle OAuth Callback on Page Load
+// Handle OAuth Callback on Page Load (Implicit Grant uses URL Hash instead of Search params)
 window.addEventListener("DOMContentLoaded", async () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const code = urlParams.get("code");
+    // Implicit grant returns tokens in the URL hash, e.g. #access_token=123&id_token=456
+    const hashParams = new URLSearchParams(window.location.hash.substring(1));
+    const accessToken = hashParams.get("access_token");
+    const idToken = hashParams.get("id_token");
+    const errorParam = hashParams.get("error") || new URLSearchParams(window.location.search).get("error_description");
     
-    if (code) {
-        // Clean URL immediately
+    if (accessToken && idToken) {
+        // Clean URL immediately to hide tokens from browser history
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);
         
@@ -232,41 +236,18 @@ window.addEventListener("DOMContentLoaded", async () => {
         }
         
         try {
-            const redirectUri = getRedirectUri();
-            const tokenUrl = `${COGNITO_DOMAIN}/oauth2/token`;
+            // Implicit grant bypasses the /oauth2/token exchange completely!
+            // We can directly save the tokens from the URL hash.
             
-            const params = new URLSearchParams();
-            params.append('grant_type', 'authorization_code');
-            params.append('client_id', COGNITO_CLIENT_ID);
-            params.append('code', code);
-            params.append('redirect_uri', redirectUri);
-
-            const response = await fetch(tokenUrl, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded'
-                },
-                body: params.toString()
-            });
-            
-            const data = await response.json();
-            
-            if (!response.ok) {
-                throw new Error(data.error_description || data.error || "Token exchange failed");
-            }
-            
-            // Store tokens identically to email/password flow
-            localStorage.setItem("accessToken", data.access_token);
-            localStorage.setItem("idToken", data.id_token);
-            if (data.refresh_token) {
-                localStorage.setItem("refreshToken", data.refresh_token);
-            }
-            localStorage.setItem("tokenType", data.token_type);
-            localStorage.setItem("expiresIn", data.expires_in);
+            localStorage.setItem("accessToken", accessToken);
+            localStorage.setItem("idToken", idToken);
+            localStorage.setItem("tokenType", hashParams.get("token_type") || "Bearer");
+            localStorage.setItem("expiresIn", hashParams.get("expires_in") || "3600");
+            // Implicit grant does not provide a refresh token for security reasons
             
             showToast("success", "Login Successful", "Successfully logged in with Google!");
             
-            const decodedToken = parseJwt(data.access_token) || {};
+            const decodedToken = parseJwt(accessToken) || {};
             const groups = decodedToken['cognito:groups'] || [];
             
             let redirectUrl = "index.html";
@@ -285,15 +266,14 @@ window.addEventListener("DOMContentLoaded", async () => {
             if (googleLoginBtn) {
                 googleLoginBtn.disabled = false;
                 googleLoginBtn.innerHTML = `
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" alt="Google Logo" class="google-icon">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" alt="Google Logo" class="google-icon">
                     Continue with Google
                 `;
             }
         }
-    } else if (urlParams.get("error_description")) {
+    } else if (errorParam) {
         // Handle OAuth errors from Cognito (e.g. user cancelled)
-        const errorDesc = urlParams.get("error_description");
-        showToast("error", "Google Login Cancelled", errorDesc);
+        showToast("error", "Google Login Failed", errorParam);
         
         const cleanUrl = window.location.origin + window.location.pathname;
         window.history.replaceState({}, document.title, cleanUrl);

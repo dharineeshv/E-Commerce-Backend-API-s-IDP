@@ -63,7 +63,13 @@ const getProfileByCognitoSub = async (cognitoSub) => {
 
 const getProfileBySub = async (cognitoSub) => {
 
-  const profile = await getProfileByCognitoSub(cognitoSub);
+  let profile = await getProfileByCognitoSub(cognitoSub);
+
+  if (!profile) {
+    console.log(`Auto-creating profile for missing user: ${cognitoSub}`);
+    await createProfile({ cognitoSub, email: "google-sso-user@example.com" });
+    profile = await getProfileByCognitoSub(cognitoSub);
+  }
 
   if (!profile) {
     const error = new Error("User profile not found.");
@@ -104,7 +110,13 @@ const getProfileByCustomerId = async (customerId) => {
 const getMyProfile = async (cognitoSub) => {
 
   // Find profile using Cognito Sub
-  const profile = await getProfileByCognitoSub(cognitoSub);
+  let profile = await getProfileByCognitoSub(cognitoSub);
+
+  if (!profile) {
+    console.log(`Auto-creating profile for missing user in getMyProfile: ${cognitoSub}`);
+    await createProfile({ cognitoSub, email: "google-sso-user@example.com" });
+    profile = await getProfileByCognitoSub(cognitoSub);
+  }
 
   if (!profile) {
     const error = new Error("User profile not found.");

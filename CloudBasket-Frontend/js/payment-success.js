@@ -92,7 +92,24 @@ document.addEventListener('DOMContentLoaded', async () => {
                 else if (order.shippingAddress.fullName) custName = order.shippingAddress.fullName;
                 else if (order.shippingAddress.firstName) custName = `${order.shippingAddress.firstName} ${order.shippingAddress.lastName || ''}`.trim();
                 
-                if (order.shippingAddress.email) custEmail = order.shippingAddress.email;
+                if (order.shippingAddress.email && order.shippingAddress.email !== "customer@example.com") {
+                    custEmail = order.shippingAddress.email;
+                } else if (order.customerId) {
+                    try {
+                        const profileResponse = await apiFetch(`${API.userProfileService}/api/v1/profile/${order.customerId}`);
+                        if (profileResponse.ok) {
+                            const profileResult = await profileResponse.json();
+                            if (profileResult.data && profileResult.data.email) {
+                                custEmail = profileResult.data.email;
+                            }
+                        }
+                    } catch(e) {
+                        console.error("Error fetching profile for invoice", e);
+                    }
+                }
+                if (custEmail === "google-sso-user@example.com") {
+                    custEmail = "Google SSO User";
+                }
             }
             
             document.getElementById('pdf-customer-name').textContent = custName;

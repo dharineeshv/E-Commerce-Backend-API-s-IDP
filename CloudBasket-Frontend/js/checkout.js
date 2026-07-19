@@ -138,10 +138,21 @@ document.addEventListener('DOMContentLoaded', () => {
             const firstName = nameParts[0];
             const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
 
+            let userEmail = "";
+            try {
+                const idToken = localStorage.getItem('idToken');
+                if (idToken) {
+                    const payload = JSON.parse(atob(idToken.split('.')[1]));
+                    if (payload.email) userEmail = payload.email;
+                }
+            } catch (e) {
+                console.error("Could not parse email from token", e);
+            }
+
             const shippingAddress = {
                 firstName: firstName,
                 lastName: lastName,
-                email: "customer@example.com", // Add a fallback or get from profile if possible
+                email: userEmail || "No Email",
                 phone: "000-000-0000",
                 address: street,
                 city: city,
