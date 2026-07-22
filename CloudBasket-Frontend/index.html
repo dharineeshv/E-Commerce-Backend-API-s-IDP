@@ -1,206 +1,198 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CloudBasket - Shop</title>
-    <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <!-- Main CSS -->
-    <link rel="stylesheet" href="css/storefront.css?v=11">
-    <link rel="stylesheet" href="css/chatbot.css?v=8">
+
+    <title>CloudBasket | Login</title>
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/toast.css">
+    <link rel="stylesheet" href="css/login.css">
+
+    <!-- Font Awesome (Eye Icon) -->
+    <link rel="stylesheet"
+        href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link
+        href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+
 </head>
+
 <body>
-    <!-- Marketing Banner -->
-    <div id="marketing-banner" class="marketing-banner">
-        <span class="sale-badge" id="banner-badge">FESTIVAL SALE</span>
-        <p id="banner-text">Loading special offers...</p>
-        <button class="btn-banner" onclick="document.getElementById('marketing-banner').classList.remove('visible')">Dismiss</button>
-    </div>
 
-    <!-- Header -->
-    <header class="store-header">
-        <div class="header-container">
-            <div class="logo">CloudBasket</div>
-            
-            <div class="search-bar">
-                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="11" cy="11" r="8"></circle>
-                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                </svg>
-                <input type="text" id="search-input" placeholder="Search for products, brands and more">
+    <!-- Background -->
+
+    <div class="background-blur"></div>
+
+    <!-- Main Container -->
+
+    <main class="login-container">
+
+        <!-- Left Side -->
+
+        <section class="left-panel">
+
+            <img
+                src="assets/login-illustration.png"
+                alt="Shopping Illustration"
+                class="illustration">
+
+            <div class="welcome-text">
+
+                <h1>Welcome Back</h1>
+
+                <p>
+
+                    Securely access your account to continue shopping
+                    with the best deals in the cloud.
+
+                </p>
+
             </div>
 
-            <nav class="header-nav">
-                <a href="index.html" class="nav-link active">Categories</a>
-                <a href="cart.html" class="nav-link">Cart</a>
-                <a href="orders.html" class="nav-link">Orders</a>
-                <a href="#" class="nav-link">Profile</a>
-                <!-- Company Logo Placeholder -->
-                <div class="company-logo-header">
-                    <img src="assets/logo.png" alt="Company Logo" style="height: 36px; object-fit: contain; margin-left: 15px;">
-                </div>
-            </nav>
-        </div>
-    </header>
-
-    <main class="store-main">
-        <!-- Hero Slider -->
-        <section class="hero-slider-container">
-            <div class="slider-wrapper" id="store-slider">
-                <!-- Slide 1 -->
-                <div class="store-slide active" style="background-image: url('https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1200&q=80');">
-                    <div class="slide-overlay"></div>
-                    <div class="store-slide-content">
-                        <span class="badge badge-orange">EXCLUSIVE DEAL</span>
-                        <h2>Enterprise Admin<br>Upgrade Your<br>Workflow</h2>
-                        <p>Save up to 50% on enterprise-grade hardware and<br>productivity suites.</p>
-                        <button class="btn btn-orange">Shop Enterprise</button>
-                    </div>
-                </div>
-                
-                <!-- Slide 2 -->
-                <div class="store-slide" style="background-image: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80');">
-                    <div class="slide-overlay"></div>
-                    <div class="store-slide-content">
-                        <span class="badge badge-orange">NEW ARRIVAL</span>
-                        <h2>Premium Audio<br>Experience</h2>
-                        <p>Discover our new range of noise-cancelling headphones.</p>
-                        <button class="btn btn-orange">Shop Audio</button>
-                    </div>
-                </div>
-                
-                <!-- Slide 3 -->
-                <div class="store-slide" style="background-image: url('assets/premium_mobiles_banner.jpg');">
-                    <div class="slide-overlay"></div>
-                    <div class="store-slide-content">
-                        <span class="badge badge-orange">PREMIUM MOBILES</span>
-                        <h2>Buy Different<br>Premium Mobiles</h2>
-                        <p>Discover our new range of flagship smartphones today.</p>
-                        <button class="btn btn-orange" onclick="document.getElementById('category-filter').value = 'Electronics'; document.getElementById('category-filter').dispatchEvent(new Event('change'));">Shop Mobiles</button>
-                    </div>
-                </div>
-                
-                <!-- Slide 4 -->
-                <div class="store-slide" style="background-image: url('assets/earbuds_banner.jpg');">
-                    <div class="slide-overlay"></div>
-                    <div class="store-slide-content">
-                        <span class="badge badge-orange">TOP AUDIO</span>
-                        <h2>True Wireless<br>Earbuds</h2>
-                        <p>Experience crystal clear sound with our latest ear buds.</p>
-                        <button class="btn btn-orange" onclick="document.getElementById('category-filter').value = 'Electronics'; document.getElementById('category-filter').dispatchEvent(new Event('change'));">Shop Earbuds</button>
-                    </div>
-                </div>
-            </div>
         </section>
 
-        <!-- Filters -->
-        <section class="filters-bar">
-            <span class="filter-label">FILTERS:</span>
-            
-            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
-                <select id="category-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500;">
-                    <option value="">All Categories</option>
-                    <option value="Electronics">Electronics</option>
-                    <option value="Wearables">Wearables</option>
-                    <option value="Accessories">Accessories</option>
-                    <option value="Computer Accessories">Computer Accessories</option>
-                    <option value="Home">Home</option>
-                    <option value="Fitness">Fitness</option>
-                    <option value="Outdoor">Outdoor</option>
-                    <option value="Office">Office</option>
-                </select>
-            </div>
-            
-            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
-                <select id="price-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500;">
-                    <option value="">Price Range</option>
-                    <option value="0-100">Under ₹100</option>
-                    <option value="100-1000">₹100 - ₹1,000</option>
-                    <option value="1000-5000">₹1,000 - ₹5,000</option>
-                    <option value="5000-10000">₹5,000 - ₹10,000</option>
-                    <option value="10000+">Over ₹10,000</option>
-                </select>
-            </div>
-            
-            <button class="clear-filters" id="clear-filters">Clear All</button>
-        </section>
+        <!-- Right Side -->
 
-        <!-- Product Listing Header -->
-        <div class="listing-header">
-            <div class="breadcrumbs">
-                <a href="#">Home</a> &gt; <span>All Products</span>
-            </div>
-            
-            <div class="listing-meta">
-                <div class="product-count">
-                    <h2 id="product-count-display">Loading products...</h2>
-                </div>
-                
-                <div class="sort-by">
-                    <span>Sort by:</span>
-                    <div class="sort-dropdown" style="padding: 0; border: none; background: transparent;">
-                        <select id="sort-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500;">
-                            <option value="relevance">Relevance</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                        </select>
+        <section class="right-panel">
+
+            <div class="login-card">
+
+                <img
+                    src="assets/logo.png"
+                    class="logo"
+                    alt="CloudBasket Logo">
+
+                <h2>Login</h2>
+
+                <p class="subtitle">
+
+                    Login to continue shopping.
+
+                </p>
+
+                <form id="loginForm">
+
+                    <div class="input-group">
+
+                        <label>Email Address</label>
+
+                        <input
+                            type="email"
+                            id="email"
+                            placeholder="name@example.com"
+                            required>
+
                     </div>
-                </div>
-            </div>
-        </div>
 
-        <!-- Product Grid -->
-        <section class="product-grid" id="product-grid">
-            <!-- Product Cards will be injected dynamically -->
+                    <div class="input-group">
+
+                        <label>Password</label>
+
+                        <div class="password-wrapper">
+
+                            <input
+                                type="password"
+                                id="password"
+                                placeholder="Enter Password"
+                                required>
+
+                            <i
+                                class="fa-solid fa-eye toggle-password"
+                                id="togglePassword"></i>
+
+                        </div>
+
+                    </div>
+
+                    <a
+                        href="forgot-password.html"
+                        class="forgot-password">
+
+                        Forgot Password?
+
+                    </a>
+
+                    <button
+                        class="login-btn"
+                        id="loginBtn">
+
+                        Login
+
+                    </button>
+
+                </form>
+
+                <div class="divider">
+                    <span></span>
+                    <p>OR</p>
+                    <span></span>
+                </div>
+
+                <button id="googleLoginBtn" class="google-login-btn">
+                    <img src="https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/google/google-original.svg" alt="Google Logo" class="google-icon">
+                    Continue with Google
+                </button>
+
+                <div class="register-link">
+
+                    Don't have an account?
+
+                    <a href="register.html">
+
+                        Register Now
+
+                    </a>
+
+                </div>
+
+            </div>
+
         </section>
+
     </main>
 
     <!-- Footer -->
-    <footer class="store-footer" style="background: #0f172a; color: white; padding: 60px 0 20px; font-family: 'Inter', sans-serif;">
-        <div style="max-width: 100%; margin: 0 auto; padding: 0 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
-            <div>
-                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 15px; color: white;">CloudBasket</h2>
-                <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Providing premium experiences through reliable, high-quality products. Your cloud-connected marketplace for the modern enterprise and beyond.</p>
-            </div>
-            
-            <div>
-                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: white;">Platform Details</h3>
-                <div style="display: flex; flex-direction: column; gap: 12px;">
-                    <a href="https://instagram.com/v.dharineesh_18" target="_blank" style="display: flex; align-items: center; gap: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; transition: color 0.2s;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
-                        v.dharineesh_18
-                    </a>
-                    <a href="mailto:dharineeshv18@gmail.com" style="display: flex; align-items: center; gap: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; transition: color 0.2s;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                        dharineeshv18@gmail.com
-                    </a>
-                </div>
-            </div>
-            
-            <div>
-                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: white;">Stay Connected</h3>
-                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;">Reach out to us through the following channels:</p>
-                <div style="display: flex; gap: 15px;">
-                    <a href="mailto:dharineeshv18@gmail.com" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1e293b; color: white; transition: all 0.2s; border: 1px solid #334155; text-decoration: none;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
-                    </a>
-                    <a href="tel:9715020320" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1e293b; color: white; transition: all 0.2s; border: 1px solid #334155; text-decoration: none;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-        <div style="max-width: 100%; margin: 40px auto 0; padding: 20px 30px; border-top: 1px solid #1e293b; text-align: left; color: #94a3b8; font-size: 14px;">
-            &copy; 2026 CloudBasket. All rights reserved.
-        </div>
+
+    <footer>
+
+        Â© 2026 CloudBasket.
+        All Rights Reserved.
+
     </footer>
 
+    <!-- Toast -->
 
-    
+    <div id="toastContainer"></div>
 
-    <script src="js/storefront.js?v=8" type="module"></script>
-    <script src="js/components/chatbot.js?v=3"></script>
+    <!-- Scripts -->
+
+    <script src="js/api.js"></script>
+
+    <script src="js/auth.js"></script>
+
+    <script src="js/toast.js"></script>
+
+    <script src="js/login.js"></script>
+
 </body>
+
 </html>

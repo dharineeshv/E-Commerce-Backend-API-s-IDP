@@ -273,6 +273,9 @@ customerName =
 
             }
 
+            if (!customerName && order.shippingAddress) {
+                customerName = `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
+            }
             customerName = customerName || "Unknown Customer";
 
             const paymentStatus =
@@ -289,7 +292,7 @@ customerName =
 
                     <td>${order.orderId ?? "N/A"}</td>
 
-                    <td>₹${order.totalAmount ?? order.amount ?? order.grandTotal ?? 0}</td>
+                    <td>₹${order.orderTotal ?? order.totalAmount ?? order.amount ?? order.grandTotal ?? 0}</td>
 
                     <td>
 

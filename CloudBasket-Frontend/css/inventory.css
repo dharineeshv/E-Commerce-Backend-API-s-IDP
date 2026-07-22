@@ -802,7 +802,7 @@
 
 .input-field:focus {
     outline: none;
-    border-color: var(--inv-accent);
+    border-color: var(--inv-primary);
     box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
 }
 
@@ -845,7 +845,7 @@
 }
 
 .btn-primary {
-    background: var(--inv-accent);
+    background: var(--inv-primary);
     color: white;
     box-shadow: 0 4px 12px rgba(99, 102, 241, 0.3);
 }

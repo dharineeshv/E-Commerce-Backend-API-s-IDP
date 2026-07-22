@@ -99,11 +99,14 @@ const product = productResponse.data?.product;
       });
     }
 
+    const productImageUrl = product.imageUrl || (product.images && product.images.length > 0 ? (product.images[0].imageUrl || product.images[0]) : null);
+
     const result = await cartService.addProductToCart(customerId, {
       productId,
       productName: product.name,
       price: product.sellingPrice || product.price,
       quantity,
+      imageUrl: productImageUrl
     });
 
     return res.status(201).json(result);

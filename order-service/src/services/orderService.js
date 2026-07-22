@@ -95,7 +95,7 @@ const clearCartItems = async (customerId) => {
 };
 
 // Place a new order from cart items
-const placeOrder = async (customerId, shippingAddress) => {
+const placeOrder = async (customerId, shippingAddress, calculatedTotal) => {
   const cartItems = await getCartItems(customerId);
 
   if (!cartItems || cartItems.length === 0) {
@@ -103,7 +103,7 @@ const placeOrder = async (customerId, shippingAddress) => {
   }
 
   const orderId = uuidv4();
-  const orderTotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+  const orderTotal = calculatedTotal ? parseFloat(calculatedTotal) : cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
   const orderItems = cartItems.map((item) => ({
     productId: item.productId,

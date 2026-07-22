@@ -127,3 +127,8 @@
     font-weight:700;
 
 }
+/* Responsive Adjustments */
+@media (max-width: 1024px) { .dashboard-cards { grid-template-columns: repeat(3, 1fr); } }
+@media (max-width: 768px) { .dashboard-cards { grid-template-columns: repeat(2, 1fr); gap: 15px; } .dashboard-card { padding: 15px; flex-direction: column; text-align: center; } }
+@media (max-width: 480px) { .dashboard-cards { grid-template-columns: 1fr; } .dashboard-card { flex-direction: row; text-align: left; } }
+

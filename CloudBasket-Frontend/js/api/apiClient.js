@@ -122,7 +122,7 @@ function initProfileDropdown() {
     logoutBtn.addEventListener('click', () => {
         window.showCustomConfirm('Are you sure you want to log out?', () => {
             localStorage.clear();
-            window.location.href = 'login.html';
+            window.location.href = '/CloudBasket-Frontend/index.html';
         });
     });
 }
@@ -135,7 +135,7 @@ window.showCustomAlert = function(message) {
     overlay.style.left = '0';
     overlay.style.width = '100vw';
     overlay.style.height = '100vh';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.backgroundColor = 'transparent';
     overlay.style.zIndex = '9999';
     overlay.style.display = 'flex';
     overlay.style.alignItems = 'center';
@@ -186,7 +186,7 @@ window.showCustomConfirm = function(message, onConfirm) {
     overlay.style.height = '100%';
     overlay.style.right = '0';
     overlay.style.bottom = '0';
-    overlay.style.backgroundColor = 'rgba(0, 0, 0, 0.5)';
+    overlay.style.backgroundColor = 'transparent';
     overlay.style.zIndex = '9999';
     overlay.style.display = 'flex';
     overlay.style.alignItems = 'center';

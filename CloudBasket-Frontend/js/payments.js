@@ -94,7 +94,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 });
 
 function formatCurrency(amount) {
-    return `₹${Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    return `\u20B9${Number(amount).toLocaleString('en-IN', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
 }
 
 function renderAll() {
@@ -485,7 +485,7 @@ function openPaymentPanel(paymentId) {
     const currencyBox = detailsPanel.querySelectorAll('.payment-info-grid .box-value')[1];
     
     if (paymentIdBox) paymentIdBox.textContent = payment.paymentId.substring(0, 10);
-    if (currencyBox) currencyBox.textContent = "INR (₹)";
+    if (currencyBox) currencyBox.textContent = "INR (\u20B9)";
 
     // Order Summary
     const orderSummaryContainer = detailsPanel.querySelector('.order-summary-card');
@@ -552,7 +552,7 @@ function populateReceipt(payment) {
     if (totalsContainer) {
         totalsContainer.innerHTML = `
             <div class="total-row"><span>Subtotal</span><span>${payment.amountFormatted}</span></div>
-            <div class="total-row"><span>Taxes</span><span>₹0.00</span></div>
+            <div class="total-row"><span>Taxes</span><span>\u20B90.00</span></div>
             <div class="total-row grand-total"><span style="color: #003366;">Paid</span><span>${payment.amountFormatted}</span></div>
         `;
     }

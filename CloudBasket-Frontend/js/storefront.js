@@ -1,11 +1,30 @@
 // JS for CloudBasket Home Page (storefront)
 import { apiFetch } from "./api/apiClient.js";
+import { getActiveFestivalSale } from "./api/marketingApi.js";
 
 let allProducts = [];
 let filteredProducts = [];
-const CUSTOMER_ID = 'cust-001'; // Default test customer
-
-document.addEventListener("DOMContentLoaded", () => {
+let userWishlistIds = new Set();
+let activeFestivalSale = null;
+let CUSTOMER_ID = 'cust-001'; // Default test customer
+try {
+    const token = localStorage.getItem('idToken') || localStorage.getItem('accessToken');
+    if (token) {
+        const payload = JSON.parse(atob(token.split('.')[1]));
+        if (payload.sub) CUSTOMER_ID = payload.sub;
+    }
+} catch (e) {
+    console.error("Failed to parse token for CUSTOMER_ID", e);
+}
+document.addEventListener("DOMContentLoaded", async () => {
+    try {
+        const festRes = await getActiveFestivalSale();
+        if (festRes && festRes.success && festRes.data) {
+            activeFestivalSale = festRes.data;
+        }
+    } catch (e) {
+        console.error("Failed to load festival sale", e);
+    }
     initSlider();
     loadProducts();
     setupFilters();
@@ -44,6 +63,26 @@ async function loadProducts() {
         if (!allProducts || allProducts.length === 0) {
             console.warn("No products found from backend. Using mock data.");
             allProducts = getMockProducts();
+        }
+
+        if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
+            try {
+                const wishRes = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}`);
+                if (wishRes.ok) {
+                    const wishData = await wishRes.json();
+                    if (wishData.items) {
+                        wishData.items.forEach(item => {
+                            if (item.productDetails && (item.productDetails.productId || item.productDetails.id)) {
+                                userWishlistIds.add(item.productDetails.productId || item.productDetails.id);
+                            } else if (item.productId) {
+                                userWishlistIds.add(item.productId);
+                            }
+                        });
+                    }
+                }
+            } catch (e) {
+                console.error("Error fetching initial wishlist", e);
+            }
         }
 
         filteredProducts = [...allProducts];
@@ -168,31 +207,87 @@ function renderProducts(products) {
         const title = product.name || product.title;
         const category = product.category || 'CATEGORY';
         const price = product.sellingPrice || product.price;
-        const imageUrl = product.imageUrl || product.image || 'https://via.placeholder.com/250';
-        const discount = product.discountPercentage || product.discount || (Math.floor(Math.random() * 20) + 5);
-        const originalPrice = product.mrp || (price / (1 - (discount/100))).toFixed(2);
-        
-        const stars = renderStars(product.rating || (4 + Math.random()));
-        const reviews = product.reviews || Math.floor(Math.random() * 500) + 20;
 
+        let imageUrl = product.imageUrl || product.image;
+        
+        if (imageUrl && imageUrl.includes('amazonaws.com')) {
+            try {
+                const parsed = new URL(imageUrl);
+                imageUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            } catch (e) {}
+        }
+        
+        if (!imageUrl || imageUrl.includes('placeholder')) {
+            imageUrl = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        }
+
+        
+        let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        if (title.toLowerCase().includes('vivo')) {
+            fallbackImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
+        }
+
+        const discount = product.discountPercentage || product.discount || (Math.floor(Math.random() * 20) + 5);
+        let originalPrice = product.mrp || (price / (1 - (discount/100))).toFixed(2);
+        
+        const isInWishlist = userWishlistIds.has(id);
+        const heartColor = isInWishlist ? '#ef4444' : '#64748b';
+        const heartFill = isInWishlist ? '#ef4444' : 'none';
+        
+        let currentPrice = Number(price);
+        let festivalLabel = '';
+        if (activeFestivalSale) {
+            if (activeFestivalSale.discountType === 'percentage' || activeFestivalSale.discountType === 'PERCENTAGE') {
+                currentPrice = currentPrice * (1 - (activeFestivalSale.discountValue / 100));
+            } else {
+                currentPrice = Math.max(0, currentPrice - activeFestivalSale.discountValue);
+            }
+            if (currentPrice < Number(price)) {
+                festivalLabel = `<div style="font-size: 0.7em; color: #ef4444; font-weight: bold; margin-top: 2px;">(Festival Sale)</div>`;
+                // Set the original price to the normal selling price if there's a festival sale
+                originalPrice = Number(price).toFixed(2);
+            }
+        }
+        
         const card = document.createElement('div');
         card.className = 'product-card';
         card.innerHTML = `
-            <div class="card-img-container">
-                <img src="${imageUrl}" alt="${title}">
-            </div>
-            <div class="card-body">
-                <h3 class="card-title">${title}</h3>
-                <div class="price-block">
-                    <span class="new-price">₹${Number(price).toFixed(2)}</span>
+            <div class="card-img-container" style="position: relative; overflow: hidden;" onclick="viewProduct('${id}')">
+                <div style="position: absolute; top: 10px; left: 10px; background: #4a3418; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; z-index: 2;">-${discount}%</div>
+                <button class="wishlist-btn" onclick="toggleWishlist(event, '${id}', this)" style="position: absolute; top: 10px; right: 10px; background: white; border: 1px solid #f1f5f9; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; color: ${heartColor}; z-index: 2;">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="${heartFill}" stroke="currentColor" stroke-width="2">
+                        <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+                    </svg>
+                </button>
+                <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='${fallbackImg}';">
+                <div class="hover-view-overlay" style="position: absolute; bottom: -50px; left: 0; right: 0; padding: 10px; text-align: center; transition: bottom 0.3s; display: flex; justify-content: center; z-index: 2;">
+                    <button class="view-details-btn" onclick="viewProduct('${id}'); event.stopPropagation();" style="background: white; border: none; border-radius: 20px; padding: 8px 20px; font-size: 0.85rem; font-weight: 700; color: #0f3d7a; cursor: pointer; box-shadow: 0 4px 6px rgba(0,0,0,0.15);">Quick View</button>
                 </div>
-                <button class="view-details-btn" data-product-id="${id}">View Details</button>
+            </div>
+            <div class="card-body" style="padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
+                <div style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">${category}</div>
+                <h3 class="card-title" style="margin: 0 0 8px 0; font-size: 1rem; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title}</h3>
+                <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto;">
+                    <div class="price-block" style="display: flex; flex-direction: column;">
+                        <span style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">\u20B9${originalPrice}</span>
+                        <span class="new-price" style="font-size: 1.1rem; font-weight: 700; color: #0f3d7a;">\u20B9${Number(currentPrice).toFixed(2)}</span>
+                        ${festivalLabel}
+                    </div>
+                    <button class="add-to-cart-btn" data-product-id="${id}" data-product-name="${title.replace(/"/g, '&quot;')}" style="background: #0f3d7a; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.2s;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path></svg>
+                    </button>
+                </div>
             </div>
         `;
         
-        // Add View Details Event Listener
-        const viewDetailsBtn = card.querySelector('.view-details-btn');
-        viewDetailsBtn.addEventListener('click', () => viewProduct(product));
+        // Add To Cart Event Listener
+        const addToCartBtn = card.querySelector('.add-to-cart-btn');
+        if (addToCartBtn) {
+            addToCartBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                addToCart(id, title);
+            });
+        }
         
         grid.appendChild(card);
     });
@@ -283,60 +378,167 @@ function getMockProducts() {
 
 async function loadMarketingBanner() {
     try {
-        const response = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/festival-sales/active');
-        if (response.ok) {
-            const data = await response.json();
-            const banner = document.getElementById('marketing-banner');
-            const badge = document.getElementById('banner-badge');
-            const text = document.getElementById('banner-text');
-            
-            if (data && data.success && data.data) {
-                const sale = data.data;
-                
-                // 1. Update the small top banner
-                if (banner && badge && text) {
-                    badge.innerText = sale.festivalName || 'SPECIAL SALE';
-                    text.innerText = `${sale.discountPercentage}% OFF! Use code ${sale.couponCode} at checkout.`;
-                    banner.classList.add('visible');
-                }
-                
-                // 2. Add image to hero slider dynamically
-                const sliderWrapper = document.getElementById('store-slider');
-                if (sliderWrapper && sale.bannerImageUrl) {
-                    const slide = document.createElement('div');
-                    slide.className = 'store-slide';
-                    slide.style.backgroundImage = `url('${sale.bannerImageUrl}')`;
-                    slide.innerHTML = `
-                        <div class="slide-overlay"></div>
-                        <div class="store-slide-content">
-                            <span class="badge badge-orange">FESTIVAL SALE</span>
-                            <h2>${sale.festivalName || 'Special Offer'}</h2>
-                            <p>${sale.description || `Get ${sale.discountPercentage}% OFF with code ${sale.couponCode}`}</p>
-                            <button class="btn btn-orange" onclick="document.getElementById('marketing-banner').scrollIntoView({behavior: 'smooth'})">Shop Sale</button>
-                        </div>
-                    `;
-                    
-                    // Prepend it so it shows first
-                    sliderWrapper.insertBefore(slide, sliderWrapper.firstChild);
-                    
-                    // Reset active states
-                    const allSlides = sliderWrapper.querySelectorAll('.store-slide');
-                    allSlides.forEach(s => s.classList.remove('active'));
-                    slide.classList.add('active'); // Make the new slide immediately active
+        const banner = document.getElementById('marketing-banner');
+        const badge = document.getElementById('banner-badge');
+        const text = document.getElementById('banner-text');
+        
+        // 1. Fetch Coupons for Top Orange Banner
+        try {
+            const couponRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/coupons');
+            if (couponRes.ok) {
+                const couponData = await couponRes.json();
+                if (couponData && couponData.success && couponData.data && couponData.data.length > 0) {
+                    const activeCoupons = couponData.data.filter(c => c.status === 'active' || c.status === 'ACTIVE');
+                    if (activeCoupons.length > 0 && banner && badge && text) {
+                        const coupon = activeCoupons[0];
+                        badge.innerText = 'SPECIAL COUPON';
+                        text.innerText = `${coupon.discountValue}${coupon.discountType === 'percentage' || coupon.discountType === 'PERCENTAGE' ? '%' : ' OFF'}! Use code ${coupon.couponCode} at checkout.`;
+                        banner.classList.add('visible');
+                    }
                 }
             }
-        }
-} catch (error) {
-        console.error("Failed to fetch marketing banner", error);
+        } catch (e) { console.error("Error loading coupons", e); }
+
+        // 2. Fetch Festival Sales for Hero Slider
+        try {
+            const festRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/festival-sales/active');
+            if (festRes.ok) {
+                const festData = await festRes.json();
+                if (festData && festData.success && festData.data) {
+                    const sale = festData.data;
+                    const sliderWrapper = document.getElementById('store-slider');
+                    if (sliderWrapper) {
+                        const slide = document.createElement('div');
+                        slide.className = 'store-slide active'; // Make it active immediately
+                        
+                        const imageUrl = sale.bannerImageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                        const fallbackImg = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                        slide.style.position = 'relative';
+                        slide.style.overflow = 'hidden';
+                        
+                        slide.innerHTML = `
+                            <img src="${imageUrl}" onerror="this.onerror=null; this.src='${fallbackImg}';" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+                            <div class="slide-overlay" style="z-index: 1; background: linear-gradient(90deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.6) 40%, transparent 100%); width: 100%; height: 100%; position: absolute; top:0; left:0;"></div>
+                            <div class="store-slide-content" style="z-index: 2; position: relative; display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 0 5%; max-width: 650px;">
+                                
+                                <div style="background: #92400e; color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 20px; display: inline-block;">
+                                    Limited Time Offer
+                                </div>
+                                
+                                <h2 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                                    🎉 ${sale.festivalName || 'Special Offer'}
+                                </h2>
+                                
+                                <p style="font-size: 1.25rem; color: #f8fafc; line-height: 1.5; margin-bottom: 30px; margin-top: 0;">
+                                    Up to ${sale.discountValue}${sale.discountType === 'percentage' || sale.discountType === 'PERCENTAGE' ? '%' : ' OFF'} on all inventory items. Boost your sales today!
+                                </p>
+                                
+                                <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <div id="fest-days" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">DAYS</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <div id="fest-hours" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">HOURS</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <div id="fest-mins" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">MINS</span>
+                                    </div>
+                                    <div style="display: flex; flex-direction: column; align-items: center;">
+                                        <div id="fest-secs" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">SECS</span>
+                                    </div>
+                                </div>
+                                
+                                <button class="btn" style="background: #f59e0b; color: #0f172a; font-weight: 700; padding: 12px 32px; border-radius: 25px; border: none; cursor: pointer; font-size: 1rem;" onclick="document.getElementById('product-grid').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
+                            </div>
+                        `;
+                        
+                        // Insert at the beginning of the slider
+                        sliderWrapper.insertBefore(slide, sliderWrapper.firstChild);
+                        
+                        // Set up timer
+                        const endDate = new Date(sale.endDate).getTime();
+                        setInterval(() => {
+                            const now = new Date().getTime();
+                            const distance = endDate - now;
+                            
+                            const dEl = document.getElementById('fest-days');
+                            const hEl = document.getElementById('fest-hours');
+                            const mEl = document.getElementById('fest-mins');
+                            const sEl = document.getElementById('fest-secs');
+                            
+                            if (!dEl || !hEl || !mEl || !sEl) return;
+                            
+                            if (distance < 0) {
+                                dEl.innerText = "00"; hEl.innerText = "00"; mEl.innerText = "00"; sEl.innerText = "00";
+                                return;
+                            }
+                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                            
+                            dEl.innerText = days.toString().padStart(2, '0');
+                            hEl.innerText = hours.toString().padStart(2, '0');
+                            mEl.innerText = minutes.toString().padStart(2, '0');
+                            sEl.innerText = seconds.toString().padStart(2, '0');
+                        }, 1000);
+                        
+                        // Fix active states for other slides
+                        const allSlides = sliderWrapper.querySelectorAll('.store-slide');
+                        allSlides.forEach((s, idx) => {
+                            if (idx !== 0) s.classList.remove('active');
+                        });
+                    }
+                }
+            }
+        } catch (e) { console.error("Error loading festival sales", e); }
+        
+    } catch (error) {
+        console.error("Error in marketing banner logic", error);
     }
 }
 
 // ==========================================
 // Product View Modal (Now redirects to dedicated page)
 // ==========================================
-function viewProduct(product) {
-    const id = product.productId || product.id;
+window.viewProduct = function(productIdOrObj) {
+    const id = typeof productIdOrObj === 'string' ? productIdOrObj : (productIdOrObj.productId || productIdOrObj.id);
     if (id) {
         window.location.href = `product.html?id=${id}`;
     }
-}
+};
+
+// ==========================================
+// Global Wishlist Toggle
+// ==========================================
+window.toggleWishlist = async function(event, id, btnElement) {
+    event.stopPropagation();
+    try {
+        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || btnElement.style.color === '#ef4444';
+        if (isAdded) {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
+                method: 'DELETE'
+            });
+            if (response.ok) {
+                btnElement.style.color = '#64748b';
+                btnElement.style.fill = 'none';
+            }
+        } else {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ customerId: CUSTOMER_ID, productId: id })
+            });
+            if (response.ok) {
+                btnElement.style.color = '#ef4444';
+                btnElement.style.fill = '#ef4444';
+            }
+        }
+    } catch (error) {
+        console.error("Error toggling wishlist", error);
+    }
+};

@@ -34,12 +34,12 @@ document.addEventListener("DOMContentLoaded", () => {
 // Global State
 // ==========================================================
 
-let selectedImage = null;
-let uploadedImage = null;
+let selectedImages = [];
+let uploadedImages = [];
 let isEditMode = false;
 let editProductId = null;
-let existingProductImageKey = null;
-let existingProductImageUrl = null;
+let existingProductImages = [];
+
 
 // ==========================================================
 // Cached DOM
@@ -128,25 +128,23 @@ function populateForm(product) {
         if (statusRadio) statusRadio.checked = true;
     }
     
-    // Existing image handling
-    if (product.imageUrl) {
-        existingProductImageKey = product.imageKey || null;
-        existingProductImageUrl = product.imageUrl;
+    
+    if (product.images && product.images.length > 0) {
+        existingProductImages = product.images;
+        previewImage.src = product.images[0].imageUrl;
+        previewImage.style.display = 'block';
+        if(defaultPreviewItem) defaultPreviewItem.style.display = 'none';
+        
+        renderThumbnails();
+    } else if (product.imageUrl) {
+        existingProductImages = [{ imageUrl: product.imageUrl, imageKey: product.imageKey || null }];
         previewImage.src = product.imageUrl;
         previewImage.style.display = 'block';
-        defaultPreviewItem.style.display = 'none';
+        if(defaultPreviewItem) defaultPreviewItem.style.display = 'none';
         
-        // Setup remove existing image
-        removeImageButton.classList.add("show");
-        removeImageButton.addEventListener("click", () => {
-            existingProductImageUrl = null;
-            existingProductImageKey = null;
-            previewImage.src = '';
-            previewImage.style.display = 'none';
-            defaultPreviewItem.style.display = 'flex';
-            removeImageButton.classList.remove("show");
-        });
+        renderThumbnails();
     }
+
     
     // Specifications
     if (product.specifications) {
@@ -253,105 +251,82 @@ function initializeImageUpload() {
 // Image Selected
 // ==========================================================
 
+
 function handleImageSelection(event) {
-
-    const file = event.target.files[0];
-
-    if (!file) {
-
-        return;
-
-    }
-
-    if (
-
-        !file.type.startsWith("image/")
-
-    ) {
-
-        showToast(
-
-            "Please select a valid image.",
-
-            "error"
-
-        );
-
-        return;
-
-    }
-
-    if (
-
-        file.size >
-
-        5 * 1024 * 1024
-
-    ) {
-
-        showToast(
-
-            "Maximum image size is 5 MB.",
-
-            "error"
-
-        );
-
-        return;
-
-    }
-
-    selectedImage = file;
-
-    renderSelectedImage(file);
-
+    const files = Array.from(event.target.files);
+    
+    files.forEach(file => {
+        if (!file.type.startsWith("image/")) {
+            showToast("Please select valid images.", "error");
+            return;
+        }
+        if (file.size > 5 * 1024 * 1024) {
+            showToast("Maximum image size is 5 MB.", "error");
+            return;
+        }
+        selectedImages.push(file);
+    });
+    
+    renderThumbnails();
 }
+
+
 
 // ==========================================================
 // Preview Image
 // ==========================================================
 
-function renderSelectedImage(file) {
 
-    const reader =
-        new FileReader();
-
-    reader.onload = function (event) {
-
-        previewImage.src =
-            event.target.result;
-
-        defaultPreviewItem.style.display =
-            "block";
-
-    };
-
-    reader.readAsDataURL(file);
-
+function renderThumbnails() {
+    const previewsGrid = document.getElementById('previewsGrid');
+    if(previewsGrid) previewsGrid.innerHTML = '';
+    
+    // Render existing images
+    existingProductImages.forEach((img, index) => {
+        const item = document.createElement('div');
+        item.className = 'image-preview-item';
+        item.innerHTML = `<img src="${img.imageUrl}" alt="Existing image"><button type="button" class="remove-image show" onclick="removeExistingImage(${index})">×</button>`;
+        if(previewsGrid) previewsGrid.appendChild(item);
+        if (index === 0) previewImage.src = img.imageUrl;
+    });
+    
+    // Render new images
+    selectedImages.forEach((file, index) => {
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            const item = document.createElement('div');
+            item.className = 'image-preview-item';
+            item.innerHTML = `<img src="${e.target.result}" alt="New image"><button type="button" class="remove-image show" onclick="removeSelectedImage(${index})">×</button>`;
+            if(previewsGrid) previewsGrid.appendChild(item);
+            
+            if (existingProductImages.length === 0 && index === 0) {
+                previewImage.src = e.target.result;
+            }
+        };
+        reader.readAsDataURL(file);
+    });
+    
+    if (existingProductImages.length === 0 && selectedImages.length === 0) {
+        if(previewsGrid) previewsGrid.innerHTML = `<div class="image-preview-item" id="defaultPreviewItem"><img src="https://images.unsplash.com/photo-1496181130204-755241544e35?auto=format&fit=crop&w=400&q=80" alt="Default Product Image"></div>`;
+        previewImage.src = "https://images.unsplash.com/photo-1496181130204-755241544e35?auto=format&fit=crop&w=400&q=80";
+    }
 }
+
+window.removeExistingImage = function(index) {
+    existingProductImages.splice(index, 1);
+    renderThumbnails();
+};
+
+window.removeSelectedImage = function(index) {
+    selectedImages.splice(index, 1);
+    imageInput.value = "";
+    renderThumbnails();
+};
 
 // ==========================================================
 // Remove Image
 // ==========================================================
 
-function removeSelectedImage() {
-
-    selectedImage = null;
-
-    imageInput.value = "";
-
-    previewImage.src =
-        "https://images.unsplash.com/photo-1496181130204-755241544e35?auto=format&fit=crop&w=400&q=80";
-
-    showToast(
-
-        "Image removed",
-
-        "success"
-
-    );
-
-}
 
 // ==========================================================
 // Drag & Drop
@@ -600,10 +575,10 @@ function calculatePrice() {
         sellingPrice.toFixed(2);
 
     previewSellingPrice.textContent =
-        `₹${sellingPrice.toFixed(2)}`;
+        `\u20B9${sellingPrice.toFixed(2)}`;
 
     previewMrp.textContent =
-        `₹${mrp.toFixed(2)}`;
+        `\u20B9${mrp.toFixed(2)}`;
 
     previewDiscount.textContent =
         `-${discount}%`;
@@ -902,23 +877,27 @@ Publishing...
         // Validation
         // ===============================
 
-        if (!selectedImage && !existingProductImageUrl) {
-            showToast("Please select a product image.", "error");
+
+        if (selectedImages.length === 0 && existingProductImages.length === 0) {
+            showToast("Please select at least one product image.", "error");
             resetPublishButton();
             return;
         }
 
-        // ===============================
-        // Upload Image
-        // ===============================
-
-        if (selectedImage) {
-            const uploadResponse = await uploadProductImage(selectedImage);
+        // Upload Images
+        for (const file of selectedImages) {
+            const uploadResponse = await uploadProductImage(file);
             if (!uploadResponse || !uploadResponse.success) {
                 throw new Error(uploadResponse?.message || "Image upload failed.");
             }
-            uploadedImage = uploadResponse;
+            uploadedImages.push({
+                imageKey: uploadResponse.imageKey,
+                imageUrl: uploadResponse.imageUrl
+            });
         }
+        
+        const finalImages = [...existingProductImages, ...uploadedImages];
+
 
         // ===============================
         // Product Object
@@ -988,8 +967,11 @@ Publishing...
 
                 ),
 
-            imageKey: uploadedImage ? uploadedImage.imageKey : existingProductImageKey,
-            imageUrl: uploadedImage ? uploadedImage.imageUrl : existingProductImageUrl,
+
+            images: finalImages,
+            imageUrl: finalImages.length > 0 ? finalImages[0].imageUrl : '',
+            imageKey: finalImages.length > 0 ? finalImages[0].imageKey : '',
+
 
             specifications:
 

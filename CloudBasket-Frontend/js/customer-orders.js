@@ -114,7 +114,19 @@ function renderOrders(container, orders) {
 
         let firstItemImg = 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80';
         if (order.items && order.items.length > 0) {
-            firstItemImg = order.items[0].imageUrl || order.items[0].image || firstItemImg;
+            let itemImg = order.items[0].imageUrl || order.items[0].image || firstItemImg;
+            
+            if (itemImg && itemImg.includes('amazonaws.com')) {
+                try {
+                    const parsed = new URL(itemImg);
+                    itemImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                } catch(e) {}
+            }
+        
+            if (order.items[0].productName && order.items[0].productName.toUpperCase().includes('VIVO Y56')) {
+                itemImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
+            }
+            firstItemImg = itemImg;
         }
 
         const card = document.createElement('div');

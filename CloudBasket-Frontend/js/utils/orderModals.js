@@ -289,16 +289,16 @@ function downloadInvoice() {
     `).join('');
     
     container.innerHTML = `
-        <div style="max-width: 800px; margin: 0 auto; font-family: 'Inter', sans-serif; color: #1e293b; padding: 40px; background: #fff;">
+        <div style="max-width: 800px; margin: 0 auto; font-family: Arial, Helvetica, sans-serif; color: #1e293b; padding: 40px; background: #fff;">
             <!-- Header -->
             <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #f1f5f9; padding-bottom: 24px; margin-bottom: 32px;">
                 <div>
-                    <h1 style="margin: 0; color: #0f172a; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">INVOICE</h1>
-                    <p style="margin: 8px 0 0 0; color: #64748b; font-size: 15px;">Invoice #INV-${currentOrder.id.substring(0,8).toUpperCase()}</p>
-                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Date: ${currentOrder.date}</p>
+                    <h1 style="margin: 0; color: #0f172a; font-size: 32px; font-weight: 800;">INVOICE</h1>
+                    <p style="margin: 8px 0 0 0; color: #64748b; font-size: 15px;">Invoice # INV-${currentOrder.id.substring(0,8).toUpperCase()}</p>
+                    <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">Date: &nbsp; ${currentOrder.date}</p>
                 </div>
                 <div style="text-align: right;">
-                    <h2 style="margin: 0; color: #3b82f6; font-size: 28px; font-weight: 800; letter-spacing: -1px;">CloudBasket</h2>
+                    <h2 style="margin: 0; color: #3b82f6; font-size: 28px; font-weight: 800;">CloudBasket</h2>
                     <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">123 Cloud Avenue, Tech Park</p>
                     <p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">support@cloudbasket.com</p>
                 </div>
@@ -308,23 +308,23 @@ function downloadInvoice() {
             <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 40px;">
                 <!-- Billed To -->
                 <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9;">
-                    <h3 style="margin: 0 0 12px 0; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Billed To</h3>
+                    <h3 style="margin: 0 0 12px 0; color: #94a3b8; font-size: 12px; text-transform: uppercase; font-weight: 700;">Billed To</h3>
                     <p style="margin: 0 0 4px 0; font-weight: 700; color: #0f172a; font-size: 16px;">${currentOrder.customerName || currentOrder.customerEmail.split('@')[0]}</p>
-                    <p style="margin: 0; color: #64748b; font-size: 14px;">Email: ${currentOrder.customerEmail}</p>
-                    ${currentOrder._raw && currentOrder._raw.shippingAddress ? `<p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">${currentOrder._raw.shippingAddress.addressLine1 || currentOrder._raw.shippingAddress.street || ''}, ${currentOrder._raw.shippingAddress.city || ''}</p>` : ''}
+                    <p style="margin: 0; color: #64748b; font-size: 14px;">Email: &nbsp; ${currentOrder.customerEmail}</p>
+                    ${currentOrder._raw && currentOrder._raw.shippingAddress ? `<p style="margin: 4px 0 0 0; color: #64748b; font-size: 14px;">${currentOrder._raw.shippingAddress.addressLine1 || currentOrder._raw.shippingAddress.street || ''}, &nbsp; ${currentOrder._raw.shippingAddress.city || ''}</p>` : ''}
                 </div>
                 
                 <!-- Order Info -->
                 <div style="background: #f8fafc; padding: 20px; border-radius: 12px; border: 1px solid #f1f5f9;">
-                    <h3 style="margin: 0 0 12px 0; color: #94a3b8; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; font-weight: 700;">Order Status</h3>
+                    <h3 style="margin: 0 0 12px 0; color: #94a3b8; font-size: 12px; text-transform: uppercase; font-weight: 700;">Order Status</h3>
                     
                     <div style="display: flex; justify-content: space-between; margin-bottom: 8px;">
-                        <span style="color: #64748b; font-size: 14px;">Delivery Status:</span>
+                        <span style="color: #64748b; font-size: 14px;">Delivery Status: &nbsp; </span>
                         <span style="font-weight: 600; color: ${currentOrder.status === 'Delivered' ? '#10b981' : '#3b82f6'};">${currentOrder.status}</span>
                     </div>
                     
                     <div style="display: flex; justify-content: space-between;">
-                        <span style="color: #64748b; font-size: 14px;">Payment Status:</span>
+                        <span style="color: #64748b; font-size: 14px;">Payment Status: &nbsp; </span>
                         <span style="font-weight: 600; color: ${currentOrder.paymentStatus === 'Paid' ? '#10b981' : (currentOrder.paymentStatus === 'Failed' ? '#ef4444' : '#f59e0b')};">${currentOrder.paymentStatus || 'Success'}</span>
                     </div>
                 </div>
@@ -344,11 +344,10 @@ function downloadInvoice() {
                 </tbody>
             </table>
             
-            <!-- Totals -->
             <div style="display: flex; justify-content: flex-end;">
                 <div style="width: 300px; background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #f1f5f9;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
-                        <span style="color: #475569; font-size: 16px; font-weight: 600;">Total Amount</span>
+                        <span style="color: #475569; font-size: 16px; font-weight: 600;">Total Amount: &nbsp; </span>
                         <span style="font-weight: 800; font-size: 24px; color: #0f172a;">₹${Number(currentOrder.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                     </div>
                 </div>
@@ -361,11 +360,26 @@ function downloadInvoice() {
             </div>
         </div>
     `;
-    
     // Give DOM a moment to update
     setTimeout(() => {
-        window.print();
-        showToast("Invoice downloaded (printed to PDF).");
+        const element = container.firstElementChild;
+        const opt = {
+            margin:       0,
+            filename:     `Invoice-${currentOrder.id.substring(0,8).toUpperCase()}.pdf`,
+            image:        { type: 'jpeg', quality: 0.98 },
+            html2canvas:  { scale: 2 },
+            jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        };
+        
+        if (window.html2pdf) {
+            html2pdf().set(opt).from(element).save().then(() => {
+                showToast("Invoice downloaded successfully as PDF.");
+            });
+        } else {
+            console.warn("html2pdf library not loaded, falling back to window.print()");
+            window.print();
+            showToast("Invoice printed (fallback).");
+        }
     }, 200);
 }
 

@@ -230,3 +230,16 @@
     align-items:center;
 
 }
+/* ==========================================================
+                        MOBILE RESPONSIVENESS
+========================================================== */
+@media screen and (max-width: 768px) {
+    .dashboard-header { padding: 0 15px; }
+    .search-bar { display: none; }
+    .logo h1 { display: none; }
+    .profile-info { display: none; }
+    .header-left, .header-right { gap: 10px; }
+    .action-btn { width: 36px; height: 36px; }
+    .profile-avatar { width: 36px; height: 36px; font-size: 14px; }
+}
+

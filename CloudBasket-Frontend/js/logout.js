@@ -44,8 +44,7 @@ export function initializeLogout() {
 
         sessionStorage.clear();
 
-        window.location.href =
-            "../../login.html";
+        window.location.href = "/CloudBasket-Frontend/index.html";
 
     });
 

@@ -20,7 +20,7 @@ const placeOrder = async (req, res) => {
 
      const customerId = await getCustomerIdFromSub(cognitoSub);
 
-    const { shippingAddress } = req.body;
+    const { shippingAddress, calculatedTotal } = req.body;
 
     if (!customerId) {
       return res.status(400).json({
@@ -29,7 +29,7 @@ const placeOrder = async (req, res) => {
       });
     }
 
-    const result = await orderService.placeOrder(customerId, shippingAddress);
+    const result = await orderService.placeOrder(customerId, shippingAddress, calculatedTotal);
     return res.status(201).json(result);
   } catch (error) {
     console.error("Error placing order:", error);

@@ -1,14 +1,12 @@
 import { API } from "./config.js";
-import { apiFetch } from "./api/apiClient.js";
-
+import { apiFetch } from './api/apiClient.js';
+import { getActiveFestivalSale } from './api/marketingApi.js';
 document.addEventListener('DOMContentLoaded', () => {
     
     // --- Existing UI Logic --- //
-
     // Payment Accordion Logic
     const paymentOptions = document.querySelectorAll('.payment-option');
     const paymentRadios = document.querySelectorAll('input[name="payment_method"]');
-
     paymentRadios.forEach(radio => {
         radio.addEventListener('change', (e) => {
             // First collapse all
@@ -21,34 +19,36 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     });
-
     // --- Dynamic Checkout Logic --- //
-
     const summaryList = document.getElementById('checkout-summary-list');
     const subtotalEl = document.getElementById('checkout-subtotal');
     const taxEl = document.getElementById('checkout-tax');
     const totalEl = document.getElementById('checkout-total');
     const btnPurchase = document.getElementById('btn-complete-purchase');
-
     let cartItems = [];
-
     function formatCurrency(value) {
-        return '₹' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
-
+    let activeFestivalSale = null;
     async function loadCheckoutCart() {
         if (!summaryList) return;
         
         summaryList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">Loading your cart...</p>';
-
+        try {
+            const festResponse = await getActiveFestivalSale();
+            if (festResponse && festResponse.success && festResponse.data) {
+                activeFestivalSale = festResponse.data;
+            }
+        } catch(e) {
+            console.error('Error fetching marketing sale in checkout', e);
+        }
         try {
             const response = await apiFetch(`${API.orderService}/api/v1/cart`);
             
             if (response.status === 401 || response.status === 403) {
-                window.location.href = "login.html";
+                window.location.href = "index.html";
                 return;
             }
-
             const data = await response.json();
             
             if (response.ok && data.success) {
@@ -63,7 +63,6 @@ document.addEventListener('DOMContentLoaded', () => {
             cartItems = [];
         }
     }
-
     function renderSummary() {
         if (!summaryList) return;
         
@@ -73,40 +72,54 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">Your cart is empty.</p>';
             if (btnPurchase) btnPurchase.disabled = true;
         }
-
         let subtotal = 0;
-
+        let totalQuantity = 0;
         cartItems.forEach(item => {
             const title = item.productName || item.title || 'Product';
-            const price = item.price || 0;
+            let originalPrice = item.price || 0;
+            let price = originalPrice;
             const quantity = item.quantity || 1;
             const imageUrl = item.imageUrl || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=80&q=80';
             
+            if (activeFestivalSale) {
+                if (activeFestivalSale.discountType === 'percentage' || activeFestivalSale.discountType === 'PERCENTAGE') {
+                    price = price * (1 - (activeFestivalSale.discountValue / 100));
+                } else {
+                    price = Math.max(0, price - activeFestivalSale.discountValue);
+                }
+            }
             subtotal += (price * quantity);
-
+            totalQuantity += quantity;
             const itemEl = document.createElement('div');
             itemEl.className = 'summary-mini-item';
+            
+            let priceHtml = `<div class="mini-price">${formatCurrency(price * quantity)}</div>`;
+            if (activeFestivalSale && price < originalPrice) {
+                priceHtml = `
+                    <div class="mini-price">
+                        <div style="font-size: 0.8em; color: #888; text-decoration: line-through;">${formatCurrency(originalPrice * quantity)}</div>
+                        <div>${formatCurrency(price * quantity)}</div>
+                        <div style="font-size: 0.7em; color: #ef4444; font-weight: bold; margin-top: 2px;">(Festival Sale)</div>
+                    </div>
+                `;
+            }
             itemEl.innerHTML = `
                 <div class="mini-img"><img src="${imageUrl}" alt="${title}"></div>
                 <div class="mini-details">
                     <p class="mini-title">${title}</p>
                     <p class="mini-qty">Qty: ${quantity}</p>
                 </div>
-                <div class="mini-price">${formatCurrency(price * quantity)}</div>
+                ${priceHtml}
             `;
             summaryList.appendChild(itemEl);
         });
-
-        // Calculate tax (assuming 8% for demo)
-        const taxRate = 0.08;
-        const tax = subtotal * taxRate;
-        const total = subtotal + tax;
-
+        const shipping = totalQuantity * 30;
+        const total = subtotal + shipping;
         if (subtotalEl) subtotalEl.textContent = formatCurrency(subtotal);
-        if (taxEl) taxEl.textContent = formatCurrency(tax);
+        const shippingEl = document.getElementById('checkout-shipping');
+        if (shippingEl) shippingEl.textContent = formatCurrency(shipping);
         if (totalEl) totalEl.textContent = formatCurrency(total);
     }
-
     // Handle Place Order
     if (btnPurchase) {
         btnPurchase.addEventListener('click', async (e) => {
@@ -117,7 +130,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 else alert("Your cart is empty!");
                 return;
             }
-
             // Gather address data
             const fullName = document.getElementById('billing-fullname')?.value.trim();
             const street = document.getElementById('billing-street')?.value.trim();
@@ -125,19 +137,16 @@ document.addEventListener('DOMContentLoaded', () => {
             const state = document.getElementById('billing-state')?.value.trim();
             const zip = document.getElementById('billing-zip')?.value.trim();
             const country = document.getElementById('billing-country')?.value.trim();
-
             if (!fullName || !street || !city || !state || !zip || !country) {
                 if(window.showCustomAlert) window.showCustomAlert("Please fill in all shipping address fields.");
                 else alert("Please fill in all shipping address fields.");
                 return;
             }
-
             // The backend placeOrder expects shippingAddress
             // Some fields are derived like firstName, lastName, etc if needed, but we'll map what we have
             const nameParts = fullName.split(' ');
             const firstName = nameParts[0];
             const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : '';
-
             let userEmail = "";
             try {
                 const idToken = localStorage.getItem('idToken');
@@ -148,7 +157,6 @@ document.addEventListener('DOMContentLoaded', () => {
             } catch (e) {
                 console.error("Could not parse email from token", e);
             }
-
             const shippingAddress = {
                 firstName: firstName,
                 lastName: lastName,
@@ -160,22 +168,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 zipCode: zip,
                 country: country
             };
-
             const originalBtnText = btnPurchase.innerHTML;
             btnPurchase.disabled = true;
             btnPurchase.innerHTML = 'Processing...';
-
             try {
                 const response = await apiFetch(`${API.orderService}/api/v1/order`, {
                     method: 'POST',
-                    body: JSON.stringify({ shippingAddress })
+                    body: JSON.stringify({ shippingAddress, calculatedTotal: total })
                 });
-
                 const data = await response.json();
-
                 if (response.ok && data.success) {
                     const orderId = data.data?.orderId || data.data?.id || '';
-                    const orderTotal = data.data?.orderTotal || 0;
+                    const orderTotal = data.data?.calculatedTotal || data.data?.orderTotal || 0;
                     
                     // Create Razorpay Order
                     const amountInPaise = Math.round(orderTotal * 100);
@@ -261,7 +265,6 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
-
     // Initialize
     loadCheckoutCart();
 });

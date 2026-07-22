@@ -155,7 +155,7 @@ showToast(
         const decodedToken = parseJwt(response.data.accessToken);
         const groups = (decodedToken && decodedToken['cognito:groups']) ? decodedToken['cognito:groups'] : [];
         
-        let redirectUrl = "index.html"; // Default Customer route
+        let redirectUrl = "login.html"; // Default Customer route
         if (groups.includes('Admin')) {
             redirectUrl = "pages/dashboard/dashboard.html"; // Admin route
         }

@@ -3,7 +3,7 @@ import { CognitoJwtVerifier } from "aws-jwt-verify";
 const verifier = CognitoJwtVerifier.create({
   userPoolId: process.env.COGNITO_USER_POOL_ID,
   tokenUse: "access",
-  clientId: [process.env.COGNITO_CLIENT_ID, "4i9ucuisno2545vd77lngcps27"],
+  clientId: [process.env.COGNITO_CLIENT_ID, "4i9ucuisno2545vd77lngcps27", "vsuddgu9b60grfe3cj41hoiku"],
 });
 
 const cognitoAuthMiddleware = async (req, res, next) => {

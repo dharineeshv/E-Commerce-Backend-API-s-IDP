@@ -127,7 +127,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (title) title.textContent = activeFestival.title || "Festival Sale";
                 if (desc) desc.textContent = activeFestival.subtitle || "Enjoy the latest discounts!";
                 if (discount) {
-                    const discountText = activeFestival.discountType === 'PERCENTAGE' ? `FLAT ₹{activeFestival.discountValue}%` : `FLAT ₹${activeFestival.discountValue}`;
+                    const discountText = activeFestival.discountType === 'PERCENTAGE' ? `FLAT ${activeFestival.discountValue}%` : `FLAT ₹${activeFestival.discountValue}`;
                     discount.textContent = discountText;
                 }
             }
@@ -144,7 +144,7 @@ document.addEventListener("DOMContentLoaded", () => {
                 if (title) title.textContent = activeCoupon.title || activeCoupon.couponCode;
                 if (desc) desc.textContent = activeCoupon.description || "Grab this limited time coupon!";
                 if (discount) {
-                    const discountText = activeCoupon.discountType === 'PERCENTAGE' ? `FLAT ₹{activeCoupon.discountValue}%` : `FLAT ₹${activeCoupon.discountValue}`;
+                    const discountText = activeCoupon.discountType === 'PERCENTAGE' ? `FLAT ${activeCoupon.discountValue}%` : `FLAT ₹${activeCoupon.discountValue}`;
                     discount.textContent = discountText;
                 }
             }

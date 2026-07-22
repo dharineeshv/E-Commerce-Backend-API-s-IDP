@@ -117,3 +117,7 @@
     padding:40px !important;
 
 }
+/* Responsive Adjustments */
+@media (max-width: 1024px) { .dashboard-content-grid { grid-template-columns: 1fr; } }
+@media (max-width: 768px) { .dashboard-table { display: block; overflow-x: auto; white-space: nowrap; } .dashboard-panel { padding: 15px; } }
+

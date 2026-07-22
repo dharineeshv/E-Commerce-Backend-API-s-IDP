@@ -1,11 +1,11 @@
 import { apiFetch } from "./api/apiClient.js";
-
+import { getActiveFestivalSale } from "./api/marketingApi.js";
 document.addEventListener('DOMContentLoaded', () => {
     let cartItems = [];
     const cartListContainer = document.getElementById('cart-items-list');
     
     function formatCurrency(value) {
-        return '₹' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+        return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
     async function loadCart() {
@@ -22,6 +22,32 @@ document.addEventListener('DOMContentLoaded', () => {
             if (response.ok && data.success) {
                 // The cart response data structure
                 cartItems = data.data?.items || data.items || data.data || [];
+                
+                // Apply Festival Sale Discount
+                try {
+                    const festRes = await getActiveFestivalSale();
+                    if (festRes && festRes.success && festRes.data) {
+                        const activeSale = festRes.data;
+                        cartItems.forEach(item => {
+                            let currentPrice = Number(item.price);
+                            item.originalPrice = currentPrice;
+                            
+                            if (activeSale.discountType === 'percentage' || activeSale.discountType === 'PERCENTAGE') {
+                                currentPrice = currentPrice * (1 - (activeSale.discountValue / 100));
+                            } else {
+                                currentPrice = Math.max(0, currentPrice - activeSale.discountValue);
+                            }
+                            
+                            if (currentPrice < item.originalPrice) {
+                                item.price = currentPrice;
+                                item.isFestivalDiscounted = true;
+                            }
+                        });
+                    }
+                } catch (e) {
+                    console.error("Failed to load festival sale in cart", e);
+                }
+                
             } else {
                 console.error("Failed to load cart", data);
                 cartItems = [];
@@ -100,7 +126,19 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div>
                             <h3>${title}</h3>
                         </div>
-                        <div class="item-price">${formatCurrency(price)}</div>
+
+                     ${item.isFestivalDiscounted ? 
+                         `<div class="item-price" style="display:flex; flex-direction:column; align-items:flex-end;">
+                            <div>
+                                <span style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through; margin-right: 4px;">${formatCurrency(item.originalPrice)}</span>
+                                <span>${formatCurrency(price)}</span>
+                            </div>
+                            <div style="font-size: 0.7em; color: #ef4444; font-weight: bold; margin-top: 2px;">(Festival Sale)</div>
+                          </div>` 
+                         : `<div class="item-price">${formatCurrency(price)}</div>`
+                     }
+
+                        
                     </div>
                     
                     <div class="item-actions">
@@ -208,8 +246,8 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             if (subtotal < coupon.minimumOrderAmount) {
-                if (window.showCustomAlert) window.showCustomAlert(`Minimum order amount is ₹${coupon.minimumOrderAmount}.`);
-                else alert(`Minimum order amount is ₹${coupon.minimumOrderAmount}.`);
+                if (window.showCustomAlert) window.showCustomAlert(`Minimum order amount is \u20B9${coupon.minimumOrderAmount}.`);
+                else alert(`Minimum order amount is \u20B9${coupon.minimumOrderAmount}.`);
                 return;
             }
 
@@ -233,8 +271,8 @@ document.addEventListener('DOMContentLoaded', () => {
                 discount: discount
             };
 
-            if (window.showCustomAlert) window.showCustomAlert(`Coupon applied successfully! Saved ₹${discount.toFixed(2)}`);
-            else alert(`Coupon applied successfully! Saved ₹${discount.toFixed(2)}`);
+            if (window.showCustomAlert) window.showCustomAlert(`Coupon applied successfully! Saved \u20B9${discount.toFixed(2)}`);
+            else alert(`Coupon applied successfully! Saved \u20B9${discount.toFixed(2)}`);
             
             updateTotals();
             document.getElementById('coupon-code-input').value = '';

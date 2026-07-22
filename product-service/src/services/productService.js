@@ -136,6 +136,8 @@ if (productData.quantity === undefined || Number(productData.quantity) < 0) {
     imageKey: productData.imageKey || "",
 
     imageUrl: productData.imageUrl || "",
+    
+    images: productData.images || [],
 
     specifications:
       productData.specifications || {},
@@ -205,6 +207,8 @@ export async function modifyProduct(productId, updates) {
   "imageKey",
 
   "imageUrl",
+  
+  "images",
 
   "specifications",
 

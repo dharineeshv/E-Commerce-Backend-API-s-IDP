@@ -20,6 +20,12 @@ export const API = {
         "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
 
     userProfileService:
+        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+
+    wishlistService:
+        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+
+    cartService:
         "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com"
 
 };

@@ -72,14 +72,14 @@ async function loadSuggestedProducts() {
             const id = product.productId || product.id;
             const title = product.name || product.title;
             const price = product.sellingPrice || product.price;
-            const imageUrl = product.imageUrl || product.image || 'https://via.placeholder.com/250';
+            const imageUrl = product.imageUrl || product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
 
             const card = document.createElement('div');
             card.className = 'product-card';
             
             card.innerHTML = `
                 <div class="card-img-container">
-                    <img src="${imageUrl}" alt="${title}">
+                    <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src=\'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80\';">
                 </div>
                 <div class="card-body">
                     <h3 class="card-title">${title}</h3>

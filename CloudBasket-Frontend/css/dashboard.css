@@ -110,6 +110,14 @@ body{
 
 }
 
+.status-badge.low{
+
+    background:#fee2e2;
+
+    color:#dc2626;
+
+}
+
 /* ==========================================================
                     MAIN CONTENT
 ========================================================== */
@@ -125,3 +133,8 @@ body{
     margin-left:90px;
 
 }
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .dashboard-main { margin-left: 0; padding: 15px; margin-top: 70px; }
+}
+

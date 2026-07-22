@@ -2,14 +2,11 @@
    Login Layout
 ========================================== */
 
-body {
-    zoom: 0.8;
-}
-
 .login-container{
 
     width:100%;
-    min-height:125vh;
+    min-height:100vh;
+    zoom: 0.8;
 
     display:flex;
     align-items:center;

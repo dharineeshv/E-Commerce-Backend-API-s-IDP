@@ -9,10 +9,8 @@
 }
 
 body {
-    zoom: 0.8;
     font-family: "Poppins", sans-serif;
-
-    min-height: 125vh;
+    min-height: 100vh;
 
     background: linear-gradient(135deg,#eef4ff,#f6f8ff,#eef4ff);
 
@@ -50,6 +48,7 @@ MAIN
 .register-container{
 
     width:100%;
+    zoom: 0.8;
 
     flex:1;
 

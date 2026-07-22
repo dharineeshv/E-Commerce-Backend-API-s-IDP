@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+    <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudBasket | Add Product</title>
-    <meta name="description" content="CloudBasket Admin — Add a new product to your store inventory.">
+    <meta name="description" content="CloudBasket Admin â€” Add a new product to your store inventory.">
     <!-- Style Sheets -->
     <link rel="stylesheet" href="../../../css/variables.css">
     <link rel="stylesheet" href="../../../css/common.css">
@@ -71,7 +72,6 @@
                             <div class="form-group">
                                 <label for="prodBrand">Brand <span aria-hidden="true" style="color:#ef4444">*</span></label>
                                 <select id="prodBrand" required aria-required="true">
-                                    <option value="" disabled selected>Select Brand</option>
                                     <option value="Apple">Apple</option>
                                     <option value="Samsung">Samsung</option>
                                     <option value="Sony">Sony</option>
@@ -79,18 +79,22 @@
                                     <option value="Google">Google</option>
                                     <option value="Asus">Asus</option>
                                     <option value="OnePlus">OnePlus</option>
+                                    <option value="Vivo">Vivo</option>
+                                    <option value="Oppo">Oppo</option>
+                                    <option value="Redmi">Redmi</option>
+                                    <option value="Realme">Realme</option>
+                                    <option value="Noise">Noise</option>
+                                    <option value="boAt">boAt</option>
+                                    <option value="Fire-Boltt">Fire-Boltt</option>
                                 </select>
                             </div>
                             <div class="form-group">
                                 <label for="prodCategory">Category <span aria-hidden="true" style="color:#ef4444">*</span></label>
                                 <select id="prodCategory" required aria-required="true">
-                                    <option value="" disabled selected>Select Category</option>
-                                    <option value="Electronics">Electronics</option>
-                                    <option value="Clothing">Clothing</option>
-                                    <option value="Home &amp; Kitchen">Home &amp; Kitchen</option>
-                                    <option value="Books">Books</option>
-                                    <option value="Sports">Sports</option>
-                                    <option value="Beauty">Beauty</option>
+                                    <option value="Mobiles">Mobiles</option>
+                                    <option value="Laptops">Laptops</option>
+                                    <option value="Earbuds">Earbuds</option>
+                                    <option value="Watches">Watches</option>
                                 </select>
                             </div>
                         </div>
@@ -113,7 +117,7 @@
                         
                         <div class="form-row">
                             <div class="form-group no-margin">
-                                <label for="priceMrp">Price (₹) [MRP] <span aria-hidden="true" style="color:#ef4444">*</span></label>
+                                <label for="priceMrp">Price (â‚¹) [MRP] <span aria-hidden="true" style="color:#ef4444">*</span></label>
                                 <input type="number" id="priceMrp" placeholder="0.00" min="0" step="0.01" required aria-required="true">
                             </div>
                             <div class="form-group no-margin">
@@ -121,7 +125,7 @@
                                 <input type="number" id="priceDiscount" placeholder="0" min="0" max="100" step="1">
                             </div>
                             <div class="form-group no-margin">
-                                <label for="priceSelling">Final Price (₹)</label>
+                                <label for="priceSelling">Final Price (â‚¹)</label>
                                 <input type="number" id="priceSelling" placeholder="0.00" readonly aria-readonly="true">
                                 <span class="form-note">Automatically calculated.</span>
                             </div>
@@ -182,7 +186,7 @@
                             <!-- Pre-populated laptop image -->
                             <div class="image-preview-item" id="defaultPreviewItem" role="listitem">
                                 <img src="https://images.unsplash.com/photo-1496181130204-755241544e35?auto=format&fit=crop&w=400&q=80" alt="Default Product Image">
-                                <button type="button" class="remove-image" id="removeDefaultBtn" aria-label="Remove default image">×</button>
+                                <button type="button" class="remove-image" id="removeDefaultBtn" aria-label="Remove default image">Ã—</button>
                             </div>
                             <!-- Dashed placeholder '+' button -->
                             <div class="image-upload-placeholder" id="addMoreImagesBtn" role="button" tabindex="0" aria-label="Add more images">
@@ -287,7 +291,7 @@
 
                         <!-- Price Section -->
                         <div class="preview-price-container">
-                            <span class="preview-price-selling" id="previewPriceSelling" aria-live="polite">₹0</span>
+                            <span class="preview-price-selling" id="previewPriceSelling" aria-live="polite">â‚¹0</span>
                             <span class="preview-price-mrp" id="previewPriceMrp" style="display:none;"></span>
                             <span class="preview-discount-pill" id="previewPriceDiscount" style="display:none;"></span>
                         </div>

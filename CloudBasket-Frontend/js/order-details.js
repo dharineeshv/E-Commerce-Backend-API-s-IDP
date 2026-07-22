@@ -98,7 +98,7 @@ function renderOrderDetails(order, allProducts = []) {
             itemDiv.className = 'ordered-item';
             
             // Generate S3 image or fallback
-            const imgUrl = realProduct ? (realProduct.imageUrl || realProduct.image) : (item.imageUrl || item.image || `https://via.placeholder.com/150`);
+            const imgUrl = realProduct ? (realProduct.imageUrl || realProduct.image) : (item.imageUrl || item.image || `https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80`);
 
             itemDiv.innerHTML = `
                 <div class="item-image">

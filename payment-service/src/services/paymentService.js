@@ -69,7 +69,7 @@ const processPayment = async (paymentData) => {
   }
 
   const paymentId = uuidv4();
-  const status = paymentMethod === 'UPI' ? 'SUCCESS' : 'PENDING';
+  const status = (paymentMethod === 'UPI' || paymentMethod === 'Razorpay') ? 'SUCCESS' : 'PENDING';
   const payment = {
     paymentId,
     orderId,
@@ -87,7 +87,7 @@ const processPayment = async (paymentData) => {
     })
   );
 
-  const eventType = paymentMethod === 'UPI' ? 'PAYMENT_SUCCESS' : 'PAYMENT_PENDING';
+  const eventType = (paymentMethod === 'UPI' || paymentMethod === 'Razorpay') ? 'PAYMENT_SUCCESS' : 'PAYMENT_PENDING';
   try {
     await publishEvent(eventType, buildPaymentPayload(payment));
   } catch (error) {

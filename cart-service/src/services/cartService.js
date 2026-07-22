@@ -10,10 +10,27 @@ import { v4 as uuidv4 } from "uuid";
 
 const CART_TABLE = process.env.CART_TABLE || "Cart";
 
-// Add product to cart
 const addProductToCart = async (customerId, product) => {
   try {
-    const { productId, productName, price, quantity } = product;
+    const { productId, productName, price, quantity, imageUrl } = product;
+
+    // Check if product already exists in cart
+    const existingItemQuery = await dynamodb.send(new QueryCommand({
+      TableName: CART_TABLE,
+      KeyConditionExpression: "customerId = :customerId",
+      FilterExpression: "productId = :productId",
+      ExpressionAttributeValues: {
+        ":customerId": customerId,
+        ":productId": productId
+      }
+    }));
+
+    if (existingItemQuery.Items && existingItemQuery.Items.length > 0) {
+      // Product already in cart, just update the quantity
+      const existingItem = existingItemQuery.Items[0];
+      const newQuantity = existingItem.quantity + quantity;
+      return await updateProductQuantity(customerId, existingItem.cartItemId, newQuantity);
+    }
 
     // Generate a unique item ID for this cart item
     const cartItemId = uuidv4();
@@ -28,6 +45,7 @@ const addProductToCart = async (customerId, product) => {
         price: price,
         quantity: quantity,
         totalPrice: price * quantity,
+        imageUrl: imageUrl,
         addedAt: new Date().toISOString(),
       },
     };
