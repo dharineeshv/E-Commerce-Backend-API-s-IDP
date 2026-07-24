@@ -1,11 +1,11 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudBasket - Order History</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="css/storefront.css">
     <link rel="stylesheet" href="css/orders.css?v=2">
     <link rel="stylesheet" href="css/chatbot.css">
@@ -41,6 +41,18 @@
         <div class="page-header">
             <h1 class="page-title">Order History</h1>
             <p class="page-subtitle">Review and manage your previous industrial supply acquisitions.</p>
+        </div>
+
+        <!-- Summary Cards Section matching the user's provided UI design -->
+        <div class="orders-summary-cards" style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 24px; margin-bottom: 35px;">
+            <div style="background: #ffffff; border-radius: 16px; padding: 28px 32px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">TOTAL ORDERS</div>
+                <div id="stat-total-orders" style="font-size: 36px; font-weight: 800; color: #0f172a;">0</div>
+            </div>
+            <div style="background: #ffffff; border-radius: 16px; padding: 28px 32px; border: 1px solid #f1f5f9; box-shadow: 0 4px 12px rgba(0,0,0,0.03);">
+                <div style="font-size: 12px; font-weight: 700; color: #64748b; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 12px;">TOTAL AMOUNT SPENT</div>
+                <div id="stat-total-spent" style="font-size: 36px; font-weight: 800; color: #0f172a;">₹0.00</div>
+            </div>
         </div>
 
         <div class="orders-list" id="customer-orders-list">
@@ -98,7 +110,7 @@
     </footer>
 
     <!-- Customer Orders Script -->
-    <script type="module" src="js/customer-orders.js?v=2"></script>
+    <script type="module" src="js/customer-orders.js?v=3"></script>
     <script src="js/components/chatbot.js"></script>
 </body>
 </html>

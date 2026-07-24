@@ -18,34 +18,40 @@ export function initializeLogout() {
         });
     });
 
-    cancel.addEventListener("click", () => {
+    if (cancel) {
+        cancel.addEventListener("click", () => {
+            if (modal) modal.classList.remove("show");
+        });
+    }
 
-        modal.classList.remove("show");
+    if (modal) {
+        modal.addEventListener("click", (event) => {
+            if (event.target === modal) {
+                modal.classList.remove("show");
+            }
+        });
+    }
 
-    });
+    if (confirm) {
+        confirm.addEventListener("click", () => {
+            // Preserve customer reviews across logout sessions
+            const preservedItems = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith("cb_reviews_") || key.startsWith("cb_user_reviews_") || key === "cb_global_reviews_db")) {
+                    preservedItems[key] = localStorage.getItem(key);
+                }
+            }
 
-    modal.addEventListener("click", (event) => {
+            localStorage.clear();
+            sessionStorage.clear();
 
-        if (event.target === modal) {
+            // Restore customer reviews
+            Object.keys(preservedItems).forEach(k => {
+                localStorage.setItem(k, preservedItems[k]);
+            });
 
-            modal.classList.remove("show");
-
-        }
-
-    });
-
-    confirm.addEventListener("click", () => {
-
-        // TODO:
-        // Replace these keys with the exact keys
-        // your login module stores.
-
-        localStorage.clear();
-
-        sessionStorage.clear();
-
-        window.location.href = "/CloudBasket-Frontend/index.html";
-
-    });
-
+            window.location.href = "/CloudBasket-Frontend/index.html";
+        });
+    }
 }

@@ -121,7 +121,17 @@ function initProfileDropdown() {
     const logoutBtn = dropdown.querySelector('#logout-btn');
     logoutBtn.addEventListener('click', () => {
         window.showCustomConfirm('Are you sure you want to log out?', () => {
+            const reviewsToPreserve = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key && (key.startsWith('cb_reviews_') || key.startsWith('cb_user_reviews_') || key === 'cb_global_reviews_db')) {
+                    reviewsToPreserve[key] = localStorage.getItem(key);
+                }
+            }
             localStorage.clear();
+            Object.keys(reviewsToPreserve).forEach(k => {
+                localStorage.setItem(k, reviewsToPreserve[k]);
+            });
             window.location.href = '/CloudBasket-Frontend/index.html';
         });
     });

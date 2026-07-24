@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CloudBasket - Product Details</title>
     <!-- Google Fonts -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Main CSS -->
     <link rel="stylesheet" href="css/storefront.css">
     <!-- Product CSS -->
@@ -73,8 +73,14 @@
                     </div>
                     
                     <h1 class="pd-title" id="pd-title">Loading...</h1>
+                    
+                    <div class="pd-rating-summary-badge" id="pd-rating-summary-badge" style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px; font-size: 14px;">
+                        <div class="stars-outer" id="pd-star-header" style="color: #f59e0b; display: flex; gap: 2px;"></div>
+                        <span id="pd-rating-header-text" style="color: #64748b; font-weight: 500;">(0 reviews)</span>
+                    </div>
+
                     <div class="pd-price-wrap">
-                        <span class="pd-price" id="pd-price">â‚¹-.--</span>
+                        <span class="pd-price" id="pd-price">₹-.--</span>
                         <span class="pd-mrp" id="pd-mrp" style="display: none;"></span>
                         <span class="pd-discount" id="pd-discount" style="display: none;"></span>
                     </div>
@@ -117,6 +123,7 @@
                     <button class="pd-tab active" data-target="tab-specs">Technical Specifications</button>
                     <button class="pd-tab" data-target="tab-desc">Description</button>
                     <button class="pd-tab" data-target="tab-shipping">Shipping Info</button>
+                    <button class="pd-tab" data-target="tab-reviews" id="tab-reviews-btn">Customer Reviews (<span id="pd-reviews-count">0</span>)</button>
                 </div>
                 <div class="pd-tab-content">
                     <div id="tab-specs" class="pd-tab-pane active">
@@ -130,15 +137,69 @@
                     <div id="tab-shipping" class="pd-tab-pane" style="display: none;">
                         <p>Orders are processed within 1-2 business days. Industrial and Enterprise shipping options are available at checkout. Contact support for bulk freight options.</p>
                     </div>
+                    <div id="tab-reviews" class="pd-tab-pane" style="display: none;">
+                        <div class="reviews-container" style="display: grid; grid-template-columns: 280px 1fr; gap: 30px; margin-top: 15px;">
+                            <!-- Left: Summary -->
+                            <div class="reviews-summary-card" style="background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #e2e8f0; height: fit-content;">
+                                <h3 style="margin-top: 0; font-size: 18px; color: #0f172a;">Customer Ratings</h3>
+                                <div style="display: flex; align-items: baseline; gap: 10px; margin: 15px 0;">
+                                    <span id="summary-avg-rating" style="font-size: 42px; font-weight: 800; color: #0f172a;">0.0</span>
+                                    <span style="font-size: 16px; color: #64748b;">out of 5</span>
+                                </div>
+                                <div id="summary-stars" style="color: #f59e0b; display: flex; gap: 4px; font-size: 20px; margin-bottom: 15px;"></div>
+                                <p id="summary-total-text" style="color: #64748b; font-size: 14px; margin-bottom: 20px;">Based on 0 reviews</p>
+
+                                <div id="rating-breakdown-list" style="display: flex; flex-direction: column; gap: 8px;"></div>
+
+                                <button id="btn-open-review-form" style="width: 100%; margin-top: 24px; padding: 12px; background: #2563eb; color: white; border: none; border-radius: 8px; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 8px;">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                    Write a Review
+                                </button>
+                            </div>
+
+                            <!-- Right: Reviews List & Form -->
+                            <div class="reviews-content">
+                                <div id="review-form-card" style="display: none; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 12px; padding: 24px; margin-bottom: 30px; box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                                    <h4 style="margin-top: 0; font-size: 18px; color: #0f172a; margin-bottom: 15px;">Write Your Review</h4>
+                                    <form id="add-review-form">
+                                        <div style="margin-bottom: 16px;">
+                                            <label style="display: block; font-weight: 600; margin-bottom: 6px; color: #334155;">Rating Score <span style="color: #ef4444;">*</span></label>
+                                            <div id="form-star-rating" style="display: flex; gap: 8px; font-size: 28px; color: #cbd5e1; cursor: pointer; user-select: none;">
+                                                <span class="star-rating-btn" data-rating="1">★</span>
+                                                <span class="star-rating-btn" data-rating="2">★</span>
+                                                <span class="star-rating-btn" data-rating="3">★</span>
+                                                <span class="star-rating-btn" data-rating="4">★</span>
+                                                <span class="star-rating-btn" data-rating="5" style="color: #f59e0b;">★</span>
+                                            </div>
+                                            <input type="hidden" id="review-rating-val" value="5" required>
+                                        </div>
+                                        <div style="margin-bottom: 16px;">
+                                            <label for="review-title" style="display: block; font-weight: 600; margin-bottom: 6px; color: #334155;">Review Title</label>
+                                            <input type="text" id="review-title" placeholder="e.g., Outstanding product quality!" style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 14px; box-sizing: border-box;">
+                                        </div>
+                                        <div style="margin-bottom: 16px;">
+                                            <label for="review-comment" style="display: block; font-weight: 600; margin-bottom: 6px; color: #334155;">Review Comments <span style="color: #ef4444;">*</span></label>
+                                            <textarea id="review-comment" rows="4" placeholder="Share your experience with this product..." required style="width: 100%; padding: 10px 14px; border: 1px solid #cbd5e1; border-radius: 6px; font-family: inherit; font-size: 14px; resize: vertical; box-sizing: border-box;"></textarea>
+                                        </div>
+                                        <div style="display: flex; gap: 12px; justify-content: flex-end;">
+                                            <button type="button" id="btn-cancel-review" style="padding: 10px 18px; background: #e2e8f0; color: #475569; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Cancel</button>
+                                            <button type="submit" id="btn-submit-review" style="padding: 10px 20px; background: #2563eb; color: white; border: none; border-radius: 6px; font-weight: 600; cursor: pointer;">Submit Review</button>
+                                        </div>
+                                    </form>
+                                </div>
+
+                                <div id="product-reviews-list" style="display: flex; flex-direction: column; gap: 16px;"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </section>
-
         </div>
     </main>
 
     <!-- Similar Products Section (Full Width) -->
     <div class="store-main" style="margin-top: 0; padding-top: 40px; border-top: 1px solid #e2e8f0;">
-        <section class="similar-products-section">
+        <section class="similar-products-section" style="max-width: 1200px; margin: 0 auto; padding: 0 20px;">
             <h2 style="font-size: 24px; color: #0f172a; margin-bottom: 30px;">Similar Products</h2>
             <div class="product-grid" id="similar-products-grid">
                 <!-- Related product cards will be injected dynamically -->
@@ -187,9 +248,7 @@
         </div>
     </footer>
 
-    
-
-    <script src="js/product.js?v=2" type="module"></script>
+    <script src="js/product.js?v=3" type="module"></script>
     <script src="js/components/chatbot.js?v=3"></script>
 </body>
 </html>

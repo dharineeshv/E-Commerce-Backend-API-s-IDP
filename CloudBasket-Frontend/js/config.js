@@ -26,6 +26,9 @@ export const API = {
         "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
 
     cartService:
+        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+
+    reviewService:
         "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com"
 
 };

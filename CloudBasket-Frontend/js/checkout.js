@@ -26,6 +26,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const totalEl = document.getElementById('checkout-total');
     const btnPurchase = document.getElementById('btn-complete-purchase');
     let cartItems = [];
+    let checkoutTotal = 0;
     function formatCurrency(value) {
         return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
@@ -114,11 +115,11 @@ document.addEventListener('DOMContentLoaded', () => {
             summaryList.appendChild(itemEl);
         });
         const shipping = totalQuantity * 30;
-        const total = subtotal + shipping;
+        checkoutTotal = subtotal + shipping;
         if (subtotalEl) subtotalEl.textContent = formatCurrency(subtotal);
         const shippingEl = document.getElementById('checkout-shipping');
         if (shippingEl) shippingEl.textContent = formatCurrency(shipping);
-        if (totalEl) totalEl.textContent = formatCurrency(total);
+        if (totalEl) totalEl.textContent = formatCurrency(checkoutTotal);
     }
     // Handle Place Order
     if (btnPurchase) {
@@ -174,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await apiFetch(`${API.orderService}/api/v1/order`, {
                     method: 'POST',
-                    body: JSON.stringify({ shippingAddress, calculatedTotal: total })
+                    body: JSON.stringify({ shippingAddress, calculatedTotal: checkoutTotal })
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {

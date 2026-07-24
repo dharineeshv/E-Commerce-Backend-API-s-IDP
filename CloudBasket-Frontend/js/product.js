@@ -1,7 +1,10 @@
 import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
+import { fetchProductReviews, postReview } from "./api/reviewApi.js";
 
-let activeFestivalSale = null;document.addEventListener("DOMContentLoaded", () => {
+let activeFestivalSale = null;
+
+document.addEventListener("DOMContentLoaded", () => {
     initProductPage();
 });
 
@@ -55,6 +58,7 @@ async function initProductPage() {
     renderProductDetails(product);
     renderSimilarProducts(product, allProducts);
     setupTabs();
+    initReviewsSection(productId);
     
     // Wire Add to Cart
     const addBtn = document.getElementById('pd-add-to-cart-btn');
@@ -379,3 +383,231 @@ function getMockProducts() {
         }
     ];
 }
+
+/* ==========================================================
+   Review & Rating Service Integration
+========================================================== */
+
+async function initReviewsSection(productId) {
+    setupReviewForm(productId);
+    await loadAndRenderReviews(productId);
+}
+
+async function loadAndRenderReviews(productId) {
+    try {
+        const data = await fetchProductReviews(productId);
+        const reviews = data.reviews || [];
+        const summary = data.summary || { averageRating: 0, totalReviews: 0, ratingBreakdown: {5:0,4:0,3:0,2:0,1:0} };
+
+        // 1. Header Rating Badge
+        const headerStarsEl = document.getElementById('pd-star-header');
+        const headerTextEl = document.getElementById('pd-rating-header-text');
+        if (headerStarsEl) headerStarsEl.innerHTML = renderStarRating(summary.averageRating);
+        if (headerTextEl) headerTextEl.innerText = summary.totalReviews > 0 
+            ? `(${summary.averageRating}★ • ${summary.totalReviews} ${summary.totalReviews === 1 ? 'review' : 'reviews'})`
+            : `(No reviews yet)`;
+
+        // 2. Tab Count
+        const countEl = document.getElementById('pd-reviews-count');
+        if (countEl) countEl.innerText = summary.totalReviews;
+
+        // 3. Left Summary Card
+        const avgEl = document.getElementById('summary-avg-rating');
+        const starsEl = document.getElementById('summary-stars');
+        const totalTextEl = document.getElementById('summary-total-text');
+        const breakdownListEl = document.getElementById('rating-breakdown-list');
+
+        if (avgEl) avgEl.innerText = summary.averageRating > 0 ? summary.averageRating.toFixed(1) : '0.0';
+        if (starsEl) starsEl.innerHTML = renderStarRating(summary.averageRating);
+        if (totalTextEl) totalTextEl.innerText = `Based on ${summary.totalReviews} ${summary.totalReviews === 1 ? 'review' : 'reviews'}`;
+
+        if (breakdownListEl) {
+            breakdownListEl.innerHTML = '';
+            [5, 4, 3, 2, 1].forEach((star) => {
+                const count = (summary.ratingBreakdown && summary.ratingBreakdown[star]) || 0;
+                const percent = summary.totalReviews > 0 ? Math.round((count / summary.totalReviews) * 100) : 0;
+                const row = document.createElement('div');
+                row.style.cssText = 'display: flex; align-items: center; gap: 8px; font-size: 13px; color: #475569;';
+                row.innerHTML = `
+                    <span style="width: 38px;">${star} star</span>
+                    <div style="flex: 1; height: 8px; background: #e2e8f0; border-radius: 4px; overflow: hidden;">
+                        <div style="width: ${percent}%; height: 100%; background: #f59e0b; border-radius: 4px;"></div>
+                    </div>
+                    <span style="width: 32px; text-align: right; color: #64748b;">${percent}%</span>
+                `;
+                breakdownListEl.appendChild(row);
+            });
+        }
+
+        // 4. Right Review List
+        const listEl = document.getElementById('product-reviews-list');
+        if (listEl) {
+            listEl.innerHTML = '';
+            if (reviews.length === 0) {
+                listEl.innerHTML = `
+                    <div style="text-align: center; background: #f8fafc; padding: 40px; border-radius: 12px; border: 1px dashed #cbd5e1;">
+                        <p style="color: #64748b; font-weight: 500; margin: 0 0 8px 0;">No reviews for this product yet.</p>
+                        <p style="color: #94a3b8; font-size: 14px; margin: 0;">Be the first customer to write a review!</p>
+                    </div>
+                `;
+            } else {
+                reviews.forEach((rev) => {
+                    const dateStr = rev.createdAt ? new Date(rev.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recently';
+                    let authorName = rev.customerName;
+                    if (!authorName || authorName === 'Verified Customer' || authorName === 'Verified Buyer' || authorName === 'anonymous') {
+                        authorName = getCurrentUserDisplayName();
+                    }
+                    const card = document.createElement('div');
+                    card.className = 'review-card';
+                    card.style.cssText = 'background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
+                    card.innerHTML = `
+                        <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
+                            <div>
+                                <div style="color: #f59e0b; font-size: 16px; margin-bottom: 4px;">${renderStarRating(rev.rating)}</div>
+                                <h4 style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">${escapeHtml(rev.title || 'Great Product')}</h4>
+                            </div>
+                            <span style="font-size: 12px; color: #94a3b8;">${dateStr}</span>
+                        </div>
+                        <p style="margin: 8px 0 12px 0; color: #334155; font-size: 14px; line-height: 1.6;">${escapeHtml(rev.comment)}</p>
+                        <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
+                            <span style="font-weight: 600; color: #475569;">${escapeHtml(authorName)}</span>
+                            <span>•</span>
+                            <span style="color: #16a34a; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
+                                Verified Purchase
+                            </span>
+                        </div>
+                    `;
+                    listEl.appendChild(card);
+                });
+            }
+        }
+    } catch (e) {
+        console.error("Error loading product reviews:", e);
+    }
+}
+
+function renderStarRating(rating) {
+    const r = Math.min(5, Math.max(0, Number(rating) || 0));
+    const fullStars = Math.floor(r);
+    const hasHalf = (r - fullStars) >= 0.5;
+    let stars = '';
+    for (let i = 0; i < fullStars; i++) stars += '★';
+    if (hasHalf && fullStars < 5) stars += '½';
+    const emptyCount = 5 - fullStars - (hasHalf ? 1 : 0);
+    for (let i = 0; i < emptyCount; i++) stars += '☆';
+    return stars;
+}
+
+function getCurrentUserDisplayName() {
+    let name = localStorage.getItem("userName") || localStorage.getItem("userEmail");
+    if (!name) {
+        try {
+            const idToken = localStorage.getItem('idToken') || localStorage.getItem('accessToken');
+            if (idToken) {
+                const payload = JSON.parse(atob(idToken.split('.')[1]));
+                if (payload.name) name = payload.name;
+                else if (payload.given_name) name = `${payload.given_name} ${payload.family_name || ''}`.trim();
+                else if (payload.email) {
+                    const parts = payload.email.split('@')[0].split('.');
+                    name = parts.map(p => p.charAt(0).toUpperCase() + p.slice(1)).join(' ');
+                } else if (payload["cognito:username"]) {
+                    name = payload["cognito:username"];
+                }
+            }
+        } catch (e) {}
+    }
+    return name || "Customer";
+}
+
+function escapeHtml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+}
+
+function setupReviewForm(productId) {
+    const btnOpen = document.getElementById('btn-open-review-form');
+    const formCard = document.getElementById('review-form-card');
+    const btnCancel = document.getElementById('btn-cancel-review');
+    const form = document.getElementById('add-review-form');
+    const ratingBtns = document.querySelectorAll('.star-rating-btn');
+    const ratingInput = document.getElementById('review-rating-val');
+
+    if (btnOpen && formCard) {
+        btnOpen.addEventListener('click', () => {
+            formCard.style.display = formCard.style.display === 'none' ? 'block' : 'none';
+        });
+    }
+
+    if (btnCancel && formCard) {
+        btnCancel.addEventListener('click', () => {
+            formCard.style.display = 'none';
+        });
+    }
+
+    if (ratingBtns && ratingInput) {
+        ratingBtns.forEach((btn) => {
+            btn.addEventListener('click', () => {
+                const selectedVal = Number(btn.getAttribute('data-rating'));
+                ratingInput.value = selectedVal;
+                ratingBtns.forEach((b) => {
+                    const bVal = Number(b.getAttribute('data-rating'));
+                    b.style.color = bVal <= selectedVal ? '#f59e0b' : '#cbd5e1';
+                });
+            });
+        });
+    }
+
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const rating = Number(document.getElementById('review-rating-val').value) || 5;
+            const title = document.getElementById('review-title').value.trim();
+            const comment = document.getElementById('review-comment').value.trim();
+
+            if (!comment) {
+                alert("Please provide review comments");
+                return;
+            }
+
+            const btnSubmit = document.getElementById('btn-submit-review');
+            if (btnSubmit) {
+                btnSubmit.disabled = true;
+                btnSubmit.innerText = "Submitting...";
+            }
+
+            try {
+                const result = await postReview({
+                    productId,
+                    rating,
+                    title,
+                    comment,
+                    customerName: getCurrentUserDisplayName()
+                });
+
+                if (result.success) {
+                    if (window.showCustomAlert) window.showCustomAlert("Thank you! Your review has been submitted.");
+                    else alert("Thank you! Your review has been submitted.");
+                    form.reset();
+                    if (formCard) formCard.style.display = 'none';
+                    await loadAndRenderReviews(productId);
+                } else {
+                    alert(result.message || "Failed to submit review");
+                }
+            } catch (err) {
+                console.error("Error submitting review:", err);
+                alert(err.message || "Failed to submit review. Please ensure you are logged in.");
+            } finally {
+                if (btnSubmit) {
+                    btnSubmit.disabled = false;
+                    btnSubmit.innerText = "Submit Review";
+                }
+            }
+        });
+    }
+}
+

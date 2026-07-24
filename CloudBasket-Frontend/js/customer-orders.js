@@ -19,10 +19,12 @@ async function init() {
         const orders = result.data || result; // Fallback depending on API structure
 
         if (!orders || orders.length === 0) {
+            updateSummaryCards([]);
             renderEmpty(listContainer);
         } else {
             // Sort by date (newest first)
             orders.sort((a, b) => new Date(b.createdAt || b.updatedAt) - new Date(a.createdAt || a.updatedAt));
+            updateSummaryCards(orders);
             renderOrders(listContainer, orders);
         }
 
@@ -151,3 +153,29 @@ function renderOrders(container, orders) {
         container.appendChild(card);
     });
 }
+
+function updateSummaryCards(orders) {
+    const totalOrdersEl = document.getElementById('stat-total-orders');
+    const totalSpentEl = document.getElementById('stat-total-spent');
+
+    if (!orders || !Array.isArray(orders) || orders.length === 0) {
+        if (totalOrdersEl) totalOrdersEl.innerText = '0';
+        if (totalSpentEl) totalSpentEl.innerText = '₹0.00';
+        return;
+    }
+
+    const count = orders.length;
+    let totalSpent = 0;
+
+    orders.forEach(order => {
+        const status = String(order.status || '').toUpperCase();
+        if (status !== 'CANCELLED') {
+            const amt = Number(order.orderTotal || order.totalAmount || order.amount || order.calculatedTotal || 0);
+            totalSpent += amt;
+        }
+    });
+
+    if (totalOrdersEl) totalOrdersEl.innerText = count;
+    if (totalSpentEl) totalSpentEl.innerText = '₹' + totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+}
+
