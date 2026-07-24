@@ -3,7 +3,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const chatbotHTML = `
         <div id="global-chatbot-widget">
             <div class="chatbot-tooltip" id="chatbot-tooltip">
-                <span class="wave-emoji">👋</span> Hey! How can I help?
+                <span class="wave-emoji">👋</span> Hi, I am Tara. How can I help you?
             </div>
             
             <!-- Chatbot Window Overlay -->
@@ -20,7 +20,7 @@ document.addEventListener('DOMContentLoaded', () => {
                             </svg>
                         </div>
                         <div>
-                            <h4>CloudBasket Support</h4>
+                            <h4>Tara - CloudBasket Assistant</h4>
                             <span class="chatbot-status">Online</span>
                         </div>
                     </div>
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 
                 <div class="chatbot-messages" id="chatbot-messages">
                     <div class="chat-msg bot-msg">
-                        Hi there! 👋 I'm the CloudBasket assistant. How can I help you today?
+                        Hi, I am Tara. How can I help you?
                     </div>
                 </div>
                 
