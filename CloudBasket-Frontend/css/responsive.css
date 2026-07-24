@@ -1,1 +1,202 @@
-/* Responsive styles to be added here */
+/* ==========================================================
+   CloudBasket Global Mobile Responsive Stylesheet
+========================================================== */
+
+/* Prevent horizontal overflow across all devices */
+html, body {
+    max-width: 100vw !important;
+    overflow-x: hidden !important;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+*, *::before, *::after {
+    box-sizing: border-box;
+}
+
+/* --- Mobile Breakpoints (Max-width: 768px) --- */
+@media (max-width: 768px) {
+
+    /* 1. Header & Navigation */
+    .header-container {
+        padding: 12px 16px !important;
+        flex-wrap: wrap !important;
+        gap: 12px !important;
+    }
+
+    .search-bar {
+        order: 3 !important;
+        width: 100% !important;
+        margin: 6px 0 0 0 !important;
+    }
+
+    .header-nav {
+        gap: 12px !important;
+        font-size: 13px !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding-bottom: 4px !important;
+        max-width: 100% !important;
+    }
+
+    .company-logo-header {
+        display: none !important;
+    }
+
+    /* 2. Order History Page (orders.html) */
+    .orders-page-container {
+        padding: 20px 15px 40px !important;
+        width: 100% !important;
+    }
+
+    .orders-summary-cards {
+        grid-template-columns: 1fr !important;
+        gap: 15px !important;
+        margin-bottom: 25px !important;
+    }
+
+    .orders-summary-cards > div {
+        padding: 20px 24px !important;
+    }
+
+    .order-card {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        padding: 16px !important;
+        gap: 12px !important;
+    }
+
+    .order-icon-box {
+        width: 100% !important;
+        height: 160px !important;
+        margin-right: 0 !important;
+    }
+
+    .order-details {
+        width: 100% !important;
+    }
+
+    .order-actions {
+        width: 100% !important;
+        justify-content: flex-end !important;
+        margin-top: 8px !important;
+    }
+
+    .order-actions .btn-solid-orange,
+    .order-actions .btn-outline {
+        width: 100% !important;
+        text-align: center !important;
+    }
+
+    /* Order Details Page */
+    .details-layout {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    .details-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 10px !important;
+    }
+
+    .tracker-timeline {
+        flex-direction: column !important;
+        gap: 20px !important;
+    }
+
+    .tracker-timeline::before {
+        display: none !important;
+    }
+
+    /* 3. Product Details Page (product.html) */
+    .product-main {
+        margin: 15px auto !important;
+        padding: 0 15px !important;
+    }
+
+    .product-details-grid {
+        grid-template-columns: 1fr !important;
+        gap: 25px !important;
+        margin-bottom: 30px !important;
+    }
+
+    .product-main-image-wrapper {
+        min-height: 280px !important;
+        padding: 10px !important;
+    }
+
+    .product-main-image-wrapper img {
+        max-height: 280px !important;
+    }
+
+    .pd-title {
+        font-size: 22px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .pd-price {
+        font-size: 32px !important;
+    }
+
+    .pd-tabs {
+        gap: 16px !important;
+        overflow-x: auto !important;
+        white-space: nowrap !important;
+        padding-bottom: 8px !important;
+        margin-bottom: 25px !important;
+    }
+
+    .pd-tab {
+        font-size: 14px !important;
+        padding-bottom: 10px !important;
+        flex-shrink: 0 !important;
+    }
+
+    .reviews-container {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    .reviews-summary-card {
+        padding: 16px !important;
+    }
+
+    .pd-specs-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* 4. Cart & Checkout Pages */
+    .cart-layout,
+    .checkout-layout {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    /* 5. Footer */
+    .store-footer {
+        padding: 40px 0 20px !important;
+    }
+}
+
+/* Extra small mobile devices (max-width: 480px) */
+@media (max-width: 480px) {
+    .pd-price-wrap {
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .pd-price {
+        font-size: 28px !important;
+    }
+
+    #summary-avg-rating {
+        font-size: 32px !important;
+    }
+
+    #form-star-rating {
+        font-size: 22px !important;
+    }
+}
