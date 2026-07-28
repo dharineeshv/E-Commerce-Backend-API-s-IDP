@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
     <link rel="icon" type="image/png" href="/favicon.png">
@@ -36,18 +36,13 @@
     <!-- Header -->
     <header class="dashboard-header">
         <div class="header-left">
-            <button class="menu-toggle" id="menu-toggle" aria-label="Toggle Sidebar">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <line x1="3" y1="6" x2="21" y2="6"></line>
-                    <line x1="3" y1="12" x2="21" y2="12"></line>
-                    <line x1="3" y1="18" x2="21" y2="18"></line>
-                </svg>
-            </button>
-            <div class="logo-section">
-                <img src="../../assets/logo.png" alt="CloudBasket Logo" class="logo">
-                <div class="logo-text">
-                    <h2>CloudBasket</h2>
-                    <span>Enterprise Admin</span>
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <h2 style="color: #003366; font-weight: 800; font-size: 1.25rem; margin:0; line-height: 1.1;">CloudBasket</h2>
+                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; color: #64748b; text-transform: uppercase; margin-top: 2px;">Enterprise Admin</span>
                 </div>
             </div>
         </div>
@@ -188,6 +183,19 @@
                     </svg>
                 </span>
                 <span class="sidebar-text">Payments</span>
+            </a>
+
+            <!-- Customers -->
+            <a href="../../pages/customers/customers.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Customers</span>
             </a>
 
             <!-- Marketing -->
@@ -352,6 +360,10 @@
                     </div>
                     
                     <button class="btn-clear" id="clearFiltersBtn">Clear Filters</button>
+                    <button class="btn-export-excel" id="exportOrdersExcelBtn" style="padding: 8px 16px; background: #003366; border: none; border-radius: 8px; font-weight: 600; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: background 0.2s;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export
+                    </button>
                 </div>
             </div>
 
@@ -548,7 +560,7 @@
 <div id="invoice-print-container" style="display: none;"></div>
 
 <!-- JS Modules -->
-<script type="module" src="../../js/orders.js?v=12"></script>
+<script type="module" src="../../js/orders.js?v=13"></script>
 
 <!-- ==========================================================
                     LOGOUT MODAL

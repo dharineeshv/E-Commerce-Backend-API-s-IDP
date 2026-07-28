@@ -132,7 +132,12 @@ function initProfileDropdown() {
             Object.keys(reviewsToPreserve).forEach(k => {
                 localStorage.setItem(k, reviewsToPreserve[k]);
             });
-            window.location.href = '/CloudBasket-Frontend/index.html';
+            const path = window.location.pathname;
+            if (path.includes('/pages/')) {
+                window.location.href = "../../index.html";
+            } else {
+                window.location.href = "index.html";
+            }
         });
     });
 }

@@ -326,24 +326,3 @@
         grid-template-columns: 1fr;
     }
 }
-
-@media (max-width: 768px) {
-    .cart-main {
-        padding: 0 16px !important;
-        margin: 20px 0 !important;
-    }
-
-    .cart-item {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 16px;
-    }
-
-    .item-total-col {
-        width: 100%;
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-    }
-}
-

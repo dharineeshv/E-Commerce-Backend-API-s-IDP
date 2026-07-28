@@ -94,6 +94,15 @@ const deleteProfile = async (req, res, next) => {
   }
 };
 
+const getAllProfiles = async (req, res, next) => {
+  try {
+    const result = await userProfileService.getAllProfiles();
+    return res.status(200).json(result);
+  } catch (error) {
+    next(error);
+  }
+};
+
 export {
   createProfile,
   getProfileBySub,
@@ -102,4 +111,5 @@ export {
   getProfileByCustomerId,
   updateProfile,
   deleteProfile,
+  getAllProfiles,
 };

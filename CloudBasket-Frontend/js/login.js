@@ -247,10 +247,10 @@ window.addEventListener("DOMContentLoaded", async () => {
             
             showToast("success", "Login Successful", "Successfully logged in with Google!");
             
-            const decodedToken = parseJwt(accessToken) || {};
+            const decodedToken = parseJwt(accessToken) || parseJwt(idToken) || {};
             const groups = decodedToken['cognito:groups'] || [];
             
-            let redirectUrl = "index.html";
+            let redirectUrl = "login.html"; // Default Customer route (shop/categories page)
             if (groups.includes('Admin')) {
                 redirectUrl = "pages/dashboard/dashboard.html";
             }

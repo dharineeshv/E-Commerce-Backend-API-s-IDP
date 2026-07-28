@@ -62,23 +62,17 @@ document.addEventListener("DOMContentLoaded", () => {
         });
     }
 
-    function updateSliderVisibility() {
-        const festivalsTable = document.getElementById('festivals-table');
-        const couponsTable = document.getElementById('coupons-table');
-        
-        const festivalsCount = festivalsTable ? festivalsTable.querySelectorAll('tbody tr').length : 0;
-        const couponsCount = couponsTable ? couponsTable.querySelectorAll('tbody tr').length : 0;
-
+    function updateSliderVisibility(hasActiveFestival, hasActiveCoupon) {
         document.querySelectorAll('.slide').forEach(slide => {
             const type = slide.getAttribute('data-type');
             if (type === 'empty-festival') {
-                slide.style.display = festivalsCount > 0 ? 'none' : 'block';
+                slide.style.display = hasActiveFestival ? 'none' : 'block';
             } else if (type === 'festival') {
-                slide.style.display = festivalsCount === 0 ? 'none' : 'block';
+                slide.style.display = hasActiveFestival ? 'block' : 'none';
             } else if (type === 'empty-coupon') {
-                slide.style.display = couponsCount > 0 ? 'none' : 'block';
+                slide.style.display = hasActiveCoupon ? 'none' : 'block';
             } else if (type === 'coupon') {
-                slide.style.display = couponsCount === 0 ? 'none' : 'block';
+                slide.style.display = hasActiveCoupon ? 'block' : 'none';
             }
         });
 
@@ -87,6 +81,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (currentSlide >= slides.length) currentSlide = 0;
         initSlider();
     }
+
     async function fetchMarketingData() {
         try {
             const [festivalsRes, couponsRes] = await Promise.all([
@@ -100,24 +95,45 @@ document.addEventListener("DOMContentLoaded", () => {
             const festivals = festivalsData.data || [];
             const coupons = couponsData.data || [];
 
+            const now = new Date();
+            const hasActiveFestival = festivals.some(f => {
+                const isStatusActive = (f.status || '').toUpperCase() === 'ACTIVE';
+                const endDate = f.endDate ? new Date(f.endDate) : null;
+                const startDate = f.startDate ? new Date(f.startDate) : null;
+                return isStatusActive && (!endDate || now <= endDate) && (!startDate || now >= startDate);
+            });
+
+            const hasActiveCoupon = coupons.some(c => {
+                const isStatusActive = (c.status || '').toUpperCase() === 'ACTIVE';
+                const expiryDate = c.expiryDate ? new Date(c.expiryDate) : (c.endDate ? new Date(c.endDate) : null);
+                const startDate = c.startDate ? new Date(c.startDate) : null;
+                const notExhausted = (c.usedCount || 0) < (c.usageLimit || Infinity);
+                return isStatusActive && (!expiryDate || now <= expiryDate) && (!startDate || now >= startDate) && notExhausted;
+            });
+
             updateStats(festivals, coupons);
             updateSliderContent(festivals, coupons);
             renderFestivals(festivals);
             renderCoupons(coupons);
 
-            updateSliderVisibility();
+            updateSliderVisibility(hasActiveFestival, hasActiveCoupon);
         } catch (error) {
             console.error("Error fetching marketing data:", error);
         }
     }
 
     function updateSliderContent(festivals, coupons) {
-        const activeFestival = festivals.find(f => f.status === 'ACTIVE');
+        const now = new Date();
+        const activeFestival = festivals.find(f => {
+            const isStatusActive = (f.status || '').toUpperCase() === 'ACTIVE';
+            const endDate = f.endDate ? new Date(f.endDate) : null;
+            const startDate = f.startDate ? new Date(f.startDate) : null;
+            return isStatusActive && (!endDate || now <= endDate) && (!startDate || now >= startDate);
+        });
+
         if (activeFestival) {
             const slide = document.getElementById('slider-festival');
             if (slide) {
-                // If it's a private S3 URL that doesn't require auth on GET (via CloudFront/etc), it works.
-                // If the user's issue was just that we weren't setting it, this fixes it.
                 slide.style.backgroundImage = `url('${activeFestival.bannerImageUrl}')`;
                 
                 const title = document.getElementById('slider-festival-title');
@@ -133,7 +149,14 @@ document.addEventListener("DOMContentLoaded", () => {
             }
         }
 
-        const activeCoupon = coupons.find(c => c.status === 'ACTIVE');
+        const activeCoupon = coupons.find(c => {
+            const isStatusActive = (c.status || '').toUpperCase() === 'ACTIVE';
+            const expiryDate = c.expiryDate ? new Date(c.expiryDate) : (c.endDate ? new Date(c.endDate) : null);
+            const startDate = c.startDate ? new Date(c.startDate) : null;
+            const notExhausted = (c.usedCount || 0) < (c.usageLimit || Infinity);
+            return isStatusActive && (!expiryDate || now <= expiryDate) && (!startDate || now >= startDate) && notExhausted;
+        });
+
         if (activeCoupon) {
             const slide = document.getElementById('slider-coupon');
             if (slide) {
@@ -152,10 +175,22 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     function updateStats(festivals, coupons) {
-        const activeFestivalsCount = festivals.filter(f => f.status === 'ACTIVE').length;
+        const now = new Date();
+        const activeFestivalsCount = festivals.filter(f => {
+            const isStatusActive = (f.status || '').toUpperCase() === 'ACTIVE';
+            const endDate = f.endDate ? new Date(f.endDate) : null;
+            const startDate = f.startDate ? new Date(f.startDate) : null;
+            return isStatusActive && (!endDate || now <= endDate) && (!startDate || now >= startDate);
+        }).length;
         const totalFestivalsCount = festivals.length;
         
-        const activeCouponsCount = coupons.filter(c => c.status === 'ACTIVE').length;
+        const activeCouponsCount = coupons.filter(c => {
+            const isStatusActive = (c.status || '').toUpperCase() === 'ACTIVE';
+            const expiryDate = c.expiryDate ? new Date(c.expiryDate) : (c.endDate ? new Date(c.endDate) : null);
+            const startDate = c.startDate ? new Date(c.startDate) : null;
+            const notExhausted = (c.usedCount || 0) < (c.usageLimit || Infinity);
+            return isStatusActive && (!expiryDate || now <= expiryDate) && (!startDate || now >= startDate) && notExhausted;
+        }).length;
         const totalCouponsCount = coupons.length;
 
         const statActiveFestivals = document.getElementById('stat-active-festivals');
@@ -180,19 +215,34 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const discountText = fest.discountType === 'PERCENTAGE' ? `${fest.discountValue}%` : `₹${fest.discountValue}`;
             
-            const startDate = new Date(fest.startDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
-            const endDate = new Date(fest.endDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const startDateObj = fest.startDate ? new Date(fest.startDate) : null;
+            const endDateObj = fest.endDate ? new Date(fest.endDate) : null;
+            const startDateStr = startDateObj ? startDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
+            const endDateStr = endDateObj ? endDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
             
-            const statusClass = fest.status === 'ACTIVE' ? 'background: #dcfce7; color: #166534;' : 'background: #e0f2fe; color: #0369a1;';
-            const statusText = fest.status === 'ACTIVE' ? '• Active' : 'Scheduled';
-            
+            const now = new Date();
+            const isStatusActive = (fest.status || '').toUpperCase() === 'ACTIVE';
+            const isExpired = endDateObj && now > endDateObj;
+            const isNotStarted = startDateObj && now < startDateObj;
+
+            let festStatusBadgeHtml = '';
+            if (isExpired) {
+                festStatusBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Expired</span>`;
+            } else if (isNotStarted) {
+                festStatusBadgeHtml = `<span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Scheduled</span>`;
+            } else if (isStatusActive) {
+                festStatusBadgeHtml = `<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">• Active</span>`;
+            } else {
+                festStatusBadgeHtml = `<span style="background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Inactive</span>`;
+            }
+
             tr.innerHTML = `
                 <td style="padding: 14px;"><img src="${fest.bannerImageUrl || 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80'}" style="width: 80px; height: 30px; object-fit: cover; border-radius: 4px;"></td>
                 <td style="padding: 14px; font-weight: 600; color: #003366;">${fest.title}</td>
                 <td style="padding: 14px; font-weight: 700;">${discountText}</td>
-                <td style="padding: 14px;">${startDate}</td>
-                <td style="padding: 14px;">${endDate}</td>
-                <td style="padding: 14px;"><span style="${statusClass} padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">${statusText}</span></td>
+                <td style="padding: 14px;">${startDateStr}</td>
+                <td style="padding: 14px;">${endDateStr}</td>
+                <td style="padding: 14px;">${festStatusBadgeHtml}</td>
                 <td style="padding: 14px; display: flex; gap: 8px;">
                     <button class="delete-btn" data-id="${fest.festivalSaleId}" data-type="festival" style="background: #fee2e2; border: none; padding: 8px; border-radius: 50%; cursor: pointer; color: #b91c1c;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
@@ -214,15 +264,36 @@ document.addEventListener("DOMContentLoaded", () => {
             
             const discountText = coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}% Off` : `₹${coupon.discountValue} Off`;
             
-            const expiryDate = new Date(coupon.expiryDate).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+            const expDateObj = coupon.expiryDate ? new Date(coupon.expiryDate) : null;
+            const startDateObj = coupon.startDate ? new Date(coupon.startDate) : null;
+            const expiryDateStr = expDateObj ? expDateObj.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : 'N/A';
             
+            const now = new Date();
+            const isStatusActive = (coupon.status || '').toUpperCase() === 'ACTIVE';
+            const isExpired = expDateObj && now > expDateObj;
+            const isExhausted = coupon.usageLimit && (coupon.usedCount || 0) >= coupon.usageLimit;
+            const isNotStarted = startDateObj && now < startDateObj;
+
+            let statusBadgeHtml = '';
+            if (isExpired) {
+                statusBadgeHtml = `<span style="background: #fee2e2; color: #991b1b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Expired</span>`;
+            } else if (isExhausted) {
+                statusBadgeHtml = `<span style="background: #fef3c7; color: #92400e; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Completed</span>`;
+            } else if (isNotStarted) {
+                statusBadgeHtml = `<span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Scheduled</span>`;
+            } else if (isStatusActive) {
+                statusBadgeHtml = `<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Active</span>`;
+            } else {
+                statusBadgeHtml = `<span style="background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Inactive</span>`;
+            }
+
             tr.innerHTML = `
                 <td style="padding: 14px;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-family: monospace;">${coupon.couponCode}</span></td>
                 <td style="padding: 14px; font-weight: 700; color: #b45309;">${discountText}</td>
                 <td style="padding: 14px;">₹${coupon.minimumOrderAmount || 0}</td>
                 <td style="padding: 14px;">${coupon.usedCount || 0} / ${coupon.usageLimit || 'Unlimited'}</td>
-                <td style="padding: 14px;">${expiryDate}</td>
-                <td style="padding: 14px;"><span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Active</span></td>
+                <td style="padding: 14px;">${expiryDateStr}</td>
+                <td style="padding: 14px;">${statusBadgeHtml}</td>
                 <td style="padding: 14px; display: flex; gap: 8px;">
                     <button class="delete-btn" data-id="${coupon.couponId}" data-type="coupon" style="background: #fee2e2; border: none; padding: 8px; border-radius: 50%; cursor: pointer; color: #b91c1c;">
                         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>

@@ -11,40 +11,45 @@ function getAuthHeaders() {
   };
 }
 
-const REVIEW_BASE_URL = API.reviewService || "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
+// Check if reviewService endpoint is explicitly defined and distinct from default API gateway root
+const isRemoteServiceActive = API.reviewService && 
+  API.reviewService !== "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
 
 export async function fetchProductReviews(productId) {
-  try {
-    const response = await fetch(`${REVIEW_BASE_URL}/api/v1/reviews/product/${productId}`);
-    if (!response.ok) {
-      throw new Error(`Status ${response.status}`);
+  if (isRemoteServiceActive) {
+    try {
+      const response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
+      if (response.ok) {
+        const data = await response.json();
+        return data.data || data;
+      }
+    } catch (error) {
+      // Quiet fallback
     }
-    const data = await response.json();
-    return data.data || data;
-  } catch (error) {
-    console.warn("Could not fetch remote reviews, using persistent local store:", error.message);
-    return getLocalReviewsFallback(productId);
   }
+
+  return getLocalReviewsFallback(productId);
 }
 
 export async function postReview({ productId, rating, title, comment, customerName }) {
-  // Always save to persistent local store first to guarantee instant, permanent persistence
   const savedLocal = saveLocalReviewFallback({ productId, rating, title, comment, customerName });
 
-  try {
-    const headers = getAuthHeaders();
-    const response = await fetch(`${REVIEW_BASE_URL}/api/v1/reviews`, {
-      method: "POST",
-      headers,
-      body: JSON.stringify({ productId, rating, title, comment, customerName }),
-    });
+  if (isRemoteServiceActive) {
+    try {
+      const headers = getAuthHeaders();
+      const response = await fetch(`${API.reviewService}/api/v1/reviews`, {
+        method: "POST",
+        headers,
+        body: JSON.stringify({ productId, rating, title, comment, customerName }),
+      });
 
-    const data = await response.json();
-    if (response.ok && data.success) {
-      return data;
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success) return data;
+      }
+    } catch (error) {
+      // Quiet fallback
     }
-  } catch (error) {
-    console.warn("Server post fallback engaged:", error.message);
   }
 
   return savedLocal;

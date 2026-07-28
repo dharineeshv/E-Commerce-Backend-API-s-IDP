@@ -162,6 +162,114 @@ function setupFilters() {
         clearFilters();
         renderAll();
     });
+
+    // Export to Excel
+    const exportBtn = document.getElementById('exportOrdersExcelBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            const listToExport = (state.filteredOrders && state.filteredOrders.length > 0) ? state.filteredOrders : state.allOrders;
+            exportOrdersToExcel(listToExport);
+        });
+    }
+}
+
+function exportOrdersToExcel(ordersToExport) {
+    if (!ordersToExport || ordersToExport.length === 0) {
+        alert("No orders data available to export.");
+        return;
+    }
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    let xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="HeaderStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#003366" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="DataStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Alignment ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="CurrencyStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <NumberFormat ss:Format="&#34;&#8377;&#34;#,##0.00"/>
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="CenterStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Orders">
+  <Table>
+   <Column ss:Width="140"/>
+   <Column ss:Width="160"/>
+   <Column ss:Width="220"/>
+   <Column ss:Width="120"/>
+   <Column ss:Width="120"/>
+   <Column ss:Width="120"/>
+   <Column ss:Width="120"/>
+   <Column ss:Width="160"/>
+   <Row ss:Height="24" ss:StyleID="HeaderStyle">
+    <Cell><Data ss:Type="String">Order ID</Data></Cell>
+    <Cell><Data ss:Type="String">Customer Name</Data></Cell>
+    <Cell><Data ss:Type="String">Items Summary</Data></Cell>
+    <Cell><Data ss:Type="String">Total Amount (INR)</Data></Cell>
+    <Cell><Data ss:Type="String">Order Status</Data></Cell>
+    <Cell><Data ss:Type="String">Payment Status</Data></Cell>
+    <Cell><Data ss:Type="String">Payment Method</Data></Cell>
+    <Cell><Data ss:Type="String">Order Date</Data></Cell>
+   </Row>`;
+
+    ordersToExport.forEach(o => {
+        const shipping = o.shippingAddress || {};
+        const custName = o.customerName || shipping.fullName || shipping.name || (shipping.firstName ? `${shipping.firstName} ${shipping.lastName || ''}`.trim() : 'Customer');
+        const itemsSummary = (o.items || []).map(i => `${i.name || i.productId || 'Item'} (x${i.quantity || 1})`).join("; ");
+        const dateStr = o.createdAt ? new Date(o.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : (o.date || 'N/A');
+
+        xml += `
+   <Row ss:Height="20">
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(o.orderId || '')}</Data></Cell>
+    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">${escapeXml(custName)}</Data></Cell>
+    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">${escapeXml(itemsSummary || '1 Item')}</Data></Cell>
+    <Cell ss:StyleID="CurrencyStyle"><Data ss:Type="Number">${Number(o.calculatedTotal || o.totalAmount || o.price || 0)}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(o.orderStatus || o.status || 'Pending')}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(o.paymentStatus || 'Paid')}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(o.paymentMethod || 'Online')}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(dateStr)}</Data></Cell>
+   </Row>`;
+    });
+
+    xml += `
+  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: "application/vnd.ms-excel" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `CloudBasket_Orders_Report_${todayStr}.xls`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function escapeXml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
 }
 
 function setupPagination() {

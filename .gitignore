@@ -30,6 +30,11 @@ coverage/
 # Temporary files
 *.tmp
 *.temp
+*.json
+*.py
+*.txt
+update_nav.js
+scratch/
 
 # AWS / credentials
 *.pem

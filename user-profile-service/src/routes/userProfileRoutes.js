@@ -7,6 +7,7 @@ import {
   deleteProfile,
   getMyProfile,
   updateMyProfile,
+  getAllProfiles,
 } from "../controllers/userProfileController.js";
 
 import cognitoAuthMiddleware from "../middlewares/cognitoAuthMiddleware.js";
@@ -44,6 +45,16 @@ router.put(
 // -------------------------
 // Admin APIs
 // -------------------------
+
+router.get(
+  "/admin/all",
+  getAllProfiles
+);
+
+router.get(
+  "/all",
+  getAllProfiles
+);
 
 router.get(
   "/:customerId",

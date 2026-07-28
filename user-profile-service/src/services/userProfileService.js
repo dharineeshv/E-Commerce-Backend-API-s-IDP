@@ -4,6 +4,7 @@ import {
   QueryCommand,
   GetCommand,
   DeleteCommand,
+  ScanCommand,
 } from "@aws-sdk/lib-dynamodb";
 
 import docClient from "../config/dynamoDb.js";
@@ -273,6 +274,19 @@ if (existingProfile) {
   };
 };
 
+const getAllProfiles = async () => {
+  const response = await docClient.send(
+    new ScanCommand({
+      TableName: process.env.USER_PROFILE_TABLE,
+    })
+  );
+
+  return {
+    success: true,
+    data: response.Items || [],
+  };
+};
+
 export {
   createProfile,
   getProfileBySub,
@@ -281,4 +295,5 @@ export {
   getProfileByCustomerId,
   updateProfile,
   deleteProfile,
+  getAllProfiles,
 };

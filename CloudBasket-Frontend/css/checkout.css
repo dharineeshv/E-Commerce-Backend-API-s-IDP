@@ -527,23 +527,3 @@ body.checkout-page {
     .checkout-footer .footer-right { justify-content: center; }
 }
 
-@media (max-width: 768px) {
-    .checkout-main {
-        padding: 20px 16px !important;
-    }
-
-    .form-row {
-        grid-template-columns: 1fr !important;
-        gap: 12px !important;
-    }
-
-    .summary-card {
-        padding: 20px 16px !important;
-    }
-
-    .checkout-title {
-        font-size: 24px !important;
-    }
-}
-
-

@@ -134,6 +134,125 @@ function setupFilters() {
             }
         });
     }
+
+    const exportBtn = document.getElementById('exportInventoryExcelBtn');
+    if (exportBtn) {
+        exportBtn.addEventListener('click', () => {
+            const dataToExport = (filteredData && filteredData.length > 0) ? filteredData : combinedInventoryData;
+            exportInventoryToExcel(dataToExport);
+        });
+    }
+}
+
+function exportInventoryToExcel(inventoryToExport) {
+    if (!inventoryToExport || inventoryToExport.length === 0) {
+        alert("No inventory data available to export.");
+        return;
+    }
+
+    const todayStr = new Date().toISOString().slice(0, 10);
+
+    let xml = `<?xml version="1.0"?>
+<?mso-application progid="Excel.Sheet"?>
+<Workbook xmlns="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:o="urn:schemas-microsoft-com:office:office"
+ xmlns:x="urn:schemas-microsoft-com:office:excel"
+ xmlns:ss="urn:schemas-microsoft-com:office:spreadsheet"
+ xmlns:html="http://www.w3.org/TR/REC-html40">
+ <Styles>
+  <Style ss:ID="HeaderStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#FFFFFF" ss:Bold="1"/>
+   <Interior ss:Color="#003366" ss:Pattern="Solid"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="DataStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Alignment ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="CurrencyStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <NumberFormat ss:Format="&#34;&#8377;&#34;#,##0.00"/>
+   <Alignment ss:Horizontal="Right" ss:Vertical="Center"/>
+  </Style>
+  <Style ss:ID="CenterStyle">
+   <Font ss:FontName="Calibri" ss:Size="11" ss:Color="#000000"/>
+   <Alignment ss:Horizontal="Center" ss:Vertical="Center"/>
+  </Style>
+ </Styles>
+ <Worksheet ss:Name="Inventory">
+  <Table>
+   <Column ss:Width="200"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="140"/>
+   <Column ss:Width="180"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="110"/>
+   <Column ss:Width="130"/>
+   <Column ss:Width="120"/>
+   <Row ss:Height="24" ss:StyleID="HeaderStyle">
+    <Cell><Data ss:Type="String">Product Name</Data></Cell>
+    <Cell><Data ss:Type="String">SKU</Data></Cell>
+    <Cell><Data ss:Type="String">Category</Data></Cell>
+    <Cell><Data ss:Type="String">Warehouse Location</Data></Cell>
+    <Cell><Data ss:Type="String">Price (INR)</Data></Cell>
+    <Cell><Data ss:Type="String">Available Qty</Data></Cell>
+    <Cell><Data ss:Type="String">Reserved Qty</Data></Cell>
+    <Cell><Data ss:Type="String">Threshold</Data></Cell>
+    <Cell><Data ss:Type="String">Stock Status</Data></Cell>
+   </Row>`;
+
+    inventoryToExport.forEach(item => {
+        const prod = item.product || {};
+        const name = prod.name || item.name || 'Product';
+        const sku = item.sku || prod.sku || 'N/A';
+        const category = prod.category || 'General';
+        const warehouse = item.warehouseLocation || item.warehouse || prod.warehouse || 'Main Warehouse, Shelf A-12';
+        const price = prod.price || item.price || 0;
+        const avail = item.availableQuantity !== undefined ? item.availableQuantity : (item.quantity || 0);
+        const reserved = item.reservedQuantity || item.reserved || 0;
+        const threshold = item.lowStockThreshold || item.threshold || 10;
+
+        let statusStr = "In Stock";
+        if (avail === 0) statusStr = "Out of Stock";
+        else if (avail <= threshold) statusStr = "Low Stock";
+
+        xml += `
+   <Row ss:Height="20">
+    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">${escapeXml(name)}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(sku)}</Data></Cell>
+    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">${escapeXml(category)}</Data></Cell>
+    <Cell ss:StyleID="DataStyle"><Data ss:Type="String">${escapeXml(warehouse)}</Data></Cell>
+    <Cell ss:StyleID="CurrencyStyle"><Data ss:Type="Number">${Number(price)}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="Number">${Number(avail)}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="Number">${Number(reserved)}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="Number">${Number(threshold)}</Data></Cell>
+    <Cell ss:StyleID="CenterStyle"><Data ss:Type="String">${escapeXml(statusStr)}</Data></Cell>
+   </Row>`;
+    });
+
+    xml += `
+  </Table>
+ </Worksheet>
+</Workbook>`;
+
+    const blob = new Blob([xml], { type: "application/vnd.ms-excel" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.setAttribute("href", url);
+    link.setAttribute("download", `CloudBasket_Inventory_Report_${todayStr}.xls`);
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+}
+
+function escapeXml(str) {
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&apos;');
 }
 
 function applyFilters(searchTerm, statusFilter) {

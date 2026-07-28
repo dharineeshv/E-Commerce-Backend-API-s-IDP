@@ -1,6 +1,7 @@
 // JS for CloudBasket Home Page (storefront)
 import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
+import { fetchProductReviews } from "./api/reviewApi.js";
 
 let allProducts = [];
 let filteredProducts = [];
@@ -20,10 +21,23 @@ document.addEventListener("DOMContentLoaded", async () => {
     try {
         const festRes = await getActiveFestivalSale();
         if (festRes && festRes.success && festRes.data) {
-            activeFestivalSale = festRes.data;
+            const sale = festRes.data;
+            const now = Date.now();
+            const isStatusActive = (sale.status || '').toUpperCase() === 'ACTIVE';
+            const startDate = sale.startDate ? new Date(sale.startDate).getTime() : 0;
+            const endDate = sale.endDate ? new Date(sale.endDate).getTime() : Infinity;
+
+            if (isStatusActive && now >= startDate && now <= endDate) {
+                activeFestivalSale = sale;
+            } else {
+                activeFestivalSale = null;
+            }
+        } else {
+            activeFestivalSale = null;
         }
     } catch (e) {
         console.error("Failed to load festival sale", e);
+        activeFestivalSale = null;
     }
     initSlider();
     loadProducts();
@@ -84,6 +98,26 @@ async function loadProducts() {
                 console.error("Error fetching initial wishlist", e);
             }
         }
+
+        // Fetch review/rating data for products asynchronously
+        await Promise.all(allProducts.map(async (product) => {
+            const pId = product.productId || product.id;
+            if (pId) {
+                try {
+                    const revRes = await fetchProductReviews(pId);
+                    if (revRes && revRes.summary) {
+                        product.rating = revRes.summary.averageRating || product.rating || 4.5;
+                        product.reviewsCount = revRes.summary.totalReviews !== undefined ? revRes.summary.totalReviews : (product.reviews || 0);
+                    }
+                } catch (e) {
+                    console.error("Error fetching rating summary for product", pId, e);
+                }
+            }
+            if (!product.rating) {
+                product.rating = 4.5;
+                product.reviewsCount = product.reviews || 8;
+            }
+        }));
 
         filteredProducts = [...allProducts];
         renderProducts(filteredProducts);
@@ -207,6 +241,8 @@ function renderProducts(products) {
         const title = product.name || product.title;
         const category = product.category || 'CATEGORY';
         const price = product.sellingPrice || product.price;
+        const rating = product.rating || 4.5;
+        const reviewsCount = product.reviewsCount !== undefined ? product.reviewsCount : (product.reviews || 0);
 
         let imageUrl = product.imageUrl || product.image;
         
@@ -230,6 +266,19 @@ function renderProducts(products) {
         const discount = product.discountPercentage || product.discount || (Math.floor(Math.random() * 20) + 5);
         let originalPrice = product.mrp || (price / (1 - (discount/100))).toFixed(2);
         
+        // Stock badge evaluation (only show if stock is low or out of stock)
+        const qty = product.quantity !== undefined ? Number(product.quantity) : (product.stockQuantity !== undefined ? Number(product.stockQuantity) : (product.stock !== undefined ? Number(product.stock) : null));
+        const lowStockThreshold = Number(product.lowStockThreshold || 10);
+        const isLowStock = product.isLowStock || (qty !== null && qty > 0 && qty <= lowStockThreshold) || (product.stockStatus === 'low_stock');
+        const isOutOfStock = (qty !== null && qty === 0) || (product.stockStatus === 'out_of_stock');
+
+        let stockBadgeHtml = '';
+        if (isOutOfStock) {
+            stockBadgeHtml = `<div style="position: absolute; top: 10px; left: 10px; background: #ef4444; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; z-index: 2;">Out of Stock</div>`;
+        } else if (isLowStock) {
+            stockBadgeHtml = `<div style="position: absolute; top: 10px; left: 10px; background: #dc2626; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; z-index: 2;">Low Stock</div>`;
+        }
+
         const isInWishlist = userWishlistIds.has(id);
         const heartColor = isInWishlist ? '#ef4444' : '#64748b';
         const heartFill = isInWishlist ? '#ef4444' : 'none';
@@ -253,7 +302,7 @@ function renderProducts(products) {
         card.className = 'product-card';
         card.innerHTML = `
             <div class="card-img-container" style="position: relative; overflow: hidden;" onclick="viewProduct('${id}')">
-                <div style="position: absolute; top: 10px; left: 10px; background: #4a3418; color: white; padding: 2px 8px; border-radius: 12px; font-size: 0.75rem; font-weight: bold; z-index: 2;">-${discount}%</div>
+                ${stockBadgeHtml}
                 <button class="wishlist-btn" onclick="toggleWishlist(event, '${id}', this)" style="position: absolute; top: 10px; right: 10px; background: white; border: 1px solid #f1f5f9; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; color: ${heartColor}; z-index: 2;">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="${heartFill}" stroke="currentColor" stroke-width="2">
                         <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
@@ -266,7 +315,14 @@ function renderProducts(products) {
             </div>
             <div class="card-body" style="padding: 15px; display: flex; flex-direction: column; gap: 4px; flex-grow: 1;">
                 <div style="font-size: 0.65rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">${category}</div>
-                <h3 class="card-title" style="margin: 0 0 8px 0; font-size: 1rem; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title}</h3>
+                <h3 class="card-title" style="margin: 0 0 2px 0; font-size: 1rem; color: #0f172a; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title}</h3>
+                
+                <div class="product-rating" style="display: flex; align-items: center; gap: 4px; margin-bottom: 6px;">
+                    <span class="rating-stars" style="color: #f59e0b; font-size: 0.85rem; letter-spacing: 1px;">${renderStars(rating)}</span>
+                    <span class="rating-val" style="font-size: 0.75rem; font-weight: 600; color: #475569; margin-left: 2px;">${Number(rating).toFixed(1)}</span>
+                    <span class="rating-count" style="font-size: 0.7rem; color: #94a3b8;">(${reviewsCount})</span>
+                </div>
+
                 <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: auto;">
                     <div class="price-block" style="display: flex; flex-direction: column;">
                         <span style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">\u20B9${originalPrice}</span>
@@ -318,17 +374,15 @@ async function addToCart(productId, productName) {
 }
 
 function renderStars(rating) {
-    let starsHtml = '';
-    for (let i = 1; i <= 5; i++) {
-        if (i <= rating) {
-            starsHtml += '★';
-        } else if (i - 0.5 <= rating) {
-            starsHtml += '★';
-        } else {
-            starsHtml += '☆';
-        }
-    }
-    return starsHtml;
+    const r = Math.min(5, Math.max(0, Number(rating) || 0));
+    const fullStars = Math.floor(r);
+    const hasHalf = (r - fullStars) >= 0.5;
+    let stars = '';
+    for (let i = 0; i < fullStars; i++) stars += '★';
+    if (hasHalf && fullStars < 5) stars += '★';
+    const emptyCount = 5 - fullStars - (hasHalf ? 1 : 0);
+    for (let i = 0; i < emptyCount; i++) stars += '☆';
+    return stars;
 }
 
 function getMockProducts() {
@@ -385,115 +439,161 @@ async function loadMarketingBanner() {
         // 1. Fetch Coupons for Top Orange Banner
         try {
             const couponRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/coupons');
+            let bannerShown = false;
             if (couponRes.ok) {
                 const couponData = await couponRes.json();
                 if (couponData && couponData.success && couponData.data && couponData.data.length > 0) {
-                    const activeCoupons = couponData.data.filter(c => c.status === 'active' || c.status === 'ACTIVE');
+                    const now = Date.now();
+                    const activeCoupons = couponData.data.filter(c => {
+                        const isStatusActive = (c.status || '').toUpperCase() === 'ACTIVE';
+                        const startDate = c.startDate ? new Date(c.startDate).getTime() : 0;
+                        const expiryDate = c.expiryDate ? new Date(c.expiryDate).getTime() : (c.endDate ? new Date(c.endDate).getTime() : Infinity);
+                        const notExpired = now <= expiryDate;
+                        const hasStarted = now >= startDate;
+                        const notExhausted = (c.usedCount || 0) < (c.usageLimit || Infinity);
+                        return isStatusActive && hasStarted && notExpired && notExhausted;
+                    });
+
                     if (activeCoupons.length > 0 && banner && badge && text) {
                         const coupon = activeCoupons[0];
                         badge.innerText = 'SPECIAL COUPON';
                         text.innerText = `${coupon.discountValue}${coupon.discountType === 'percentage' || coupon.discountType === 'PERCENTAGE' ? '%' : ' OFF'}! Use code ${coupon.couponCode} at checkout.`;
                         banner.classList.add('visible');
+                        bannerShown = true;
                     }
                 }
             }
-        } catch (e) { console.error("Error loading coupons", e); }
+            if (!bannerShown && banner) {
+                banner.classList.remove('visible');
+            }
+        } catch (e) { 
+            console.error("Error loading coupons", e); 
+            if (banner) banner.classList.remove('visible');
+        }
 
         // 2. Fetch Festival Sales for Hero Slider
         try {
             const festRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/festival-sales/active');
+            const sliderWrapper = document.getElementById('store-slider');
+            let festSlideInjected = false;
+
             if (festRes.ok) {
                 const festData = await festRes.json();
                 if (festData && festData.success && festData.data) {
                     const sale = festData.data;
-                    const sliderWrapper = document.getElementById('store-slider');
-                    if (sliderWrapper) {
-                        const slide = document.createElement('div');
-                        slide.className = 'store-slide active'; // Make it active immediately
-                        
-                        const imageUrl = sale.bannerImageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
-                        const fallbackImg = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
-                        slide.style.position = 'relative';
-                        slide.style.overflow = 'hidden';
-                        
-                        slide.innerHTML = `
-                            <img src="${imageUrl}" onerror="this.onerror=null; this.src='${fallbackImg}';" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
-                            <div class="slide-overlay" style="z-index: 1; background: linear-gradient(90deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.6) 40%, transparent 100%); width: 100%; height: 100%; position: absolute; top:0; left:0;"></div>
-                            <div class="store-slide-content" style="z-index: 2; position: relative; display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 0 5%; max-width: 650px;">
-                                
-                                <div style="background: #92400e; color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 20px; display: inline-block;">
-                                    Limited Time Offer
+                    const now = Date.now();
+                    const isStatusActive = (sale.status || '').toUpperCase() === 'ACTIVE';
+                    const startDate = sale.startDate ? new Date(sale.startDate).getTime() : 0;
+                    const endDate = sale.endDate ? new Date(sale.endDate).getTime() : Infinity;
+
+                    if (isStatusActive && now >= startDate && now <= endDate) {
+                        activeFestivalSale = sale;
+                        if (sliderWrapper) {
+                            const oldFestSlide = document.getElementById('fest-sale-slide');
+                            if (oldFestSlide) oldFestSlide.remove();
+
+                            const slide = document.createElement('div');
+                            slide.id = 'fest-sale-slide';
+                            slide.className = 'store-slide active';
+                            
+                            const imageUrl = sale.bannerImageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                            const fallbackImg = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                            slide.style.position = 'relative';
+                            slide.style.overflow = 'hidden';
+                            
+                            slide.innerHTML = `
+                                <img src="${imageUrl}" onerror="this.onerror=null; this.src='${fallbackImg}';" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; object-fit: cover; z-index: 0;">
+                                <div class="slide-overlay" style="z-index: 1; background: linear-gradient(90deg, rgba(15,23,42,0.9) 0%, rgba(15,23,42,0.6) 40%, transparent 100%); width: 100%; height: 100%; position: absolute; top:0; left:0;"></div>
+                                <div class="store-slide-content" style="z-index: 2; position: relative; display: flex; flex-direction: column; align-items: flex-start; text-align: left; padding: 0 5%; max-width: 650px;">
+                                    
+                                    <div style="background: #92400e; color: white; padding: 6px 16px; border-radius: 20px; font-size: 0.9rem; font-weight: 600; margin-bottom: 20px; display: inline-block;">
+                                        Limited Time Offer
+                                    </div>
+                                    
+                                    <h2 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
+                                        🎉 ${sale.festivalName || sale.title || 'Special Offer'}
+                                    </h2>
+                                    
+                                    <p style="font-size: 1.25rem; color: #f8fafc; line-height: 1.5; margin-bottom: 30px; margin-top: 0;">
+                                        Up to ${sale.discountValue}${sale.discountType === 'percentage' || sale.discountType === 'PERCENTAGE' ? '%' : ' OFF'} on all inventory items. Boost your sales today!
+                                    </p>
+                                    
+                                    <div style="display: flex; gap: 15px; margin-bottom: 30px;">
+                                        <div style="display: flex; flex-direction: column; align-items: center;">
+                                            <div id="fest-days" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                            <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">DAYS</span>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; align-items: center;">
+                                            <div id="fest-hours" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                            <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">HOURS</span>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; align-items: center;">
+                                            <div id="fest-mins" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                            <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">MINS</span>
+                                        </div>
+                                        <div style="display: flex; flex-direction: column; align-items: center;">
+                                            <div id="fest-secs" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
+                                            <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">SECS</span>
+                                        </div>
+                                    </div>
+                                    
+                                    <button class="btn" style="background: #f59e0b; color: #0f172a; font-weight: 700; padding: 12px 32px; border-radius: 25px; border: none; cursor: pointer; font-size: 1rem;" onclick="document.getElementById('product-grid').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
                                 </div>
-                                
-                                <h2 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                                    🎉 ${sale.festivalName || 'Special Offer'}
-                                </h2>
-                                
-                                <p style="font-size: 1.25rem; color: #f8fafc; line-height: 1.5; margin-bottom: 30px; margin-top: 0;">
-                                    Up to ${sale.discountValue}${sale.discountType === 'percentage' || sale.discountType === 'PERCENTAGE' ? '%' : ' OFF'} on all inventory items. Boost your sales today!
-                                </p>
-                                
-                                <div style="display: flex; gap: 15px; margin-bottom: 30px;">
-                                    <div style="display: flex; flex-direction: column; align-items: center;">
-                                        <div id="fest-days" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
-                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">DAYS</span>
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; align-items: center;">
-                                        <div id="fest-hours" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
-                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">HOURS</span>
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; align-items: center;">
-                                        <div id="fest-mins" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
-                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">MINS</span>
-                                    </div>
-                                    <div style="display: flex; flex-direction: column; align-items: center;">
-                                        <div id="fest-secs" style="background: rgba(255,255,255,0.75); color: #0f172a; font-size: 1.5rem; font-weight: 700; width: 60px; height: 60px; display: flex; align-items: center; justify-content: center; border-radius: 8px; margin-bottom: 5px;">00</div>
-                                        <span style="color: #cbd5e1; font-size: 0.75rem; font-weight: 600; letter-spacing: 1px;">SECS</span>
-                                    </div>
-                                </div>
-                                
-                                <button class="btn" style="background: #f59e0b; color: #0f172a; font-weight: 700; padding: 12px 32px; border-radius: 25px; border: none; cursor: pointer; font-size: 1rem;" onclick="document.getElementById('product-grid').scrollIntoView({behavior: 'smooth'})">Shop Now</button>
-                            </div>
-                        `;
-                        
-                        // Insert at the beginning of the slider
-                        sliderWrapper.insertBefore(slide, sliderWrapper.firstChild);
-                        
-                        // Set up timer
-                        const endDate = new Date(sale.endDate).getTime();
-                        setInterval(() => {
-                            const now = new Date().getTime();
-                            const distance = endDate - now;
+                            `;
                             
-                            const dEl = document.getElementById('fest-days');
-                            const hEl = document.getElementById('fest-hours');
-                            const mEl = document.getElementById('fest-mins');
-                            const sEl = document.getElementById('fest-secs');
+                            sliderWrapper.insertBefore(slide, sliderWrapper.firstChild);
+                            festSlideInjected = true;
                             
-                            if (!dEl || !hEl || !mEl || !sEl) return;
+                            // Timer & auto-removal upon expiration
+                            const timerInterval = setInterval(() => {
+                                const currNow = Date.now();
+                                const distance = endDate - currNow;
+                                
+                                const dEl = document.getElementById('fest-days');
+                                const hEl = document.getElementById('fest-hours');
+                                const mEl = document.getElementById('fest-mins');
+                                const sEl = document.getElementById('fest-secs');
+                                
+                                if (distance <= 0) {
+                                    clearInterval(timerInterval);
+                                    if (dEl) dEl.innerText = "00";
+                                    if (hEl) hEl.innerText = "00";
+                                    if (mEl) mEl.innerText = "00";
+                                    if (sEl) sEl.innerText = "00";
+                                    
+                                    const expiredSlide = document.getElementById('fest-sale-slide');
+                                    if (expiredSlide) expiredSlide.remove();
+                                    activeFestivalSale = null;
+                                    renderProducts(filteredProducts);
+                                    return;
+                                }
+
+                                if (!dEl || !hEl || !mEl || !sEl) return;
+                                
+                                const days = Math.floor(distance / (1000 * 60 * 60 * 24));
+                                const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                                const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
+                                const seconds = Math.floor((distance % (1000 * 60)) / 1000);
+                                
+                                dEl.innerText = days.toString().padStart(2, '0');
+                                hEl.innerText = hours.toString().padStart(2, '0');
+                                mEl.innerText = minutes.toString().padStart(2, '0');
+                                sEl.innerText = seconds.toString().padStart(2, '0');
+                            }, 1000);
                             
-                            if (distance < 0) {
-                                dEl.innerText = "00"; hEl.innerText = "00"; mEl.innerText = "00"; sEl.innerText = "00";
-                                return;
-                            }
-                            const days = Math.floor(distance / (1000 * 60 * 60 * 24));
-                            const hours = Math.floor((distance % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-                            const minutes = Math.floor((distance % (1000 * 60 * 60)) / (1000 * 60));
-                            const seconds = Math.floor((distance % (1000 * 60)) / 1000);
-                            
-                            dEl.innerText = days.toString().padStart(2, '0');
-                            hEl.innerText = hours.toString().padStart(2, '0');
-                            mEl.innerText = minutes.toString().padStart(2, '0');
-                            sEl.innerText = seconds.toString().padStart(2, '0');
-                        }, 1000);
-                        
-                        // Fix active states for other slides
-                        const allSlides = sliderWrapper.querySelectorAll('.store-slide');
-                        allSlides.forEach((s, idx) => {
-                            if (idx !== 0) s.classList.remove('active');
-                        });
+                            const allSlides = sliderWrapper.querySelectorAll('.store-slide');
+                            allSlides.forEach((s, idx) => {
+                                if (idx !== 0) s.classList.remove('active');
+                            });
+                        }
                     }
                 }
+            }
+
+            if (!festSlideInjected) {
+                const oldFestSlide = document.getElementById('fest-sale-slide');
+                if (oldFestSlide) oldFestSlide.remove();
+                activeFestivalSale = null;
             }
         } catch (e) { console.error("Error loading festival sales", e); }
         
