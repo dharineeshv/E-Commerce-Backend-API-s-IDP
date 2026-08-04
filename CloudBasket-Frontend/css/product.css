@@ -207,26 +207,65 @@
     border-radius: 6px;
 }
 
+.pd-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+    margin-bottom: 35px;
+    width: 100%;
+}
+
+@media (max-width: 600px) {
+    .pd-btn-group {
+        grid-template-columns: 1fr;
+    }
+}
+
 .pd-add-to-cart-btn {
     background: #f59e0b;
     color: white;
     border: none;
-    padding: 18px;
+    padding: 16px 20px;
     border-radius: 30px;
-    font-size: 18px;
+    font-size: 16px;
     font-weight: 600;
     cursor: pointer;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
-    transition: background 0.2s;
-    margin-bottom: 40px;
+    gap: 8px;
+    transition: all 0.2s ease;
     width: 100%;
+    margin-bottom: 0;
 }
 
 .pd-add-to-cart-btn:hover {
     background: #d97706;
+    transform: translateY(-1px);
+}
+
+.pd-buy-now-btn {
+    background: #2563eb;
+    color: white;
+    border: none;
+    padding: 16px 20px;
+    border-radius: 30px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25);
+}
+
+.pd-buy-now-btn:hover {
+    background: #1d4ed8;
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(37, 99, 235, 0.35);
 }
 
 .pd-benefits-box {

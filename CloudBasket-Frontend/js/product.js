@@ -60,11 +60,22 @@ async function initProductPage() {
     setupTabs();
     initReviewsSection(productId);
     
-    // Wire Add to Cart
+    // Wire Add to Cart & Buy Now
     const addBtn = document.getElementById('pd-add-to-cart-btn');
     if (addBtn) {
         addBtn.addEventListener('click', () => {
             addToCart(productId, product.name || product.title);
+        });
+    }
+
+    const buyNowBtn = document.getElementById('pd-buy-now-btn');
+    if (buyNowBtn) {
+        buyNowBtn.addEventListener('click', async () => {
+            buyNowBtn.disabled = true;
+            const origHtml = buyNowBtn.innerHTML;
+            buyNowBtn.innerHTML = `<span>Processing...</span>`;
+            await addToCart(productId, product.name || product.title);
+            window.location.href = 'checkout.html';
         });
     }
 }

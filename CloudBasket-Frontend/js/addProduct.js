@@ -2,7 +2,7 @@
 // CloudBasket Admin Panel
 // Add Product Module
 // Part 1
-// ==========================================================
+// =====...=====================================================
 
 import {
     uploadProductImage,
