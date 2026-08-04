@@ -25,6 +25,17 @@ jobs:
         with:
           node-version: '20'
 
+      - name: Install Microservice Dependencies
+        run: |
+          npm --prefix CloudBasket-Frontend install --no-audit --no-fund || true
+          npm --prefix product-service install --no-audit --no-fund || true
+          npm --prefix order-service install --no-audit --no-fund || true
+          npm --prefix inventory-service install --no-audit --no-fund || true
+          npm --prefix cart-service install --no-audit --no-fund || true
+          npm --prefix payment-service install --no-audit --no-fund || true
+          npm --prefix user-profile-service install --no-audit --no-fund || true
+          npm --prefix marketing-service install --no-audit --no-fund || true
+
       - name: Execute All Service Unit Test Suites
         run: |
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
