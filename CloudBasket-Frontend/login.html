@@ -115,15 +115,21 @@
         <section class="filters-bar">
             <span class="filter-label">FILTERS:</span>
             
-            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
-                <select id="category-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500; margin-right: 10px;">
-                    <option value="">All Categories</option>
-                    <option value="Mobiles">Mobiles</option>
-                    <option value="Laptops">Laptops</option>
-                    <option value="Earbuds">Earbuds</option>
-                    <option value="Watches">Watches</option>
-                </select>
+            <div class="category-pills-container" id="category-pills-container" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="category-pill active" data-category="">All Categories</button>
+                <button type="button" class="category-pill" data-category="Mobiles">Mobiles</button>
+                <button type="button" class="category-pill" data-category="Laptops">Laptops</button>
+                <button type="button" class="category-pill" data-category="Earbuds">Earbuds</button>
+                <button type="button" class="category-pill" data-category="Watches">Watches</button>
             </div>
+            
+            <select id="category-filter" style="display: none;">
+                <option value="">All Categories</option>
+                <option value="Mobiles">Mobiles</option>
+                <option value="Laptops">Laptops</option>
+                <option value="Earbuds">Earbuds</option>
+                <option value="Watches">Watches</option>
+            </select>
             
             <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
                 <select id="brand-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500; margin-right: 10px;">

@@ -286,6 +286,33 @@ a {
     cursor: pointer;
 }
 
+.category-pill {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 8px;
+    outline: none;
+    cursor: pointer;
+    font-family: inherit;
+    font-size: 14px;
+    background: #dbeafe;
+    color: #1e40af;
+    font-weight: 500;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+}
+
+.category-pill:hover {
+    background: #bfdbfe;
+    color: #1e3a8a;
+}
+
+.category-pill.active {
+    background: #2563eb;
+    color: #ffffff;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
+}
+
 .clear-filters {
     background: transparent;
     border: none;

@@ -179,16 +179,25 @@ async function loadProducts() {
 function setupFilters() {
     const searchInput = document.getElementById('search-input');
     const categoryFilter = document.getElementById('category-filter');
+    const brandFilter = document.getElementById('brand-filter');
     const sortFilter = document.getElementById('sort-filter');
     const priceFilter = document.getElementById('price-filter');
     const clearBtn = document.getElementById('clear-filters');
+    const categoryPills = document.querySelectorAll('.category-pill');
 
     if (searchInput) {
         searchInput.addEventListener('input', applyFilters);
     }
     
     if (categoryFilter) {
-        categoryFilter.addEventListener('change', applyFilters);
+        categoryFilter.addEventListener('change', () => {
+            syncCategoryPills(categoryFilter.value);
+            applyFilters();
+        });
+    }
+
+    if (brandFilter) {
+        brandFilter.addEventListener('change', applyFilters);
     }
     
     if (sortFilter) {
@@ -199,15 +208,40 @@ function setupFilters() {
         priceFilter.addEventListener('change', applyFilters);
     }
 
+    categoryPills.forEach(pill => {
+        pill.addEventListener('click', () => {
+            const val = pill.getAttribute('data-category') || '';
+            if (categoryFilter) {
+                categoryFilter.value = val;
+            }
+            syncCategoryPills(val);
+            applyFilters();
+        });
+    });
+
     if (clearBtn) {
         clearBtn.addEventListener('click', () => {
             if(searchInput) searchInput.value = '';
             if(categoryFilter) categoryFilter.value = '';
+            if(brandFilter) brandFilter.value = '';
             if(sortFilter) sortFilter.value = 'relevance';
             if(priceFilter) priceFilter.value = '';
+            syncCategoryPills('');
             applyFilters();
         });
     }
+}
+
+function syncCategoryPills(val) {
+    const categoryPills = document.querySelectorAll('.category-pill');
+    categoryPills.forEach(pill => {
+        const pillVal = pill.getAttribute('data-category') || '';
+        if (pillVal.toLowerCase() === (val || '').toLowerCase()) {
+            pill.classList.add('active');
+        } else {
+            pill.classList.remove('active');
+        }
+    });
 }
 
 function applyFilters() {
@@ -235,13 +269,23 @@ function applyFilters() {
         priceRange = priceFilter.value;
     }
 
+    let brand = '';
+    const brandFilter = document.getElementById('brand-filter');
+    if (brandFilter) {
+        brand = brandFilter.value.toLowerCase();
+    }
+
     filteredProducts = allProducts.filter(product => {
         const title = (product.name || product.title || '').toLowerCase();
         const desc = (product.description || '').toLowerCase();
-        const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm);
+        const prodBrand = (product.brand || '').toLowerCase();
+
+        const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm) || prodBrand.includes(searchTerm);
         
         const prodCategory = (product.category || 'CATEGORY').toLowerCase();
         const matchesCategory = category === '' || prodCategory === category.toLowerCase();
+
+        const matchesBrand = brand === '' || prodBrand.includes(brand) || title.includes(brand);
 
         let matchesPrice = true;
         if (priceRange !== '') {
@@ -258,7 +302,7 @@ function applyFilters() {
             }
         }
 
-        return matchesSearch && matchesCategory && matchesPrice;
+        return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
     });
     
     if (sortBy === 'price-low') {
