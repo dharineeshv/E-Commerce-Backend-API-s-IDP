@@ -177,6 +177,14 @@
                 </select>
             </div>
             
+            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
+                <select id="sort-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500; margin-right: 10px;">
+                    <option value="relevance">Sort By: Relevance</option>
+                    <option value="price-low">Sort By: Price (Low to High)</option>
+                    <option value="price-high">Sort By: Price (High to Low)</option>
+                </select>
+            </div>
+            
             <button class="clear-filters" id="clear-filters">Clear All</button>
         </section>
 
@@ -189,17 +197,6 @@
             <div class="listing-meta">
                 <div class="product-count">
                     <h2 id="product-count-display">Loading products...</h2>
-                </div>
-                
-                <div class="sort-by">
-                    <span>Sort by:</span>
-                    <div class="sort-dropdown" style="padding: 0; border: none; background: transparent;">
-                        <select id="sort-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500;">
-                            <option value="relevance">Relevance</option>
-                            <option value="price-low">Price: Low to High</option>
-                            <option value="price-high">Price: High to Low</option>
-                        </select>
-                    </div>
                 </div>
             </div>
         </div>
