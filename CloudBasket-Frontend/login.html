@@ -60,6 +60,60 @@
         </div>
     </header>
 
+    <!-- Flipkart / Amazon Style Top Category Bar -->
+    <div class="fk-category-bar-section">
+        <div class="fk-category-bar-container">
+            <div class="fk-category-item active category-pill" data-category="">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect><rect x="3" y="14" width="7" height="7" rx="2"></rect></svg>
+                </div>
+                <span class="fk-category-label">For You</span>
+            </div>
+
+            <div class="fk-category-item category-pill" data-category="Mobiles">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                </div>
+                <span class="fk-category-label">Mobiles</span>
+            </div>
+
+            <div class="fk-category-item category-pill" data-category="Laptops">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>
+                </div>
+                <span class="fk-category-label">Laptops</span>
+            </div>
+
+            <div class="fk-category-item category-pill" data-category="Earbuds">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                </div>
+                <span class="fk-category-label">Earbuds</span>
+            </div>
+
+            <div class="fk-category-item category-pill" data-category="Watches">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline><path d="M16.51 17.35l-.85 3.83a2 2 0 0 1-1.96 1.57h-3.4a2 2 0 0 1-1.96-1.57l-.85-3.83"></path><path d="M7.49 6.65l.85-3.83A2 2 0 0 1 10.3 1.25h3.4a2 2 0 0 1 1.96 1.57l.85 3.83"></path></svg>
+                </div>
+                <span class="fk-category-label">Watches</span>
+            </div>
+
+            <div class="fk-category-item category-pill" data-category="Fashion">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.38 3.46L16 2a4 4 0 0 1-8 0L3.62 3.46a2 2 0 0 0-1.34 2.23l.58 3.47a1 1 0 0 0 .99.84H6v10a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2V10h2.15a1 1 0 0 0 .99-.84l.58-3.47a2 2 0 0 0-1.34-2.23z"></path></svg>
+                </div>
+                <span class="fk-category-label">Fashion</span>
+            </div>
+
+            <div class="fk-category-item category-pill" data-category="Appliances">
+                <div class="fk-category-icon-box">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="7" width="20" height="15" rx="2" ry="2"></rect><polyline points="17 2 12 7 7 2"></polyline></svg>
+                </div>
+                <span class="fk-category-label">Appliances</span>
+            </div>
+        </div>
+    </div>
+
     <main class="store-main">
         <!-- Hero Slider -->
         <section class="hero-slider-container">
@@ -115,20 +169,14 @@
         <section class="filters-bar">
             <span class="filter-label">FILTERS:</span>
             
-            <div class="category-pills-container" id="category-pills-container" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
-                <button type="button" class="category-pill active" data-category="">All Categories</button>
-                <button type="button" class="category-pill" data-category="Mobiles">Mobiles</button>
-                <button type="button" class="category-pill" data-category="Laptops">Laptops</button>
-                <button type="button" class="category-pill" data-category="Earbuds">Earbuds</button>
-                <button type="button" class="category-pill" data-category="Watches">Watches</button>
-            </div>
-            
             <select id="category-filter" style="display: none;">
                 <option value="">All Categories</option>
                 <option value="Mobiles">Mobiles</option>
                 <option value="Laptops">Laptops</option>
                 <option value="Earbuds">Earbuds</option>
                 <option value="Watches">Watches</option>
+                <option value="Fashion">Fashion</option>
+                <option value="Appliances">Appliances</option>
             </select>
             
             <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
