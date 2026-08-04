@@ -25,8 +25,16 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Execute Frontend Unit Tests
-        run: node --test CloudBasket-Frontend/test/*.test.js
+      - name: Execute All Service Unit Test Suites
+        run: |
+          node --test CloudBasket-Frontend/test/frontendUtils.test.js
+          node --test product-service/test/productService.test.js
+          node --test order-service/test/orderService.test.js
+          node --test inventory-service/test/inventoryService.test.js
+          node --test cart-service/test/cartService.test.js
+          node --test payment-service/test/paymentService.test.js
+          node --test user-profile-service/test/userProfileService.test.js
+          node --test marketing-service/test/marketingService.test.js
 
   deploy:
     name: Deploy to AWS S3 & CloudFront
