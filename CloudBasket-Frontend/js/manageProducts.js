@@ -6,13 +6,15 @@ import { renderPaginationControls } from './utils/pagination.js';
 import { setupModals, openViewModal, openDeleteModal, closeDeleteModal } from './utils/modal.js';
 import { initializeProfileCard } from './profile.js';
 import { initializeLogout } from './logout.js';
+import { initializeSidebar } from './sidebar.js';
 
 let allProducts = [];
 let currentPage = 1;
 let itemsPerPage = 10;
 
-document.addEventListener('DOMContentLoaded', () => {
+function initManageProductsPage() {
     // Layout functionality
+    initializeSidebar();
     setupLayout();
     
     // UI initializations
@@ -38,7 +40,13 @@ document.addEventListener('DOMContentLoaded', () => {
     
     // Load Data
     loadProducts();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initManageProductsPage);
+} else {
+    initManageProductsPage();
+}
 
 async function loadProducts() {
     const tableBodyId = 'productTableBody';
@@ -48,18 +56,20 @@ async function loadProducts() {
         const response = await fetchProducts();
         if (response && response.success && response.products) {
             allProducts = response.products;
+            updateSummaryCards(allProducts);
             if (allProducts.length === 0) {
                 showEmptyState(tableBodyId);
             } else {
                 renderProducts(allProducts, tableBodyId);
-                updateSummaryCards(allProducts);
                 attachActionHandlers();
             }
         } else {
+            updateSummaryCards([]);
             showErrorState(tableBodyId, loadProducts);
         }
     } catch (error) {
         console.error('Error fetching products:', error);
+        updateSummaryCards([]);
         showErrorState(tableBodyId, loadProducts);
     }
 }
@@ -124,7 +134,26 @@ function handleViewProduct(id) {
     // Image
     const imgEl = document.getElementById('viewProductImage');
     if (imgEl) {
-        imgEl.src = product.imageUrl || 'https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400&q=80';
+        let imgUrl = product.imageUrl || product.image;
+        if (imgUrl && imgUrl.includes('amazonaws.com')) {
+            try {
+                const parsed = new URL(imgUrl);
+                imgUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            } catch (e) {}
+        }
+        const prodTitle = product.name || 'Product';
+        let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        if (prodTitle.toLowerCase().includes('vivo')) {
+            fallbackImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
+        }
+        if (!imgUrl || imgUrl.includes('placeholder')) {
+            imgUrl = fallbackImg;
+        }
+        imgEl.src = imgUrl;
+        imgEl.onerror = function() {
+            this.onerror = null;
+            this.src = fallbackImg;
+        };
     }
     
     // Specifications

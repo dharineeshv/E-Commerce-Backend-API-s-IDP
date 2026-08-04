@@ -42,7 +42,13 @@ function renderStarRating(rating) {
 window.toggleWishlist = async function(event, id, btnElement) {
     event.stopPropagation();
     try {
-        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || btnElement.style.color === '#ef4444';
+        const svg = btnElement.querySelector('svg');
+        const svgFill = svg ? svg.getAttribute('fill') : '';
+        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || 
+                        btnElement.style.color === '#ef4444' || 
+                        svgFill === '#ef4444' || 
+                        svgFill === 'rgb(239, 68, 68)';
+
         if (isAdded) {
             const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
                 method: 'DELETE'
@@ -51,6 +57,10 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 userWishlistIds.delete(id);
                 btnElement.style.color = '#64748b';
                 btnElement.style.fill = 'none';
+                if (svg) {
+                    svg.setAttribute('fill', 'none');
+                    svg.style.fill = 'none';
+                }
             }
         } else {
             const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
@@ -62,6 +72,10 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 userWishlistIds.add(id);
                 btnElement.style.color = '#ef4444';
                 btnElement.style.fill = '#ef4444';
+                if (svg) {
+                    svg.setAttribute('fill', '#ef4444');
+                    svg.style.fill = '#ef4444';
+                }
             }
         }
     } catch (error) {

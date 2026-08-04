@@ -54,7 +54,13 @@
                   <div class="product-image-container">
                       <div class="product-main-image-wrapper">
                           <span class="new-release-badge">New Release</span>
+                          <button class="img-nav-btn prev-img-btn" id="pd-prev-btn" aria-label="Previous Image" style="display: none;">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="15 18 9 12 15 6"></polyline></svg>
+                          </button>
                           <img id="pd-image" src="" alt="Product Image">
+                          <button class="img-nav-btn next-img-btn" id="pd-next-btn" aria-label="Next Image" style="display: none;">
+                              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="9 18 15 12 9 6"></polyline></svg>
+                          </button>
                       </div>
                       <!-- Thumbnails -->
                       <div class="product-thumbnails-container" id="pd-thumbnails">
@@ -248,7 +254,7 @@
         </div>
     </footer>
 
-    <script src="js/product.js?v=4" type="module"></script>
+    <script src="js/product.js?v=6" type="module"></script>
     <script src="js/components/chatbot.js?v=3"></script>
 </body>
 </html>

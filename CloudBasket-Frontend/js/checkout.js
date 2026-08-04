@@ -27,6 +27,19 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPurchase = document.getElementById('btn-complete-purchase');
     let cartItems = [];
     let checkoutTotal = 0;
+    let allProductsMap = {};
+
+    function sanitizeUrl(url) {
+        if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        try {
+            if (url.includes('amazonaws.com')) {
+                const parsed = new URL(url);
+                return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            }
+        } catch (e) {}
+        return url;
+    }
+
     function formatCurrency(value) {
         return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
@@ -35,6 +48,21 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!summaryList) return;
         
         summaryList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">Loading your cart...</p>';
+
+        try {
+            const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+            const prodData = await prodRes.json();
+            const list = prodData.products || prodData.data || prodData || [];
+            if (Array.isArray(list)) {
+                list.forEach(p => {
+                    const pId = p.productId || p.id;
+                    if (pId) allProductsMap[pId] = p;
+                    if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
+                    if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+                });
+            }
+        } catch (e) {}
+
         try {
             const festResponse = await getActiveFestivalSale();
             if (festResponse && festResponse.success && festResponse.data) {
@@ -80,7 +108,18 @@ document.addEventListener('DOMContentLoaded', () => {
             let originalPrice = item.price || 0;
             let price = originalPrice;
             const quantity = item.quantity || 1;
-            const imageUrl = item.imageUrl || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=80&q=80';
+            
+            const pId = item.productId || item.id;
+            const matchedProd = (pId && allProductsMap[pId]) || (title && allProductsMap[title.toLowerCase().trim()]) || {};
+            
+            let rawImg = item.imageUrl || item.image || matchedProd.imageUrl || matchedProd.image;
+            if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {
+                const firstImg = matchedProd.images[0];
+                rawImg = typeof firstImg === 'string' ? firstImg : (firstImg.imageUrl || firstImg.url || firstImg.image);
+            }
+            
+            const imageUrl = sanitizeUrl(rawImg);
+            const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
             
             if (activeFestivalSale) {
                 if (activeFestivalSale.discountType === 'percentage' || activeFestivalSale.discountType === 'PERCENTAGE') {
@@ -105,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 `;
             }
             itemEl.innerHTML = `
-                <div class="mini-img"><img src="${imageUrl}" alt="${title}"></div>
+                <div class="mini-img"><img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='${fallbackImg}';"></div>
                 <div class="mini-details">
                     <p class="mini-title">${title}</p>
                     <p class="mini-qty">Qty: ${quantity}</p>

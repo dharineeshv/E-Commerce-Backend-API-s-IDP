@@ -16,6 +16,7 @@ import { validateProduct } from "./utils/validation.js";
 
 
 import { initializeLogout } from "./logout.js";
+import { initializeSidebar } from "./sidebar.js";
 
 // ==========================================================
 // DOM Ready
@@ -25,6 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
     console.log("✅ Add Product Loaded");
 
+    initializeSidebar();
     initialize();
     initializeLogout();
 

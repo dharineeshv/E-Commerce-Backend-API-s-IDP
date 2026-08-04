@@ -27,11 +27,38 @@ function checkAuth() {
     }
 }
 
+let allProductsMap = {};
+
+function sanitizeUrl(url) {
+    if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+    try {
+        if (url.includes('amazonaws.com')) {
+            const parsed = new URL(url);
+            return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+        }
+    } catch (e) {}
+    return url;
+}
+
 async function loadWishlist() {
     const grid = document.getElementById('wishlist-grid');
     const emptyMessage = document.getElementById('empty-wishlist-message');
     const suggestedSection = document.getElementById('suggested-section');
     
+    try {
+        const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        const prodData = await prodRes.json();
+        const list = prodData.products || prodData.data || prodData || [];
+        if (Array.isArray(list)) {
+            list.forEach(p => {
+                const pId = p.productId || p.id;
+                if (pId) allProductsMap[pId] = p;
+                if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
+                if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+            });
+        }
+    } catch (e) {}
+
     try {
         const response = await getWishlist(customerId);
         wishlistItems = response.items || [];
@@ -60,17 +87,26 @@ function renderWishlistItems(items) {
     grid.innerHTML = '';
     
     items.forEach(item => {
-        const product = item.productDetails;
-        if (!product) return;
+        const product = item.productDetails || {};
         
         const id = product.productId || product.id || item.productId;
-        const title = product.name || product.title || 'Unnamed Product';
+        const title = product.name || product.title || item.productName || 'Unnamed Product';
         const category = product.category || 'Category';
         const price = product.sellingPrice || product.price || 0;
-        const imageUrl = product.imageUrl || product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
         
-        const quantity = Number(product.quantity || 100);
-        const lowStockThreshold = Number(product.lowStockThreshold || 20);
+        const matchedProd = (id && allProductsMap[id]) || (title && allProductsMap[title.toLowerCase().trim()]) || {};
+        
+        let rawImg = product.imageUrl || product.image || matchedProd.imageUrl || matchedProd.image;
+        if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {
+            const firstImg = matchedProd.images[0];
+            rawImg = typeof firstImg === 'string' ? firstImg : (firstImg.imageUrl || firstImg.url || firstImg.image);
+        }
+        
+        const imageUrl = sanitizeUrl(rawImg);
+        const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        
+        const quantity = Number(product.quantity || matchedProd.quantity || 100);
+        const lowStockThreshold = Number(product.lowStockThreshold || matchedProd.lowStockThreshold || 20);
         
         let stockBadge = '<span class="stock-badge">In Stock</span>';
         if (quantity === 0) {
@@ -88,7 +124,7 @@ function renderWishlistItems(items) {
                         <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
                     </svg>
                 </button>
-                <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';">
+                <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='${fallbackImg}';">
                 <button class="quick-view-btn" data-product-id="${id}">Quick View</button>
             </div>
             <div class="card-body">
@@ -243,36 +279,120 @@ async function loadSuggestedProducts(currentWishlist) {
         suggested.forEach(product => {
             const id = product.productId || product.id;
             const title = product.name || product.title;
+            const category = (product.category || 'ELECTRONICS').toUpperCase();
             let imageUrl = product.imageUrl || product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
             if (imageUrl.includes('cloudbasket-products-images.s3.ap-southeast-1.amazonaws.com')) {
                 imageUrl = imageUrl.replace('cloudbasket-products-images.s3.ap-southeast-1.amazonaws.com', 'd2vghmouksu39n.cloudfront.net');
             }
-            const price = Number(product.sellingPrice || product.price || 0).toLocaleString('en-IN', {
+            const formattedPrice = Number(product.sellingPrice || product.price || 0).toLocaleString('en-IN', {
                 style: 'currency',
                 currency: 'INR'
             });
             
             const card = document.createElement('div');
-            card.style.cssText = 'background: white; border-radius: 8px; padding: 16px; border: 1px solid #e2e8f0; display: flex; flex-direction: column; cursor: pointer; transition: transform 0.2s;';
-            card.onmouseover = () => card.style.transform = 'translateY(-4px)';
-            card.onmouseout = () => card.style.transform = 'translateY(0)';
+            card.className = 'product-card';
+            card.style.cssText = 'background: white; border-radius: 16px; border: 1px solid #f1f5f9; padding: 15px; display: flex; flex-direction: column; position: relative; box-shadow: 0 4px 12px rgba(0,0,0,0.03); cursor: pointer; transition: transform 0.2s, box-shadow 0.2s;';
+            card.onmouseover = () => { card.style.transform = 'translateY(-4px)'; card.style.boxShadow = '0 10px 20px rgba(0,0,0,0.08)'; };
+            card.onmouseout = () => { card.style.transform = 'translateY(0)'; card.style.boxShadow = '0 4px 12px rgba(0,0,0,0.03)'; };
             
             card.innerHTML = `
-                <div style="height: 180px; display: flex; justify-content: center; align-items: center; margin-bottom: 16px;">
+                <div class="card-img-container" style="position: relative; height: 180px; display: flex; justify-content: center; align-items: center; overflow: hidden; border-radius: 12px;">
+                    <button class="wishlist-btn" data-id="${id}" style="position: absolute; top: 10px; right: 10px; background: white; border: 1px solid #f1f5f9; border-radius: 50%; width: 32px; height: 32px; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05); cursor: pointer; color: #64748b; z-index: 2;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20.84 4.61a5.5 5.5 0 00-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 00-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 000-7.78z"></path>
+                        </svg>
+                    </button>
                     <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';" style="max-height: 100%; max-width: 100%; object-fit: contain;">
                 </div>
-                <h4 style="font-size: 14px; margin: 0 0 8px 0; color: #0f172a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${title}</h4>
-                <div style="font-weight: 700; color: #00478f; margin-bottom: 16px;">${price}</div>
-                <button class="suggested-view-btn" style="width: 100%; padding: 8px; border: 1px solid #e2e8f0; background: white; color: #00478f; border-radius: 4px; font-size: 12px; cursor: pointer; text-align: center; margin-top: auto; transition: background 0.2s;">View Details</button>
+                <div class="card-body" style="display: flex; flex-direction: column; margin-top: 12px; flex-grow: 1;">
+                    <div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">${category}</div>
+                    <h3 style="margin: 4px 0 8px 0; font-size: 0.95rem; color: #0f172a; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">${title}</h3>
+                    <div style="display: flex; justify-content: space-between; align-items: center; margin-top: auto; padding-top: 6px;">
+                        <span style="font-size: 1.1rem; font-weight: 700; color: #0f3d7a;">${formattedPrice}</span>
+                        <button class="suggested-cart-btn" data-id="${id}" style="width: 36px; height: 36px; border-radius: 50%; background: #0f3d7a; color: white; border: none; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 5px rgba(15,61,122,0.2);">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="9" cy="21" r="1"></circle>
+                                <circle cx="20" cy="21" r="1"></circle>
+                                <path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
             `;
             
-            card.addEventListener('click', () => {
-                window.location.href = 'product.html?id=' + id;
+            card.addEventListener('click', (e) => {
+                if (!e.target.closest('.wishlist-btn') && !e.target.closest('.suggested-cart-btn')) {
+                    window.location.href = 'product.html?id=' + id;
+                }
             });
-            
-            const btn = card.querySelector('.suggested-view-btn');
-            btn.onmouseover = () => btn.style.background = '#f8fafc';
-            btn.onmouseout = () => btn.style.background = 'white';
+
+            // Wishlist Toggle
+            const wishBtn = card.querySelector('.wishlist-btn');
+            if (wishBtn) {
+                wishBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    try {
+                        const svg = wishBtn.querySelector('svg');
+                        const svgFill = svg ? svg.getAttribute('fill') : '';
+                        const isAdded = wishBtn.style.color === 'rgb(239, 68, 68)' || 
+                                        wishBtn.style.color === '#ef4444' || 
+                                        svgFill === '#ef4444' || 
+                                        svgFill === 'rgb(239, 68, 68)';
+
+                        if (isAdded) {
+                            const res = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${customerId}/${id}`, { method: 'DELETE' });
+                            if (res.ok) {
+                                wishBtn.style.color = '#64748b';
+                                wishBtn.style.fill = 'none';
+                                if (svg) { svg.setAttribute('fill', 'none'); svg.style.fill = 'none'; }
+                            }
+                        } else {
+                            const res = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ customerId, productId: id })
+                            });
+                            if (res.ok) {
+                                wishBtn.style.color = '#ef4444';
+                                wishBtn.style.fill = '#ef4444';
+                                if (svg) { svg.setAttribute('fill', '#ef4444'); svg.style.fill = '#ef4444'; }
+                            }
+                        }
+                    } catch (err) {
+                        console.error("Failed toggling wishlist on suggested product", err);
+                    }
+                });
+            }
+
+            // Add to Cart
+            const cartBtn = card.querySelector('.suggested-cart-btn');
+            if (cartBtn) {
+                cartBtn.addEventListener('click', async (e) => {
+                    e.stopPropagation();
+                    try {
+                        cartBtn.style.opacity = '0.5';
+                        const res = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`, {
+                            method: 'POST',
+                            body: JSON.stringify({ productId: id, quantity: 1 })
+                        });
+                        const data = await res.json();
+                        if (res.ok && data.success) {
+                            cartBtn.style.background = '#10b981';
+                            if (window.showCustomAlert) window.showCustomAlert(`Successfully added ${title} to cart!`);
+                            else alert(`Successfully added ${title} to cart!`);
+                            setTimeout(() => {
+                                cartBtn.style.background = '#0f3d7a';
+                                cartBtn.style.opacity = '1';
+                            }, 2000);
+                        } else {
+                            cartBtn.style.opacity = '1';
+                        }
+                    } catch (err) {
+                        console.error("Failed adding suggested product to cart", err);
+                        cartBtn.style.opacity = '1';
+                    }
+                });
+            }
             
             suggestedGrid.appendChild(card);
         });

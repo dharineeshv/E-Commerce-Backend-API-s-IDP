@@ -29,21 +29,31 @@ export function initializeLogout() {
         document.body.appendChild(modal);
     }
 
-    const logoutButtons = document.querySelectorAll('[id="logout-button"], .logout');
+    // Event delegation for all logout buttons across the app
+    document.addEventListener("click", (event) => {
+        const logoutTarget = event.target.closest('#logout-button, .logout');
+        if (logoutTarget) {
+            event.preventDefault();
+            event.stopPropagation();
+            const currentModal = document.getElementById("logout-modal");
+            if (currentModal) {
+                currentModal.classList.add("show");
+                currentModal.classList.add("active");
+            }
+        }
+    });
+
     const cancel = document.getElementById("cancel-logout");
     const confirm = document.getElementById("confirm-logout");
 
-    logoutButtons.forEach(btn => {
-        btn.addEventListener("click", (event) => {
-            event.preventDefault();
-            event.stopPropagation();
-            if (modal) modal.classList.add("show");
-        });
-    });
-
     if (cancel) {
-        cancel.addEventListener("click", () => {
-            if (modal) modal.classList.remove("show");
+        cancel.addEventListener("click", (e) => {
+            e.preventDefault();
+            const currentModal = document.getElementById("logout-modal");
+            if (currentModal) {
+                currentModal.classList.remove("show");
+                currentModal.classList.remove("active");
+            }
         });
     }
 
@@ -51,12 +61,16 @@ export function initializeLogout() {
         modal.addEventListener("click", (event) => {
             if (event.target === modal) {
                 modal.classList.remove("show");
+                modal.classList.remove("active");
             }
         });
     }
 
     if (confirm) {
-        confirm.addEventListener("click", performLogout);
+        confirm.addEventListener("click", (e) => {
+            e.preventDefault();
+            performLogout();
+        });
     }
 }
 

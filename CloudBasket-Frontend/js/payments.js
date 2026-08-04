@@ -2,6 +2,7 @@ import { getAllAdminPayments, refundPayment } from "./api/paymentApi.js?v=2";
 import { getAllOrders } from "./api/orderApi.js?v=2";
 import { initializeProfileCard } from "./profile.js?v=2";
 import { initializeLogout } from "./logout.js?v=2";
+import { initializeSidebar } from "./sidebar.js";
 import { getProfile } from "./api/userProfileApi.js?v=2";
 
 const state = {
@@ -13,6 +14,7 @@ const state = {
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
+    initializeSidebar();
     
     // Sidebar toggle (standard dashboard feature)
     const menuToggle = document.getElementById('menu-toggle');

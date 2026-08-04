@@ -8,7 +8,34 @@ document.addEventListener('DOMContentLoaded', () => {
         return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
+    let allProductsMap = {};
+
+    function sanitizeUrl(url) {
+        if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        try {
+            if (url.includes('amazonaws.com')) {
+                const parsed = new URL(url);
+                return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            }
+        } catch (e) {}
+        return url;
+    }
+
     async function loadCart() {
+        try {
+            const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+            const prodData = await prodRes.json();
+            const list = prodData.products || prodData.data || prodData || [];
+            if (Array.isArray(list)) {
+                list.forEach(p => {
+                    const pId = p.productId || p.id;
+                    if (pId) allProductsMap[pId] = p;
+                    if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
+                    if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+                });
+            }
+        } catch (e) {}
+
         try {
             const response = await apiFetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart');
             
@@ -115,11 +142,22 @@ document.addEventListener('DOMContentLoaded', () => {
             const title = item.productName || item.title || 'Product';
             const price = item.price || 0;
             const quantity = item.quantity || 1;
-            const imageUrl = item.imageUrl || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=150&q=80';
+            
+            const pId = item.productId || item.id;
+            const matchedProd = (pId && allProductsMap[pId]) || (title && allProductsMap[title.toLowerCase().trim()]) || {};
+            
+            let rawImg = item.imageUrl || item.image || matchedProd.imageUrl || matchedProd.image;
+            if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {
+                const firstImg = matchedProd.images[0];
+                rawImg = typeof firstImg === 'string' ? firstImg : (firstImg.imageUrl || firstImg.url || firstImg.image);
+            }
+            
+            const imageUrl = sanitizeUrl(rawImg);
+            const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
             
             itemEl.innerHTML = `
                 <div class="cart-item-img">
-                    <img src="${imageUrl}" alt="${title}">
+                    <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='${fallbackImg}';">
                 </div>
                 <div class="cart-item-details">
                     <div class="item-title-row">

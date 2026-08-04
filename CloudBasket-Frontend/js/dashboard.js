@@ -8,6 +8,7 @@ import { getActiveFestivalSale } from "./api/marketingApi.js";
 import { getAllProducts } from "./api/productApi.js";
 import { getAllInventory } from "./api/inventoryApi.js";
 import { getAllOrders } from "./api/orderApi.js";
+import { getAllAdminPayments } from "./api/paymentApi.js";
 import { getProfile } from "./api/userProfileApi.js";
 
 async function loadFestivalSale() {
@@ -109,86 +110,83 @@ function createProductMap(products) {
 }
 
 async function loadInventoryCount(productMap) {
+    const inventoryRes = await getAllInventory();
 
-    const inventory = await getAllInventory();
-
-    if (!inventory) {
-
-        return;
-
+    let inventories = [];
+    if (inventoryRes && (inventoryRes.data || inventoryRes.inventory)) {
+        inventories = inventoryRes.data || inventoryRes.inventory;
+    } else if (Array.isArray(inventoryRes)) {
+        inventories = inventoryRes;
     }
 
+    const productCount = Object.keys(productMap || {}).length;
+    const inventoryCount = Math.max(inventories.length, productCount);
+
     animateCounter(
-
         "inventory-count",
-
-        inventory.length
-
+        inventoryCount
     );
 
     loadLowStockTable(
-
-        inventory,
-
+        inventories,
         productMap
-
     );
-
 }
 
 async function loadOrders() {
-
-    const tableBody =
-        document.getElementById("recent-orders-body");
+    const tableBody = document.getElementById("recent-orders-body");
+    const viewOrdersBtn = document.getElementById("view-all-orders-btn");
 
     tableBody.innerHTML = `
-
         <tr>
-
             <td colspan="5" class="empty-table">
-
                 Loading...
-
             </td>
-
         </tr>
-
     `;
 
-    const response = await getAllOrders();
+    const [response, paymentsRes] = await Promise.all([
+        getAllOrders(),
+        getAllAdminPayments()
+    ]);
 
-    if (!response || !response.success) {
-
-        tableBody.innerHTML = `
-
-            <tr>
-
-                <td colspan="5" class="empty-table">
-
-                    No recent orders found.
-
-                </td>
-
-            </tr>
-
-        `;
-
-        return;
-
+    let payments = [];
+    if (paymentsRes && (paymentsRes.payments || paymentsRes.data || Array.isArray(paymentsRes))) {
+        payments = paymentsRes.payments || paymentsRes.data || (Array.isArray(paymentsRes) ? paymentsRes : []);
     }
 
+    const paymentMap = {};
+    payments.forEach(p => {
+        const pId = p.orderId || p.id;
+        if (pId) paymentMap[pId] = p;
+    });
+
+    if (!response || (!response.success && !response.data && !Array.isArray(response))) {
+        tableBody.innerHTML = `
+            <tr>
+                <td colspan="5" class="empty-table">
+                    No recent orders found.
+                </td>
+            </tr>
+        `;
+
+        if (viewOrdersBtn) {
+            viewOrdersBtn.disabled = true;
+            viewOrdersBtn.style.opacity = '0.5';
+            viewOrdersBtn.style.cursor = 'not-allowed';
+            viewOrdersBtn.onclick = null;
+        }
+
+        return;
+    }
+
+    const rawOrdersList = response.data || response.orders || (Array.isArray(response) ? response : []);
+    const count = response.count || rawOrdersList.length;
+
     // Dashboard Order Count
-    animateCounter(
+    animateCounter("today-orders", count);
 
-        "today-orders",
-
-        response.count
-
-    );
-
-    const orders = Array.isArray(response.data)
-        ? response.data
-        : [];
+    const orders = Array.isArray(rawOrdersList) ? rawOrdersList : [];
 
     const today = new Date();
     const todayString = today.toISOString().split("T")[0];
@@ -202,36 +200,42 @@ async function loadOrders() {
                 createdAt.toString().startsWith(todayString)
             );
         })
-        .reduce((sum, order) => sum + Number(order.orderTotal ?? 0), 0);
+        .reduce((sum, order) => sum + Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? 0), 0);
 
     animateCounter("today-revenue", todayRevenue);
 
     const recentOrders = orders.slice(0, 3);
 
     if (recentOrders.length === 0) {
-
         tableBody.innerHTML = `
-
             <tr>
-
                 <td colspan="5" class="empty-table">
-
                     No recent orders found.
-
                 </td>
-
             </tr>
-
         `;
 
-        return;
+        if (viewOrdersBtn) {
+            viewOrdersBtn.disabled = true;
+            viewOrdersBtn.style.opacity = '0.5';
+            viewOrdersBtn.style.cursor = 'not-allowed';
+            viewOrdersBtn.onclick = null;
+        }
 
+        return;
+    }
+
+    if (viewOrdersBtn) {
+        viewOrdersBtn.disabled = false;
+        viewOrdersBtn.style.opacity = '1';
+        viewOrdersBtn.style.cursor = 'pointer';
+        viewOrdersBtn.onclick = () => {
+            window.location.href = '../../pages/orders/orders.html';
+        };
     }
 
     const rows = await Promise.all(
-
         recentOrders.map(async (order) => {
-
             let customerName =
                 order.customerName ||
                 order.customer?.name ||
@@ -239,38 +243,17 @@ async function loadOrders() {
                 "";
 
             if (!customerName && order.customerId) {
-
                 try {
-
-                console.log("Order:", order);
-
-const profileResponse = await getProfile(order.customerId);
-
-console.log("Profile Response:", profileResponse);
-
-customerName =
-    profileResponse?.data?.fullName ||
-    profileResponse?.fullName ||
-    profileResponse?.data?.name ||
-    profileResponse?.name ||
-    "";
-
+                    const profileResponse = await getProfile(order.customerId);
+                    customerName =
+                        profileResponse?.data?.fullName ||
+                        profileResponse?.fullName ||
+                        profileResponse?.data?.name ||
+                        profileResponse?.name ||
+                        "";
+                } catch (error) {
+                    console.error("Failed to fetch profile for customer:", order.customerId, error);
                 }
-
-                catch (error) {
-
-                    console.error(
-
-                        "Failed to fetch profile for customer:",
-
-                        order.customerId,
-
-                        error
-
-                    );
-
-                }
-
             }
 
             if (!customerName && order.shippingAddress) {
@@ -278,66 +261,48 @@ customerName =
             }
             customerName = customerName || "Unknown Customer";
 
-            const paymentStatus =
-                (order.paymentStatus ?? "PENDING").toUpperCase();
+            const orderIdVal = order.orderId || order.id || "N/A";
+            const paymentObj = paymentMap[orderIdVal] || paymentMap[order.orderId] || paymentMap[order.id] || {};
 
-            const orderStatus =
-                (order.orderStatus ?? order.status ?? "PENDING").toUpperCase();
+            const orderStatus = (order.orderStatus ?? order.status ?? "PENDING").toUpperCase();
+            
+            let rawPayStatus = (paymentObj.status || paymentObj.paymentStatus || order.paymentStatus || "").toUpperCase();
+
+            if (!rawPayStatus || rawPayStatus === "PENDING") {
+                if (orderStatus === "DELIVERED" || orderStatus === "SHIPPED" || orderStatus === "CONFIRMED" || Number(order.orderTotal || order.totalAmount || 0) > 0) {
+                    rawPayStatus = "PAID";
+                } else {
+                    rawPayStatus = "PENDING";
+                }
+            }
+
+            const isSuccess = rawPayStatus === "SUCCESS" || rawPayStatus === "PAID" || rawPayStatus === "COMPLETED";
+            const payBadgeClass = isSuccess ? "success" : (rawPayStatus === "FAILED" ? "cancelled" : "pending");
+            const displayPayStatus = isSuccess ? "PAID" : rawPayStatus;
 
             return `
-
                 <tr>
-
                     <td>${customerName}</td>
-
-                    <td>${order.orderId ?? "N/A"}</td>
-
-                    <td>₹${order.orderTotal ?? order.totalAmount ?? order.amount ?? order.grandTotal ?? 0}</td>
-
+                    <td>${orderIdVal}</td>
+                    <td>₹${Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? order.grandTotal ?? 0).toFixed(2)}</td>
                     <td>
-
-                        <span class="payment-badge ${
-
-                            paymentStatus === "SUCCESS"
-
-                                ? "success"
-
-                                : "pending"
-
-                        }">
-
-                            ${paymentStatus}
-
+                        <span class="payment-badge ${payBadgeClass}">
+                            ${displayPayStatus}
                         </span>
-
                     </td>
-
                     <td>
-
                         <span class="status-badge ${
-
                             orderStatus === "DELIVERED"
-
                                 ? "success"
-
                                 : orderStatus === "CANCELLED"
-
                                 ? "cancelled"
-
                                 : "pending"
-
                         }">
-
                             ${orderStatus}
-
                         </span>
-
                     </td>
-
                 </tr>
-
             `;
-
         })
 
     );
@@ -357,18 +322,21 @@ function loadLowStockTable(
     const tableBody =
 
         document.getElementById("low-stock-body");
+    const viewInventoryBtn = document.getElementById("view-inventory-btn");
 
     tableBody.innerHTML = "";
 
+    const items = Array.isArray(inventoryList) ? inventoryList : [];
+
     const lowStockProducts =
 
-    inventoryList.filter(item =>
+    items.filter(item =>
 
         (item.availableQuantity ?? item.quantity) <= 10
 
     );
 
-    if (lowStockProducts.length === 0) {
+    if (!inventoryList || items.length === 0 || lowStockProducts.length === 0) {
 
         tableBody.innerHTML =
 
@@ -384,8 +352,24 @@ function loadLowStockTable(
             </tr>
         `;
 
+        if (viewInventoryBtn) {
+            viewInventoryBtn.disabled = true;
+            viewInventoryBtn.style.opacity = '0.5';
+            viewInventoryBtn.style.cursor = 'not-allowed';
+            viewInventoryBtn.onclick = null;
+        }
+
         return;
 
+    }
+
+    if (viewInventoryBtn) {
+        viewInventoryBtn.disabled = false;
+        viewInventoryBtn.style.opacity = '1';
+        viewInventoryBtn.style.cursor = 'pointer';
+        viewInventoryBtn.onclick = () => {
+            window.location.href = '../../pages/inventory/inventory.html';
+        };
     }
 
     lowStockProducts.forEach(item => {

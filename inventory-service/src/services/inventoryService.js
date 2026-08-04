@@ -10,7 +10,7 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 const INVENTORY_TABLE = process.env.INVENTORY_TABLE;
-const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL;
+const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || "http://localhost:3003/api/v1/products";
 const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(
   /\/api\/v1\/products\/?$/i,
   ""

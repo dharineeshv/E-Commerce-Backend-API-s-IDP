@@ -2,8 +2,13 @@ import { applyFilters, updateFilterState, clearFilters, getStats, goToPage, stat
 import { renderOrdersTable, renderStats } from './utils/renderOrders.js';
 import { initModals, openViewModal, handleUpdateStatus, handleAssignShipment } from './utils/orderModals.js';
 import { initializeLogout } from './logout.js';
+import { initializeSidebar } from './sidebar.js';
 
 document.addEventListener('DOMContentLoaded', async () => {
+    initializeSidebar();
+    resetDOMFilters();
+    clearFilters();
+
     // 1. Initial Render Loading State
     renderSkeleton();
 
@@ -335,4 +340,18 @@ function setupLayoutLogic() {
     document.getElementById('profile-email').textContent = "admin@cloudbasket.com";
     document.getElementById('profile-phone').textContent = "+1 234 567 8900";
     document.getElementById('profile-username').textContent = "dharineesh.admin";
+}
+
+function resetDOMFilters() {
+    const searchInput = document.getElementById('orderSearch');
+    const filterStatus = document.getElementById('filterStatus');
+    const filterPaymentStatus = document.getElementById('filterPaymentStatus');
+    const filterPaymentMethod = document.getElementById('filterPaymentMethod');
+    const filterDate = document.getElementById('filterDate');
+
+    if (searchInput) searchInput.value = '';
+    if (filterStatus) filterStatus.value = '';
+    if (filterPaymentStatus) filterPaymentStatus.value = '';
+    if (filterPaymentMethod) filterPaymentMethod.value = '';
+    if (filterDate) filterDate.value = '';
 }

@@ -20,8 +20,10 @@ export async function fetchAndLoadOrders() {
     });
 
     const missingEmailCustomerIds = new Set();
-    if (ordersRes && ordersRes.success && ordersRes.data) {
-        ordersRes.data.forEach(order => {
+    const rawOrders = ordersRes ? (ordersRes.data || ordersRes.orders || (Array.isArray(ordersRes) ? ordersRes : [])) : [];
+
+    if (Array.isArray(rawOrders) && rawOrders.length > 0) {
+        rawOrders.forEach(order => {
             const shipping = order.shippingAddress || {};
             const customerEmail = shipping.email || shipping.customerEmail;
             if ((!customerEmail || customerEmail === "customer@example.com") && order.customerId) {
@@ -29,15 +31,18 @@ export async function fetchAndLoadOrders() {
             }
         });
         
-        const profiles = await Promise.all([...missingEmailCustomerIds].map(id => getProfile(id)));
-        const profileMap = {};
-        profiles.forEach(p => {
-            if (p && p.success && p.data) {
-                profileMap[p.data.customerId] = p.data.email;
-            }
-        });
+        let profileMap = {};
+        try {
+            const profiles = await Promise.all([...missingEmailCustomerIds].map(id => getProfile(id)));
+            profiles.forEach(p => {
+                if (p && (p.success || p.data) && (p.data || p)) {
+                    const data = p.data || p;
+                    if (data.customerId) profileMap[data.customerId] = data.email;
+                }
+            });
+        } catch(e) {}
 
-        state.allOrders = ordersRes.data.map(order => {
+        state.allOrders = rawOrders.map(order => {
             const dateObj = new Date(order.createdAt || order.updatedAt || Date.now());
             
             // Safe fallbacks for nested properties
@@ -63,16 +68,17 @@ export async function fetchAndLoadOrders() {
             
             // Items
             const items = order.items || [];
-            const productName = items.length > 0 ? items[0].name || items[0].productId : "Unknown Product";
+            const productName = items.length > 0 ? (items[0].name || items[0].productName || items[0].title || items[0].productId || "Product") : "Unknown Product";
             
-            const payment = paymentMap[order.orderId] || {};
+            const orderIdVal = order.orderId || order.id || order._id || 'ORD-UNKNOWN';
+            const payment = paymentMap[orderIdVal] || paymentMap[order.orderId] || paymentMap[order.id] || {};
 
             return {
-                id: order.orderId,
+                id: orderIdVal,
                 customerName,
                 customerEmail,
                 customerAvatar: initials,
-                amount: order.orderTotal || order.totalAmount || 0,
+                amount: Number(order.orderTotal || order.totalAmount || order.amount || 0),
                 status: (() => {
                     const s = order.status || "PENDING";
                     return s.charAt(0).toUpperCase() + s.slice(1).toLowerCase();
@@ -103,6 +109,12 @@ export async function fetchAndLoadOrders() {
     
     state.filteredOrders = [...state.allOrders];
     applyFilters();
+
+    // Safety fallback: If active filters filtered out everything on load, show all orders
+    const hasActiveFilters = Object.values(state.filters).some(v => v !== "");
+    if (!hasActiveFilters && state.filteredOrders.length === 0 && state.allOrders.length > 0) {
+        state.filteredOrders = [...state.allOrders];
+    }
 }
 
 // State
@@ -122,25 +134,51 @@ export const state = {
 
 // Filter & Search Logic
 export function applyFilters() {
-    state.filteredOrders = state.allOrders.filter(order => {
-        // Search
-        const searchTerm = state.filters.search.toLowerCase();
-        const matchesSearch = 
-            order.id.toLowerCase().includes(searchTerm) ||
-            order.customerName.toLowerCase().includes(searchTerm) ||
-            order.customerEmail.toLowerCase().includes(searchTerm) ||
-            order.productName.toLowerCase().includes(searchTerm);
+    const searchTerm = (state.filters.search || "").trim().toLowerCase();
 
-        // Filters
-        const matchesStatus = !state.filters.status || order.status === state.filters.status;
-        const matchesPaymentStatus = !state.filters.paymentStatus || order.paymentStatus === state.filters.paymentStatus;
-        const matchesPaymentMethod = !state.filters.paymentMethod || order.paymentMethod === state.filters.paymentMethod;
+    state.filteredOrders = state.allOrders.filter(order => {
+        if (!order) return false;
+
+        // 1. Search
+        const orderId = String(order.id || "").toLowerCase();
+        const custName = String(order.customerName || "").toLowerCase();
+        const custEmail = String(order.customerEmail || "").toLowerCase();
+        const prodName = String(order.productName || "").toLowerCase();
+
+        const matchesSearch = !searchTerm || 
+            orderId.includes(searchTerm) ||
+            custName.includes(searchTerm) ||
+            custEmail.includes(searchTerm) ||
+            prodName.includes(searchTerm);
+
+        // 2. Status Filter
+        const filterStatus = (state.filters.status || "").trim().toLowerCase();
+        const orderStatus = String(order.status || "").toLowerCase();
+        const matchesStatus = !filterStatus || orderStatus === filterStatus;
+
+        // 3. Payment Status Filter
+        const filterPaymentStatus = (state.filters.paymentStatus || "").trim().toLowerCase();
+        const orderPaymentStatus = String(order.paymentStatus || "").toLowerCase();
+        const matchesPaymentStatus = !filterPaymentStatus || orderPaymentStatus === filterPaymentStatus;
+
+        // 4. Payment Method Filter
+        const filterPaymentMethod = (state.filters.paymentMethod || "").trim().toLowerCase();
+        const orderPaymentMethod = String(order.paymentMethod || "").toLowerCase();
+        const matchesPaymentMethod = !filterPaymentMethod || 
+            orderPaymentMethod === filterPaymentMethod ||
+            orderPaymentMethod.replace(/_/g, ' ') === filterPaymentMethod.replace(/_/g, ' ') ||
+            filterPaymentMethod.includes(orderPaymentMethod) ||
+            orderPaymentMethod.includes(filterPaymentMethod);
         
-        // Date formatting match (simple implementation)
+        // 5. Date Filter
         let matchesDate = true;
         if (state.filters.date) {
-            const filterDate = new Date(state.filters.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
-            matchesDate = order.date === filterDate;
+            try {
+                const filterDate = new Date(state.filters.date).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" });
+                matchesDate = order.date === filterDate;
+            } catch (e) {
+                matchesDate = true;
+            }
         }
 
         return matchesSearch && matchesStatus && matchesPaymentStatus && matchesPaymentMethod && matchesDate;
@@ -168,13 +206,18 @@ export function clearFilters() {
 
 // Pagination Logic
 export function getPaginatedOrders() {
+    const totalPages = getTotalPages();
+    if (state.currentPage > totalPages && totalPages > 0) {
+        state.currentPage = 1;
+    }
     const startIndex = (state.currentPage - 1) * state.itemsPerPage;
     const endIndex = startIndex + state.itemsPerPage;
     return state.filteredOrders.slice(startIndex, endIndex);
 }
 
 export function getTotalPages() {
-    return Math.ceil(state.filteredOrders.length / state.itemsPerPage);
+    const pages = Math.ceil(state.filteredOrders.length / state.itemsPerPage);
+    return pages > 0 ? pages : 1;
 }
 
 export function goToPage(page) {
@@ -188,16 +231,22 @@ export function goToPage(page) {
 
 // Stats Logic
 export function getStats() {
-    const total = state.filteredOrders.length;
-    const pending = state.filteredOrders.filter(o => o.status === "Pending" || o.status === "Processing" || o.status === "Confirmed").length;
-    const shipped = state.filteredOrders.filter(o => o.status === "Shipped").length;
-    const delivered = state.filteredOrders.filter(o => o.status === "Delivered").length;
-    const cancelled = state.filteredOrders.filter(o => o.status === "Cancelled").length;
+    const total = state.allOrders.length;
+    const pending = state.allOrders.filter(o => {
+        const s = (o.status || "").toLowerCase();
+        return s === "pending" || s === "processing" || s === "confirmed";
+    }).length;
+    const shipped = state.allOrders.filter(o => (o.status || "").toLowerCase() === "shipped").length;
+    const delivered = state.allOrders.filter(o => (o.status || "").toLowerCase() === "delivered").length;
+    const cancelled = state.allOrders.filter(o => (o.status || "").toLowerCase() === "cancelled").length;
     
-    const today = new Date(2023, 9, 24).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }); // Mock today
-    const todayRev = state.filteredOrders
-        .filter(o => o.date === today && o.paymentStatus === "Paid")
-        .reduce((sum, o) => sum + o.amount, 0);
+    // Revenue from all orders
+    const todayRev = state.allOrders
+        .filter(o => {
+            const ps = (o.paymentStatus || "").toLowerCase();
+            return ps === "paid" || ps === "completed" || ps === "success";
+        })
+        .reduce((sum, o) => sum + Number(o.amount || 0), 0);
 
     return { total, pending, shipped, delivered, cancelled, todayRev };
 }

@@ -45,17 +45,64 @@ document.addEventListener("DOMContentLoaded", async () => {
     loadMarketingBanner();
 });
 
+let sliderTimer = null;
+
 function initSlider() {
-    let currentSlide = 0;
-    
-    // Automatically switch slide every 5 seconds
-    setInterval(() => {
+    refreshSliderDots();
+}
+
+function refreshSliderDots() {
+    const dotsContainer = document.getElementById('slider-dots') || document.querySelector('.hero-slider-container .slider-dots');
+    const slides = document.querySelectorAll('.store-slide');
+    if (slides.length === 0) return;
+
+    let activeIndex = Array.from(slides).findIndex(s => s.classList.contains('active'));
+    if (activeIndex === -1) {
+        activeIndex = 0;
+        slides[0].classList.add('active');
+    }
+
+    if (dotsContainer) {
+        dotsContainer.innerHTML = '';
+        slides.forEach((_, idx) => {
+            const dot = document.createElement('div');
+            dot.className = 'dot' + (idx === activeIndex ? ' active' : '');
+            dot.setAttribute('title', `Go to slide ${idx + 1}`);
+            dot.addEventListener('click', () => {
+                goToSlide(idx);
+            });
+            dotsContainer.appendChild(dot);
+        });
+    }
+
+    resetSliderTimer();
+}
+
+function goToSlide(idx) {
+    const slides = document.querySelectorAll('.store-slide');
+    if (slides.length === 0) return;
+    slides.forEach(s => s.classList.remove('active'));
+    const targetIdx = (idx + slides.length) % slides.length;
+    slides[targetIdx].classList.add('active');
+
+    const dotsContainer = document.getElementById('slider-dots') || document.querySelector('.hero-slider-container .slider-dots');
+    if (dotsContainer) {
+        const dots = dotsContainer.querySelectorAll('.dot');
+        dots.forEach((d, i) => {
+            if (i === targetIdx) d.classList.add('active');
+            else d.classList.remove('active');
+        });
+    }
+    resetSliderTimer();
+}
+
+function resetSliderTimer() {
+    if (sliderTimer) clearInterval(sliderTimer);
+    sliderTimer = setInterval(() => {
         const slides = document.querySelectorAll('.store-slide');
         if (slides.length === 0) return;
-        
-        slides.forEach(s => s.classList.remove('active'));
-        currentSlide = (currentSlide + 1) % slides.length;
-        slides[currentSlide].classList.add('active');
+        let current = Array.from(slides).findIndex(s => s.classList.contains('active'));
+        goToSlide(current + 1);
     }, 5000);
 }
 
@@ -595,6 +642,7 @@ async function loadMarketingBanner() {
                 if (oldFestSlide) oldFestSlide.remove();
                 activeFestivalSale = null;
             }
+            refreshSliderDots();
         } catch (e) { console.error("Error loading festival sales", e); }
         
     } catch (error) {
@@ -618,14 +666,25 @@ window.viewProduct = function(productIdOrObj) {
 window.toggleWishlist = async function(event, id, btnElement) {
     event.stopPropagation();
     try {
-        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || btnElement.style.color === '#ef4444';
+        const svg = btnElement.querySelector('svg');
+        const svgFill = svg ? svg.getAttribute('fill') : '';
+        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || 
+                        btnElement.style.color === '#ef4444' || 
+                        svgFill === '#ef4444' || 
+                        svgFill === 'rgb(239, 68, 68)';
+
         if (isAdded) {
             const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
+                userWishlistIds.delete(id);
                 btnElement.style.color = '#64748b';
                 btnElement.style.fill = 'none';
+                if (svg) {
+                    svg.setAttribute('fill', 'none');
+                    svg.style.fill = 'none';
+                }
             }
         } else {
             const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
@@ -634,8 +693,13 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 body: JSON.stringify({ customerId: CUSTOMER_ID, productId: id })
             });
             if (response.ok) {
+                userWishlistIds.add(id);
                 btnElement.style.color = '#ef4444';
                 btnElement.style.fill = '#ef4444';
+                if (svg) {
+                    svg.setAttribute('fill', '#ef4444');
+                    svg.style.fill = '#ef4444';
+                }
             }
         }
     } catch (error) {

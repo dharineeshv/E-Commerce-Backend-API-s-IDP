@@ -30,6 +30,14 @@ export function closeDeleteModal() {
     }
 }
 
+// Bind to window for inline HTML onclick handlers
+if (typeof window !== 'undefined') {
+    window.openViewModal = openViewModal;
+    window.closeViewModal = closeViewModal;
+    window.openDeleteModal = openDeleteModal;
+    window.closeDeleteModal = closeDeleteModal;
+}
+
 export function setupModals() {
     const modals = document.querySelectorAll('.modal-overlay');
     modals.forEach(modal => {

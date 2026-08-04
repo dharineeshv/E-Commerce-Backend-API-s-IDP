@@ -43,13 +43,29 @@ export function renderProducts(products, tableBodyId) {
             }
         }
 
+        let imgUrl = imageUrl || product.image;
+        if (imgUrl && imgUrl.includes('amazonaws.com')) {
+            try {
+                const parsed = new URL(imgUrl);
+                imgUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            } catch (e) {}
+        }
+        const prodTitle = name || 'Product';
+        let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        if (prodTitle.toLowerCase().includes('vivo')) {
+            fallbackImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
+        }
+        if (!imgUrl || imgUrl.includes('placeholder')) {
+            imgUrl = fallbackImg;
+        }
+
         html += `
             <tr>
                 <td>
                     <div class="product-cell">
-                        <img src="${imageUrl}" alt="${name || 'Product'}">
+                        <img src="${imgUrl}" alt="${prodTitle}" onerror="this.onerror=null; this.src='${fallbackImg}';">
                         <div class="product-name-sku">
-                            <h4>${name || 'Unnamed Product'}</h4>
+                            <h4>${prodTitle}</h4>
                             <span>SKU: ${sku || 'N/A'}</span>
                         </div>
                     </div>
@@ -97,20 +113,30 @@ export function renderProducts(products, tableBodyId) {
     tbody.innerHTML = html;
 }
 
-export function updateSummaryCards(products) {
-    if (!products) return;
-    const lowStockThreshold = 20; // Default or could be dynamic
+export function updateSummaryCards(products = []) {
+    const safeProducts = Array.isArray(products) ? products : [];
+    const lowStockThreshold = 20;
     
-    const total = products.length;
-    const active = products.filter(p => (p.status || '').toUpperCase() === 'ACTIVE').length;
-    const inactive = products.filter(p => (p.status || '').toUpperCase() === 'INACTIVE').length;
-    const lowStock = products.filter(p => Number(p.quantity || 0) <= (p.lowStockThreshold || lowStockThreshold)).length;
+    const total = safeProducts.length;
+    const active = safeProducts.filter(p => (p.status || '').toUpperCase() === 'ACTIVE').length;
+    const inactive = safeProducts.filter(p => (p.status || '').toUpperCase() === 'INACTIVE').length;
+    const lowStock = safeProducts.filter(p => Number(p.quantity || 0) <= (p.lowStockThreshold || lowStockThreshold)).length;
     
+    const setElem = (id, val) => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = val.toLocaleString('en-IN');
+    };
+    
+    setElem('summary-total-products', total);
+    setElem('summary-active-products', active);
+    setElem('summary-inactive-products', inactive);
+    setElem('summary-low-stock-products', lowStock);
+
     const cards = document.querySelectorAll('.summary-card h3');
     if (cards.length >= 4) {
-        cards[0].textContent = total;
-        cards[1].textContent = active;
-        cards[2].textContent = inactive;
-        cards[3].textContent = lowStock;
+        cards[0].textContent = total.toLocaleString('en-IN');
+        cards[1].textContent = active.toLocaleString('en-IN');
+        cards[2].textContent = inactive.toLocaleString('en-IN');
+        cards[3].textContent = lowStock.toLocaleString('en-IN');
     }
 }

@@ -1,420 +1,673 @@
 /* ==========================================
-   Login Layout
+   CloudBasket Next-Gen Creative Sign In Layout
 ========================================== */
 
-.login-container{
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
 
-    width:100%;
-    min-height:100vh;
-    zoom: 0.8;
+html, body {
+    height: 100vh !important;
+    width: 100vw !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    background-color: #0b132b;
+    color: #0f172a;
+    overflow: hidden !important;
+    zoom: 1 !important;
+}
 
-    display:flex;
-    align-items:center;
-    justify-content:center;
-
-    padding:40px;
-
-    gap:60px;
-
+/* Overall Split Layout */
+.login-layout {
+    display: flex;
+    height: 100vh;
+    max-height: 100vh;
+    width: 100vw;
+    align-items: stretch;
+    overflow: hidden;
 }
 
 /* ==========================================
-   Left Panel
+   Left Hero Panel (Creative CSS Graphics & Stats)
 ========================================== */
-
-.left-panel{
-
-    flex:1;
-
-    display:flex;
-    flex-direction:column;
-    justify-content:center;
-    align-items:center;
-
+.left-hero-panel {
+    flex: 1 1 50%;
+    width: 50%;
+    height: 100vh;
+    position: relative;
+    background: linear-gradient(135deg, #0b132b 0%, #1c2541 45%, #0f172a 100%);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 40px 50px;
+    color: #ffffff;
+    overflow: hidden;
 }
 
-.illustration{
-
-    width:100%;
-    max-width:520px;
-
-    animation:floatImage 4s ease-in-out infinite;
-
+/* Ambient Glowing Orbs */
+.glow-orb-1 {
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 400px;
+    height: 400px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.25) 0%, rgba(59, 130, 246, 0) 70%);
+    pointer-events: none;
+    animation: orbPulse 8s ease-in-out infinite alternate;
 }
 
-.welcome-text{
-
-    margin-top:30px;
-    text-align:center;
-
+.glow-orb-2 {
+    position: absolute;
+    bottom: -120px;
+    right: -100px;
+    width: 450px;
+    height: 450px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(245, 158, 11, 0.2) 0%, rgba(245, 158, 11, 0) 70%);
+    pointer-events: none;
+    animation: orbPulse 10s ease-in-out infinite alternate-reverse;
 }
 
-.welcome-text h1{
-
-    font-size:42px;
-    color:var(--primary-color);
-    margin-bottom:15px;
-
+@keyframes orbPulse {
+    0% { transform: scale(1) translate(0, 0); opacity: 0.7; }
+    100% { transform: scale(1.15) translate(30px, 30px); opacity: 1; }
 }
 
-.welcome-text p{
+.hero-header {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
 
-    color:var(--text-light);
-    font-size:18px;
-    line-height:1.8;
+.hero-logo-box {
+    background: rgba(255, 255, 255, 0.95);
+    padding: 8px 16px;
+    border-radius: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+}
 
-    max-width:500px;
+.hero-logo-img {
+    height: 30px;
+    object-fit: contain;
+}
 
+.status-badge {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    backdrop-filter: blur(10px);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #38bdf8;
+}
+
+.pulse-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: #10b981;
+    box-shadow: 0 0 10px #10b981;
+    animation: dotBlink 1.8s infinite;
+}
+
+@keyframes dotBlink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.3; }
+}
+
+/* Center Content */
+.hero-body {
+    position: relative;
+    z-index: 2;
+    max-width: 520px;
+    margin-top: auto;
+    margin-bottom: auto;
+    padding: 20px 0;
+}
+
+.tagline-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.2), rgba(245, 158, 11, 0.2));
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    padding: 5px 12px;
+    border-radius: 20px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    color: #fbbf24;
+    text-transform: uppercase;
+    margin-bottom: 18px;
+}
+
+.hero-body h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    line-height: 1.2;
+    margin-bottom: 14px;
+    letter-spacing: -0.02em;
+    background: linear-gradient(180deg, #ffffff 0%, #cbd5e1 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+.hero-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: #94a3b8;
+    margin-bottom: 25px;
+}
+
+/* Creative Feature Glass Cards */
+.glass-features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 14px;
+    margin-bottom: 18px;
+}
+
+.glass-feature-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    backdrop-filter: blur(12px);
+    border-radius: 14px;
+    padding: 14px;
+    transition: all 0.3s ease;
+}
+
+.glass-feature-card:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: rgba(59, 130, 246, 0.4);
+    transform: translateY(-2px);
+}
+
+.feature-icon-wrap {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    background: rgba(59, 130, 246, 0.15);
+    color: #60a5fa;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.feature-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 3px;
+}
+
+.feature-desc {
+    font-size: 0.74rem;
+    color: #94a3b8;
+    line-height: 1.35;
+}
+
+/* Hero Footer */
+.hero-footer-text {
+    position: relative;
+    z-index: 2;
+    font-size: 0.75rem;
+    color: #64748b;
+    font-weight: 500;
+    margin-top: auto;
 }
 
 /* ==========================================
-   Right Panel
+   Right Form Panel (Clean Sign In)
 ========================================== */
-
-.right-panel{
-
-    flex:1;
-
-    display:flex;
-    justify-content:center;
-    align-items:center;
-
+.right-form-panel {
+    flex: 1 1 50%;
+    width: 50%;
+    height: 100vh;
+    background-color: #f8fbfe;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: space-between;
+    padding: 35px 30px;
+    position: relative;
+    overflow: hidden;
 }
 
-.login-card{
+.mobile-logo-box {
+    display: none;
+    background: #ffffff;
+    padding: 10px 20px;
+    border-radius: 12px;
+    margin-bottom: 20px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+}
 
-    width:100%;
-    max-width:460px;
+.mobile-logo-box img {
+    height: 32px;
+    object-fit: contain;
+}
 
-    padding:45px;
+.form-container {
+    width: 100%;
+    max-width: 400px;
+    display: flex;
+    flex-direction: column;
+    margin-top: auto;
+    margin-bottom: auto;
+}
 
-    border-radius:30px;
+.form-title {
+    font-size: 2.1rem;
+    font-weight: 800;
+    color: #0f172a;
+    margin-bottom: 6px;
+    letter-spacing: -0.02em;
+}
 
-    background:var(--glass-bg);
+.form-subtitle {
+    font-size: 0.92rem;
+    color: #64748b;
+    margin-bottom: 28px;
+}
 
-    backdrop-filter:var(--blur);
+/* Input Groups */
+.login-form .input-group {
+    margin-bottom: 18px;
+}
 
-    border:1px solid var(--glass-border);
+.login-form label {
+    display: block;
+    font-size: 0.84rem;
+    font-weight: 600;
+    color: #334155;
+    margin-bottom: 6px;
+}
 
-    box-shadow:var(--shadow-lg);
+.input-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
 
-    animation:fadeUp .7s ease;
+.input-icon {
+    position: absolute;
+    left: 14px;
+    color: #64748b;
+    display: flex;
+    align-items: center;
+    pointer-events: none;
+}
 
+.input-wrapper input {
+    width: 100%;
+    padding: 12px 14px 12px 42px;
+    font-size: 0.92rem;
+    border: 1px solid #cbd5e1;
+    border-radius: 12px;
+    background: #ffffff !important;
+    color: #0f172a;
+    outline: none;
+    transition: all 0.2s ease;
+}
+
+.input-wrapper input:-webkit-autofill,
+.input-wrapper input:-webkit-autofill:hover, 
+.input-wrapper input:-webkit-autofill:focus {
+    -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+    box-shadow: 0 0 0px 1000px #ffffff inset !important;
+}
+
+.input-wrapper input:focus {
+    border-color: #ff9500;
+    box-shadow: 0 0 0 3px rgba(255, 149, 0, 0.15);
+}
+
+.toggle-password {
+    position: absolute;
+    right: 14px;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.toggle-password:hover {
+    color: #0f172a;
+}
+
+/* Sign In Button */
+.sign-in-btn {
+    width: 100%;
+    padding: 13px 22px;
+    background: linear-gradient(135deg, #ff9500 0%, #e08300 100%);
+    color: #ffffff;
+    font-size: 0.98rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 30px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    box-shadow: 0 4px 14px rgba(255, 149, 0, 0.35);
+    transition: all 0.25s ease;
+}
+
+.sign-in-btn:hover {
+    background: linear-gradient(135deg, #f58900 0%, #c97500 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 6px 18px rgba(255, 149, 0, 0.45);
+}
+
+/* Divider */
+.divider {
+    display: flex;
+    align-items: center;
+    margin: 22px 0;
+}
+
+.divider .line {
+    flex: 1;
+    height: 1px;
+    background-color: #e2e8f0;
+}
+
+.divider .text {
+    padding: 0 14px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #94a3b8;
+    letter-spacing: 0.05em;
+}
+
+/* Google Pill Button */
+.google-pill-btn {
+    width: 100%;
+    padding: 11px 22px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 30px;
+    color: #1e293b;
+    font-size: 0.92rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.2s ease;
+}
+
+.google-pill-btn:hover {
+    background: #f8fafc;
+    border-color: #94a3b8;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.google-icon {
+    width: 18px;
+    height: 18px;
+}
+
+.register-prompt {
+    margin-top: 20px;
+    text-align: center;
+    font-size: 0.88rem;
+    color: #64748b;
+}
+
+.register-prompt a {
+    color: #0f4a8a;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.register-prompt a:hover {
+    text-decoration: underline;
+}
+
+/* Footer Links */
+.panel-footer {
+    width: 100%;
+    max-width: 400px;
+    margin-top: auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 0.78rem;
+    color: #94a3b8;
+    padding-top: 15px;
 }
 
 /* ==========================================
-   Logo
+   TV & Large Displays (min-width: 1600px)
 ========================================== */
+@media (min-width: 1600px) {
+    .left-hero-panel {
+        padding: 60px 80px;
+    }
 
-.logo{
+    .hero-logo-img {
+        height: 38px;
+    }
 
-    width:85px;
-    margin:auto;
-    margin-bottom:15px;
+    .status-badge {
+        font-size: 0.9rem;
+        padding: 8px 18px;
+    }
 
-}
+    .hero-body {
+        max-width: 640px;
+    }
 
-.login-card h2{
+    .hero-body h1 {
+        font-size: 3.2rem;
+        margin-bottom: 20px;
+    }
 
-    text-align:center;
-    font-size:32px;
-    color:var(--primary-color);
+    .hero-body p {
+        font-size: 1.15rem;
+        margin-bottom: 32px;
+    }
 
-}
+    .glass-feature-card {
+        padding: 20px;
+    }
 
-.subtitle{
+    .feature-title {
+        font-size: 1rem;
+    }
 
-    text-align:center;
-    color:var(--text-light);
-    margin-top:8px;
-    margin-bottom:35px;
+    .feature-desc {
+        font-size: 0.85rem;
+    }
 
+    .right-form-panel {
+        padding: 50px 60px;
+    }
+
+    .form-container {
+        max-width: 460px;
+    }
+
+    .form-title {
+        font-size: 2.5rem;
+    }
+
+    .form-subtitle {
+        font-size: 1.05rem;
+        margin-bottom: 36px;
+    }
+
+    .input-wrapper input {
+        padding: 15px 18px 15px 48px;
+        font-size: 1.02rem;
+    }
+
+    .sign-in-btn {
+        padding: 15px 28px;
+        font-size: 1.05rem;
+    }
+
+    .google-pill-btn {
+        padding: 13px 28px;
+        font-size: 1.02rem;
+    }
 }
 
 /* ==========================================
-   Inputs
+   4K Ultra HD TV Displays (min-width: 2200px)
 ========================================== */
+@media (min-width: 2200px) {
+    .left-hero-panel {
+        padding: 80px 120px;
+    }
 
-.input-group{
+    .hero-body {
+        max-width: 800px;
+    }
 
-    margin-bottom:22px;
+    .hero-body h1 {
+        font-size: 4.2rem;
+    }
 
-}
+    .hero-body p {
+        font-size: 1.4rem;
+    }
 
-.input-group label{
+    .form-container {
+        max-width: 560px;
+    }
 
-    display:block;
-    margin-bottom:8px;
-    font-weight:500;
+    .form-title {
+        font-size: 3.2rem;
+    }
 
-}
+    .form-subtitle {
+        font-size: 1.25rem;
+    }
 
-.input-group input{
+    .login-form label {
+        font-size: 1.05rem;
+    }
 
-    width:100%;
+    .input-wrapper input {
+        padding: 18px 22px 18px 56px;
+        font-size: 1.15rem;
+        border-radius: 16px;
+    }
 
-    padding:15px 18px;
+    .sign-in-btn {
+        padding: 18px 32px;
+        font-size: 1.2rem;
+        border-radius: 40px;
+    }
 
-    border-radius:14px;
-
-    border:1px solid var(--border-color);
-
-    background:#fff;
-
-    font-size:15px;
-
-    transition:.3s;
-
-}
-
-.input-group input:focus{
-
-    border-color:var(--primary-color);
-
-    box-shadow:0 0 0 4px rgba(37,99,235,.15);
-
+    .google-pill-btn {
+        padding: 16px 32px;
+        font-size: 1.15rem;
+        border-radius: 40px;
+    }
 }
 
 /* ==========================================
-   Password
+   Mobile & Tablet Devices (max-width: 900px)
 ========================================== */
+@media (max-width: 900px) {
+    html, body {
+        overflow-y: auto !important;
+        height: auto !important;
+    }
 
-.password-wrapper{
+    .login-layout {
+        height: auto;
+        max-height: none;
+        overflow-y: auto;
+    }
 
-    position:relative;
+    .left-hero-panel {
+        display: none !important;
+    }
 
+    .right-form-panel {
+        flex: 1 1 100%;
+        width: 100%;
+        padding: 40px 24px;
+        min-height: 100vh;
+        height: auto;
+        overflow-y: auto;
+    }
+
+    .mobile-logo-box {
+        display: flex;
+    }
+
+    .form-container {
+        max-width: 380px;
+    }
+
+    .form-title {
+        font-size: 1.9rem;
+    }
+
+    .form-subtitle {
+        font-size: 0.95rem;
+        margin-bottom: 28px;
+    }
+
+    .panel-footer {
+        margin-top: 45px;
+    }
 }
 
-.password-wrapper input{
-
-    padding-right:55px;
-
-}
-
-.toggle-password{
-
-    position:absolute;
-
-    right:18px;
-    top:50%;
-
-    transform:translateY(-50%);
-
-    color:#888;
-
-    cursor:pointer;
-
-    font-size:18px;
-
-    transition:.3s;
-
-}
-
-.toggle-password:hover{
-
-    color:var(--primary-color);
-
-}
-
-/* ==========================================
-   Forgot Password
-========================================== */
-
-.forgot-password{
-
-    display:flex;
-    justify-content:flex-end;
-
-    margin-bottom:28px;
-
-    color:var(--primary-color);
-
-    font-size:14px;
-
-}
-
-.forgot-password:hover{
-
-    text-decoration:underline;
-
-}
-
-/* ==========================================
-   Login Button
-========================================== */
-
-.login-btn{
-
-    width:100%;
-
-    padding:16px;
-
-    background:var(--primary-color);
-
-    color:white;
-
-    font-size:17px;
-
-    font-weight:600;
-
-    border-radius:15px;
-
-    transition:.3s;
-
-}
-
-.login-btn:hover{
-
-    background:var(--primary-dark);
-
-}
-
-/* ==========================================
-   Divider
-========================================== */
-
-.divider{
-
-    display:flex;
-
-    align-items:center;
-
-    margin:35px 0;
-
-}
-
-.divider span{
-
-    flex:1;
-
-    height:1px;
-
-    background:#ddd;
-
-}
-
-.divider p{
-
-    margin:0 15px;
-
-    color:#888;
-
-}
-
-/* ==========================================
-   Register
-========================================== */
-
-.register-link{
-
-    text-align:center;
-
-    color:var(--text-light);
-
-}
-
-.register-link a{
-
-    color:var(--primary-color);
-
-    font-weight:600;
-
-}
-
-.register-link a:hover{
-
-    text-decoration:underline;
-
-}
-
-/* ==========================================
-   Responsive
-========================================== */
-
-@media(max-width:1100px){
-
-.login-container{
-
-flex-direction:column;
-
-padding:30px;
-
-}
-
-.left-panel{
-
-display:none;
-
-}
-
-.login-card{
-
-max-width:480px;
-
-}
-
-}
-
-@media(max-width:768px){
-
-.login-card{
-
-padding:35px 28px;
-
-}
-
-.login-card h2{
-
-font-size:28px;
-
-}
-
-.subtitle{
-
-font-size:14px;
-
-}
-
-}
-
-@media(max-width:480px){
-
-.login-container{
-
-padding:20px;
-
-}
-
-.login-card{
-
-padding:30px 20px;
-
-border-radius:20px;
-
-}
-
-.logo{
-
-width:70px;
-
-}
-
-.login-card h2{
-
-font-size:25px;
-
-}
-
-.input-group input{
-
-padding:14px;
-
-}
-
-.login-btn{
-
-padding:14px;
-
-}
-
+/* Small Mobile Screens (max-width: 600px) */
+@media (max-width: 600px) {
+    .right-form-panel {
+        padding: 30px 18px;
+    }
+
+    .form-container {
+        max-width: 100%;
+    }
+
+    .form-title {
+        font-size: 1.75rem;
+    }
+
+    .form-subtitle {
+        font-size: 0.88rem;
+        margin-bottom: 22px;
+    }
+
+    .input-wrapper input {
+        font-size: 16px;
+        padding: 13px 14px 13px 44px;
+        min-height: 46px;
+    }
+
+    .sign-in-btn {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+
+    .google-pill-btn {
+        min-height: 46px;
+        font-size: 0.92rem;
+    }
 }

@@ -47,6 +47,17 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+function sanitizeUrl(url) {
+    if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+    try {
+        if (url.includes('amazonaws.com')) {
+            const parsed = new URL(url);
+            return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+        }
+    } catch (e) {}
+    return url;
+}
+
 function renderOrderDetails(order, allProducts = []) {
     const orderId = order.orderId || order.id || 'UNKNOWN';
     document.getElementById('breadcrumb-order-id').textContent = `Order History > Order #${orderId}`;
@@ -86,23 +97,33 @@ function renderOrderDetails(order, allProducts = []) {
     
     if (items.length > 0) {
         items.forEach(item => {
-            // Find actual product details from the Product API array
-            const realProduct = allProducts.find(p => (p.productId || p.id) === (item.productId || item.id));
+            const pId = item.productId || item.id;
+            const pName = item.name || item.productName || item.title || '';
             
-            const name = realProduct ? (realProduct.name || realProduct.title) : (item.name || item.productId || 'Unknown Item');
+            // Find actual product details from the Product API array
+            const realProduct = (pId ? allProducts.find(p => (p.productId || p.id) === pId) : null) || 
+                                (pName ? allProducts.find(p => (p.name || p.title || '').toLowerCase() === pName.toLowerCase()) : null) || {};
+            
+            const name = realProduct.name || realProduct.title || pName || 'Product';
             const qty = item.quantity || 1;
-            const price = item.price || 0;
+            const price = item.price || realProduct.sellingPrice || realProduct.price || 0;
             const itemTotal = qty * price;
             
             const itemDiv = document.createElement('div');
             itemDiv.className = 'ordered-item';
             
-            // Generate S3 image or fallback
-            const imgUrl = realProduct ? (realProduct.imageUrl || realProduct.image) : (item.imageUrl || item.image || `https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80`);
+            let rawImg = item.imageUrl || item.image || realProduct.imageUrl || realProduct.image;
+            if (!rawImg && realProduct.images && realProduct.images.length > 0) {
+                const firstImg = realProduct.images[0];
+                rawImg = typeof firstImg === 'string' ? firstImg : (firstImg.imageUrl || firstImg.url || firstImg.image);
+            }
+            
+            const imgUrl = sanitizeUrl(rawImg);
+            const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
 
             itemDiv.innerHTML = `
                 <div class="item-image">
-                    <img src="${imgUrl}" alt="${name}" onerror="this.src='https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80'">
+                    <img src="${imgUrl}" alt="${name}" onerror="this.onerror=null; this.src='${fallbackImg}';">
                 </div>
                 <div class="item-info">
                     <div class="item-name" style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">${name}</div>

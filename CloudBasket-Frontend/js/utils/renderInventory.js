@@ -22,9 +22,24 @@ export function renderInventoryTable(inventoryItems) {
         const name = product.name || "Unknown Product";
         const category = product.category || "Uncategorized";
         const brand = product.brand || "No Brand";
-        const image = product.imageUrl || "https://placehold.co/40x40/f1f5f9/94a3b8?text=Img";
+        let image = product.imageUrl || product.image;
+
+        if (image && image.includes('amazonaws.com')) {
+            try {
+                const parsed = new URL(image);
+                image = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            } catch (e) {}
+        }
+        let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+        if (name.toLowerCase().includes('vivo')) {
+            fallbackImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
+        }
+        if (!image || image.includes('placeholder')) {
+            image = fallbackImg;
+        }
+
         const pVal = product.sellingPrice != null ? product.sellingPrice : product.price;
-        const price = pVal != null ? `₹${pVal.toFixed(2)}` : "N/A";
+        const price = pVal != null ? `₹${Number(pVal).toFixed(2)}` : "N/A";
         
         const sku = item.sku || product.sku || "N/A";
         const warehouse = item.location || item.warehouse || "Main Warehouse";
@@ -52,7 +67,7 @@ export function renderInventoryTable(inventoryItems) {
             <td>
                 <div class="product-cell">
                     <div class="product-img-wrap">
-                        <img src="${image}" alt="${name}" onerror="this.src='https://placehold.co/40x40/f1f5f9/94a3b8?text=Img'">
+                        <img src="${image}" alt="${name}" onerror="this.onerror=null; this.src='${fallbackImg}';">
                     </div>
                     <div class="product-info">
                         <strong>${name}</strong>

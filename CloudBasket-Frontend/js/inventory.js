@@ -1,19 +1,19 @@
-import { initializeSidebar } from "./sidebar.js";
-import { initializeProfileCard } from "./profile.js";
-import { initializeLogout } from "./logout.js";
+import { initializeSidebar } from "./sidebar.js?v=6";
+import { initializeProfileCard } from "./profile.js?v=6";
+import { initializeLogout } from "./logout.js?v=6";
 
-import { getAllInventory } from "./api/inventoryApi.js";
-import { getAllProducts, getProductById } from "./api/productApi.js";
+import { getAllInventory } from "./api/inventoryApi.js?v=6";
+import { getAllProducts, getProductById } from "./api/productApi.js?v=6";
 
-import { showSkeletons, hideSkeletons } from "./utils/inventoryLoader.js";
-import { renderInventoryTable } from "./utils/renderInventory.js";
-import { updateInventoryStats } from "./utils/inventoryStats.js";
-import { setupModals } from "./utils/inventoryModals.js";
+import { showSkeletons, hideSkeletons } from "./utils/inventoryLoader.js?v=6";
+import { renderInventoryTable } from "./utils/renderInventory.js?v=6";
+import { updateInventoryStats } from "./utils/inventoryStats.js?v=6";
+import { setupModals } from "./utils/inventoryModals.js?v=6";
 
 let combinedInventoryData = [];
 let filteredData = [];
 
-document.addEventListener("DOMContentLoaded", async () => {
+async function initInventoryPage() {
     // 1. Initialize Common Layout Elements
     initializeSidebar();
     initializeProfileCard();
@@ -27,7 +27,13 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     // Setup Custom Dropdown Filter & Search
     setupFilters();
-});
+}
+
+if (document.readyState === 'loading') {
+    document.addEventListener("DOMContentLoaded", initInventoryPage);
+} else {
+    initInventoryPage();
+}
 
 async function loadInventoryPageData() {
     try {
@@ -40,7 +46,7 @@ async function loadInventoryPageData() {
         let products = [];
 
         if (inventoryRes && inventoryRes.success) {
-            inventories = inventoryRes.data || [];
+            inventories = inventoryRes.data || inventoryRes.inventory || [];
         } else if (Array.isArray(inventoryRes)) {
             inventories = inventoryRes;
         }
@@ -51,7 +57,16 @@ async function loadInventoryPageData() {
             products = productRes;
         }
 
-        // Create a lookup for products
+        // Create lookups for inventory by product id and sku
+        const inventoryByProductId = {};
+        const inventoryBySku = {};
+        inventories.forEach(inv => {
+            const pid = inv.productId || inv.product_id || inv.product || inv.inventoryId || inv.id;
+            if (pid) inventoryByProductId[pid] = inv;
+            if (inv.sku) inventoryBySku[inv.sku] = inv;
+        });
+
+        // Create lookups for products
         const productMapById = {};
         const productMapBySku = {};
         products.forEach(p => {
@@ -61,27 +76,70 @@ async function loadInventoryPageData() {
             if (sku) productMapBySku[sku] = p;
         });
 
-        // Combine
-        combinedInventoryData = inventories.map(inv => {
-            const idToMatch = inv.productId || inv.product_id || inv.product || inv._id;
-            let prod = productMapById[idToMatch];
-            
-            if (!prod && inv.sku) {
-                prod = productMapBySku[inv.sku];
+        const matchedInventoryIds = new Set();
+        const mergedList = [];
+
+        // 1. Process products and merge with inventory data (or construct inventory entry from product)
+        products.forEach(p => {
+            const pId = p.productId || p.id || p._id;
+            let inv = (pId && inventoryByProductId[pId]) || (p.sku && inventoryBySku[p.sku]);
+
+            if (inv) {
+                const invId = inv.inventoryId || inv.id || inv._id;
+                if (invId) matchedInventoryIds.add(invId);
             }
-            if (!prod) {
-                prod = {};
-            }
-            return {
-                ...inv,
-                product: prod,
-                missingProductId: (!prod.name && idToMatch) ? idToMatch : null
-            };
+
+            const availQty = inv && inv.availableQuantity !== undefined 
+                ? Number(inv.availableQuantity) 
+                : (inv && inv.quantity !== undefined 
+                    ? Number(inv.quantity) 
+                    : (p.quantity !== undefined ? Number(p.quantity) : (p.stockQuantity !== undefined ? Number(p.stockQuantity) : 0)));
+
+            const resvQty = inv ? (Number(inv.reservedQuantity || inv.reserved) || 0) : 0;
+            const thresh = inv ? (Number(inv.lowStockThreshold || inv.threshold) || Number(p.lowStockThreshold || 10)) : Number(p.lowStockThreshold || 10);
+
+            mergedList.push({
+                inventoryId: inv ? (inv.inventoryId || inv.id) : (pId ? `inv-${pId}` : `inv-${Math.random().toString(36).substr(2,7)}`),
+                productId: pId,
+                sku: p.sku || (inv ? inv.sku : 'N/A'),
+                quantity: availQty,
+                availableQuantity: availQty,
+                reservedQuantity: resvQty,
+                lowStockThreshold: thresh,
+                location: inv ? (inv.location || inv.warehouse || 'Main Warehouse') : 'Main Warehouse',
+                status: inv ? (inv.status || p.status) : (p.status || 'ACTIVE'),
+                lastUpdated: inv ? (inv.lastUpdated || inv.updatedAt || p.updatedAt) : p.updatedAt,
+                product: p
+            });
         });
 
-        // Filter out orphaned inventory records (where product was deleted)
-        combinedInventoryData = combinedInventoryData.filter(inv => inv.product && inv.product.name);
+        // 2. Include any standalone inventory items that didn't match products but have product info
+        inventories.forEach(inv => {
+            const invId = inv.inventoryId || inv.id || inv._id;
+            if (!invId || !matchedInventoryIds.has(invId)) {
+                const idToMatch = inv.productId || inv.product_id || inv.product;
+                let prod = (idToMatch && productMapById[idToMatch]) || (inv.sku ? productMapBySku[inv.sku] : null);
+                if (prod && prod.name) {
+                    mergedList.push({
+                        ...inv,
+                        product: prod
+                    });
+                } else if (inv.name || inv.productName) {
+                    mergedList.push({
+                        ...inv,
+                        product: {
+                            name: inv.name || inv.productName,
+                            category: inv.category || 'General',
+                            brand: inv.brand || 'General',
+                            sellingPrice: inv.price || inv.sellingPrice || 0,
+                            imageUrl: inv.imageUrl || inv.image
+                        }
+                    });
+                }
+            }
+        });
 
+        combinedInventoryData = mergedList;
         filteredData = [...combinedInventoryData];
 
         // Hide Skeletons and render

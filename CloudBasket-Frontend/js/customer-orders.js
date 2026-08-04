@@ -1,12 +1,39 @@
 import { API } from "./config.js";
 import { apiFetch } from "./api/apiClient.js";
 
+let allProductsMap = {};
+
+function sanitizeUrl(url) {
+    if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+    try {
+        if (url.includes('amazonaws.com')) {
+            const parsed = new URL(url);
+            return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+        }
+    } catch (e) {}
+    return url;
+}
+
 async function init() {
     const listContainer = document.getElementById('customer-orders-list');
     if (!listContainer) return;
 
     // Render skeleton loaders
     renderSkeletons(listContainer);
+
+    try {
+        const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        const prodData = await prodRes.json();
+        const list = prodData.products || prodData.data || prodData || [];
+        if (Array.isArray(list)) {
+            list.forEach(p => {
+                const pId = p.productId || p.id;
+                if (pId) allProductsMap[pId] = p;
+                if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
+                if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+            });
+        }
+    } catch (e) {}
 
     try {
         const response = await apiFetch(`${API.orderService}/api/v1/order`);
@@ -114,28 +141,28 @@ function renderOrders(container, orders) {
             dateText = `Cancelled on ${formattedDate}`;
         }
 
-        let firstItemImg = 'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80';
+        let firstItemImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
         if (order.items && order.items.length > 0) {
-            let itemImg = order.items[0].imageUrl || order.items[0].image || firstItemImg;
+            const firstItem = order.items[0];
+            const pId = firstItem.productId || firstItem.id;
+            const pName = firstItem.productName || firstItem.name || firstItem.title || '';
             
-            if (itemImg && itemImg.includes('amazonaws.com')) {
-                try {
-                    const parsed = new URL(itemImg);
-                    itemImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
-                } catch(e) {}
+            const matchedProd = (pId && allProductsMap[pId]) || (pName && allProductsMap[pName.toLowerCase().trim()]) || {};
+            
+            let rawImg = firstItem.imageUrl || firstItem.image || matchedProd.imageUrl || matchedProd.image;
+            if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {
+                const firstImg = matchedProd.images[0];
+                rawImg = typeof firstImg === 'string' ? firstImg : (firstImg.imageUrl || firstImg.url || firstImg.image);
             }
-        
-            if (order.items[0].productName && order.items[0].productName.toUpperCase().includes('VIVO Y56')) {
-                itemImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
-            }
-            firstItemImg = itemImg;
+            
+            firstItemImg = sanitizeUrl(rawImg);
         }
 
         const card = document.createElement('div');
         card.className = 'order-card';
         card.innerHTML = `
             <div class="order-icon-box" style="padding: 0; overflow: hidden; background: none;">
-                <img src="${firstItemImg}" alt="Product" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" onerror="this.src='https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80'">
+                <img src="${firstItemImg}" alt="Product" style="width: 100%; height: 100%; object-fit: cover; border-radius: 12px;" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';">
             </div>
             <div class="order-details">
                 <div class="order-id-row">

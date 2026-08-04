@@ -20,6 +20,7 @@
     <link rel="stylesheet" href="../../css/logout.css">
     <link rel="stylesheet" href="../../css/profile.css">
     <link rel="stylesheet" href="../../css/inventory.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
 
     <style>
         /* Base overrides to apply Inter font to this specific page for a modern feel */
@@ -35,6 +36,13 @@
     <!-- Header -->
     <header class="dashboard-header">
         <div class="header-left">
+            <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -247,7 +255,7 @@
                         </div>
                     </div>
                     <div class="stat-title">Total Products</div>
-                    <div class="stat-value" id="stat-total-products">12,482</div>
+                    <div class="stat-value" id="stat-total-products">0</div>
                     <!-- Background Icon -->
                     <div class="stat-bg-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -271,7 +279,7 @@
                         </div>
                     </div>
                     <div class="stat-title">Total Units</div>
-                    <div class="stat-value" id="stat-total-units">1.2M</div>
+                    <div class="stat-value" id="stat-total-units">0</div>
                     <!-- Background Icon -->
                     <div class="stat-bg-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -294,7 +302,7 @@
                         </div>
                     </div>
                     <div class="stat-title">Low Stock</div>
-                    <div class="stat-value" id="stat-low-stock">42</div>
+                    <div class="stat-value" id="stat-low-stock">0</div>
                     <!-- Background Icon -->
                     <div class="stat-bg-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -317,7 +325,7 @@
                         </div>
                     </div>
                     <div class="stat-title">Out of Stock</div>
-                    <div class="stat-value" id="stat-out-of-stock">12</div>
+                    <div class="stat-value" id="stat-out-of-stock">0</div>
                     <!-- Background Icon -->
                     <div class="stat-bg-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -340,7 +348,7 @@
                         </div>
                     </div>
                     <div class="stat-title">Total Value</div>
-                    <div class="stat-value" id="stat-total-value">â‚¹2.8M</div>
+                    <div class="stat-value" id="stat-total-value">₹0.00</div>
                     <!-- Background Icon -->
                     <div class="stat-bg-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -362,7 +370,7 @@
                         </div>
                     </div>
                     <div class="stat-title">Recently Updated</div>
-                    <div class="stat-value" id="stat-recently-updated">142 <span style="font-size: 1rem; color: #64748b; font-weight: 500;">Today</span></div>
+                    <div class="stat-value" id="stat-recently-updated">0 <span style="font-size: 1rem; color: #64748b; font-weight: 500;">Today</span></div>
                     <!-- Background Icon -->
                     <div class="stat-bg-icon">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -445,190 +453,19 @@
                                 </tr>
                             </thead>
                             <tbody id="inventory-table-body">
-                                <!-- Row 1 -->
                                 <tr>
-                                    <td>
-                                        <div class="product-cell">
-                                            <div class="product-img-wrap">
-                                                <img src="https://images.unsplash.com/photo-1512756290469-ec264b7fbf87?auto=format&fit=crop&w=40&q=80" alt="Espresso Machine">
-                                            </div>
-                                            <div class="product-info">
-                                                <strong>Black Velvet Espresso Max</strong>
-                                                <span>Appliances - Breville</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="sku-badge">BV-ES-9920</span></td>
-                                    <td><span style="font-weight: 500; color: #475569;">East Coast DC</span></td>
-                                    <td><span style="font-weight: 600; color: #0f172a;">â‚¹249.99</span></td>
-                                    <td>
-                                        <!-- Visual Stock Bar -->
-                                        <div class="stock-visual">
-                                            <div class="stock-text-flex">
-                                                <span class="avail">842 Available</span>
-                                                <span class="resv">12 Reserved</span>
-                                            </div>
-                                            <div class="progress-track" title="Threshold: 50">
-                                                <!-- Widths represent visual percentages of capacity -->
-                                                <div class="progress-avail" style="width: 84%"></div>
-                                                <div class="progress-resv" style="width: 5%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-pill in-stock">In Stock</span>
-                                        
-                                        <!-- Floating Actions -->
-                                        <div class="action-glass-menu" style="position: absolute; right: 2rem; margin-top: -18px;">
-                                            <button class="btn-action" data-tooltip="View Inventory">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock In">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock Out">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock Adjustment">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M12 20h9"></path>
-                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <!-- Row 2 -->
-                                <tr>
-                                    <td>
-                                        <div class="product-cell">
-                                            <div class="product-img-wrap">
-                                                <img src="https://images.unsplash.com/photo-1546435770-a3e426bf472b?auto=format&fit=crop&w=40&q=80" alt="Headphones">
-                                            </div>
-                                            <div class="product-info">
-                                                <strong>Aero-Sound Pro Wireless</strong>
-                                                <span>Electronics - Aero</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="sku-badge">AE-WF-001</span></td>
-                                    <td><span style="font-weight: 500; color: #475569;">Local Hub 2</span></td>
-                                    <td><span style="font-weight: 600; color: #0f172a;">â‚¹129.99</span></td>
-                                    <td>
-                                        <div class="stock-visual">
-                                            <div class="stock-text-flex">
-                                                <span class="avail">14 Available</span>
-                                                <span class="resv">4 Reserved</span>
-                                            </div>
-                                            <div class="progress-track" title="Threshold: 25">
-                                                <div class="progress-avail low" style="width: 14%"></div>
-                                                <div class="progress-resv" style="width: 4%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-pill low-stock">Low Stock</span>
-                                        
-                                        <!-- Floating Actions -->
-                                        <div class="action-glass-menu" style="position: absolute; right: 2rem; margin-top: -18px;">
-                                            <button class="btn-action" data-tooltip="View Inventory">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock In">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock Out">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock Adjustment">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M12 20h9"></path>
-                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-
-                                <!-- Row 3 -->
-                                <tr>
-                                    <td>
-                                        <div class="product-cell">
-                                            <div class="product-img-wrap">
-                                                <img src="https://images.unsplash.com/photo-1622472288133-c1f9c063cf4a?auto=format&fit=crop&w=40&q=80" alt="Water Bottle">
-                                            </div>
-                                            <div class="product-info">
-                                                <strong>PureHydro Glass 1L</strong>
-                                                <span>Lifestyle - Pure</span>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td><span class="sku-badge">PH-GW-100</span></td>
-                                    <td><span style="font-weight: 500; color: #475569;">West Coast Hub</span></td>
-                                    <td><span style="font-weight: 600; color: #0f172a;">â‚¹24.50</span></td>
-                                    <td>
-                                        <div class="stock-visual">
-                                            <div class="stock-text-flex">
-                                                <span class="avail" style="color: #ef4444;">0 Available</span>
-                                                <span class="resv">0 Reserved</span>
-                                            </div>
-                                            <div class="progress-track" title="Threshold: 100">
-                                                <div class="progress-avail empty" style="width: 0%"></div>
-                                            </div>
-                                        </div>
-                                    </td>
-                                    <td>
-                                        <span class="status-pill out-of-stock">Out of Stock</span>
-
-                                        <!-- Floating Actions -->
-                                        <div class="action-glass-menu" style="position: absolute; right: 2rem; margin-top: -18px;">
-                                            <button class="btn-action" data-tooltip="View Inventory">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
-                                                    <circle cx="12" cy="12" r="3"></circle>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock In">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="12" y1="5" x2="12" y2="19"></line>
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock Out">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <line x1="5" y1="12" x2="19" y2="12"></line>
-                                                </svg>
-                                            </button>
-                                            <button class="btn-action" data-tooltip="Stock Adjustment">
-                                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                                    <path d="M12 20h9"></path>
-                                                    <path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"></path>
-                                                </svg>
-                                            </button>
-                                        </div>
+                                    <td colspan="6" style="padding: 0;">
+                                        <div class="skeleton-row" style="height: 60px; margin: 10px; border-radius: 8px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: loading 1.5s infinite;"></div>
+                                        <div class="skeleton-row" style="height: 60px; margin: 10px; border-radius: 8px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: loading 1.5s infinite;"></div>
                                     </td>
                                 </tr>
                             </tbody>
                         </table>
+                    </div>
                 </div>
             </div>
+        </div>
+    </main>
         </div>
     </main>
 
@@ -701,6 +538,6 @@
     </div>
 
     <!-- Modules -->
-    <script type="module" src="../../js/inventory.js?v=5"></script>
+    <script type="module" src="../../js/inventory.js?v=6"></script>
 </body>
 </html>

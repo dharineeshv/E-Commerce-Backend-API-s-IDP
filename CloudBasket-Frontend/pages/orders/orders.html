@@ -19,8 +19,9 @@
     <link rel="stylesheet" href="../../css/sidebar.css">
     <link rel="stylesheet" href="../../css/logout.css">
     <link rel="stylesheet" href="../../css/profile.css">
-    <link rel="stylesheet" href="../../css/admin-orders.css?v=2">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <link rel="stylesheet" href="../../css/orders-panel.css?v=3">
+    <link rel="stylesheet" href="../../css/responsive.css">
+    <script src="../../js/lib/html2pdf.bundle.min.js"></script>
 
     <style>
         /* Base overrides to apply Inter font */
@@ -36,6 +37,13 @@
     <!-- Header -->
     <header class="dashboard-header">
         <div class="header-left">
+            <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -351,6 +359,8 @@
                     <div class="filter-chip">
                         <select id="filterPaymentMethod">
                             <option value="">Payment Method</option>
+                            <option value="Credit Card">Credit Card</option>
+                            <option value="Net Banking">Net Banking</option>
                             <option value="COD">COD</option>
                             <option value="UPI">UPI</option>
                         </select>
@@ -560,7 +570,7 @@
 <div id="invoice-print-container" style="display: none;"></div>
 
 <!-- JS Modules -->
-<script type="module" src="../../js/orders.js?v=13"></script>
+<script type="module" src="../../js/orders.js"></script>
 
 <!-- ==========================================================
                     LOGOUT MODAL

@@ -1,4 +1,5 @@
 import { getInventoryById, updateInventory } from "../api/inventoryApi.js";
+import { updateProductApi } from "../api/productApi.js";
 
 let currentInventoryData = [];
 let onRefreshCallback = null;
@@ -54,40 +55,68 @@ async function openViewModal(inventoryId) {
     const modal = document.getElementById("inventory-view-modal");
     const body = document.getElementById("view-modal-body");
     
-    body.innerHTML = `<div style="text-align: center; padding: 2rem;"><div class="spinner"></div><p>Loading details...</p></div>`;
-    modal.classList.add("show");
+    // Find cached combined product & inventory info
+    const cached = currentInventoryData.find(i => i.inventoryId === inventoryId || i.productId === inventoryId) || {};
+    let item = cached;
 
-    const data = await getInventoryById(inventoryId);
-    if (!data || data.message) {
-        body.innerHTML = `<div style="color: red; text-align: center;">Failed to load inventory details.</div>`;
-        return;
+    // Only attempt API fetch if cached data does NOT contain product information
+    if (!cached.product && !cached.name) {
+        body.innerHTML = `<div style="text-align: center; padding: 2rem;"><div class="spinner"></div><p>Loading details...</p></div>`;
+        modal.classList.add("show");
+
+        const data = await getInventoryById(inventoryId);
+        if (data && !data.notFound && !data.message && !data.error) {
+            item = data.data || data;
+        }
+    } else {
+        modal.classList.add("show");
+    }
+    
+    const product = item.product || cached.product || {};
+    const name = product.name || item.name || item.productName || item.productId || 'Inventory Product';
+    
+    let img = product.imageUrl || product.image || item.imageUrl || item.image;
+    if (img && img.includes('amazonaws.com')) {
+        try {
+            const parsed = new URL(img);
+            img = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+        } catch (e) {}
+    }
+    let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+    if (name.toLowerCase().includes('vivo')) {
+        fallbackImg = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
+    }
+    if (!img || img.includes('placeholder')) {
+        img = fallbackImg;
     }
 
-    const item = data.data || data;
-    // We try to find the combined product info from our current list to show image/name
-    const cached = currentInventoryData.find(i => i.productId === inventoryId) || {};
-    const product = cached.product || {};
-    const name = product.name || item.productId;
-    const img = product.imageUrl || "https://placehold.co/60x60/f1f5f9/94a3b8?text=Img";
+    const sku = item.sku || product.sku || cached.sku || 'N/A';
+    const location = item.location || item.warehouseLocation || item.warehouse || cached.location || 'Main Warehouse';
+    const status = item.status || product.status || cached.status || 'ACTIVE';
+    const avail = item.availableQuantity !== undefined ? item.availableQuantity : (item.quantity !== undefined ? item.quantity : (cached.availableQuantity || 0));
+    const resv = item.reservedQuantity !== undefined ? item.reservedQuantity : (cached.reservedQuantity || 0);
+    const threshold = item.lowStockThreshold !== undefined ? item.lowStockThreshold : (cached.lowStockThreshold || 10);
+    const updated = item.updatedAt || item.lastUpdated || cached.lastUpdated;
+    const dateFormatted = updated ? new Date(updated).toLocaleString() : 'Recently';
 
     body.innerHTML = `
         <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
-            <img src="${img}" alt="${name}" style="width: 60px; height: 60px; border-radius: 12px; object-fit: cover;">
+            <img src="${img}" alt="${name}" onerror="this.onerror=null; this.src='${fallbackImg}';" style="width: 60px; height: 60px; border-radius: 12px; object-fit: cover;">
             <div>
                 <h3 style="margin: 0; font-size: 1.1rem; color: var(--inv-text-primary);">${name}</h3>
-                <span style="color: var(--inv-text-secondary); font-size: 0.875rem;">SKU: ${item.sku || product.sku}</span>
+                <span style="color: var(--inv-text-secondary); font-size: 0.875rem;">SKU: ${sku}</span>
             </div>
         </div>
         <div class="form-row">
-            <div class="form-group"><label>Warehouse</label><div class="input-readonly">${item.location || item.warehouse || "N/A"}</div></div>
-            <div class="form-group"><label>Status</label><div class="input-readonly">${item.status || "N/A"}</div></div>
+            <div class="form-group"><label>Warehouse</label><div class="input-readonly">${location}</div></div>
+            <div class="form-group"><label>Status</label><div class="input-readonly">${status}</div></div>
         </div>
         <div class="form-row">
-            <div class="form-group"><label>Available</label><div class="input-readonly">${item.quantityAvailable || item.availableQuantity || item.quantity || 0}</div></div>
-            <div class="form-group"><label>Reserved</label><div class="input-readonly">${item.quantityReserved || item.reservedQuantity || 0}</div></div>
-            <div class="form-group"><label>Threshold</label><div class="input-readonly">${item.lowStockThreshold || item.threshold || 0}</div></div>
+            <div class="form-group"><label>Available</label><div class="input-readonly">${avail}</div></div>
+            <div class="form-group"><label>Reserved</label><div class="input-readonly">${resv}</div></div>
+            <div class="form-group"><label>Threshold</label><div class="input-readonly">${threshold}</div></div>
         </div>
-        <div class="form-group"><label>Last Updated</label><div class="input-readonly">${new Date(item.updatedAt || item.lastUpdated).toLocaleString()}</div></div>
+        <div class="form-group"><label>Last Updated</label><div class="input-readonly">${dateFormatted}</div></div>
     `;
 }
 
@@ -129,15 +158,28 @@ async function handleActionSubmit(e) {
     const qty = parseInt(document.getElementById("action-input-qty").value, 10);
     const remarks = document.getElementById("action-remarks").value;
 
+    if (isNaN(qty) || qty < 0) {
+        showToast("Please enter a valid quantity.", "error");
+        return;
+    }
+
     const btn = document.getElementById("confirm-action-btn");
     const originalText = btn.textContent;
     btn.textContent = "Processing...";
     btn.disabled = true;
 
-    // The backend expects the absolute final quantity for PUT /:productId
-    // Calculate the new quantity based on the action type.
-    const cached = currentInventoryData.find(i => i.productId === inventoryId) || {};
-    let newQty = cached.quantity || cached.availableQuantity || 0;
+    // Find cached product & inventory info
+    const cached = currentInventoryData.find(i => i.inventoryId === inventoryId || i.productId === inventoryId) || {};
+    const pId = cached.productId || inventoryId;
+    const productObj = cached.product || {};
+    
+    let currentQty = cached.availableQuantity !== undefined 
+        ? Number(cached.availableQuantity) 
+        : (cached.quantity !== undefined 
+            ? Number(cached.quantity) 
+            : Number(productObj.quantity || 0));
+
+    let newQty = currentQty;
     
     if (type === "IN") {
         newQty += qty;
@@ -153,17 +195,55 @@ async function handleActionSubmit(e) {
         remarks: remarks
     };
 
-    const response = await updateInventory(inventoryId, payload);
-    
+    let isSuccess = false;
+    let errorMsg = "";
+
+    // 1. Try updating inventory service
+    try {
+        const invRes = await updateInventory(inventoryId, payload);
+        if (invRes && invRes.success !== false) {
+            isSuccess = true;
+        } else if (invRes && invRes.message) {
+            errorMsg = invRes.message;
+        }
+    } catch (err) {
+        console.warn("Inventory API update notice:", err);
+    }
+
+    // 2. Also update product quantity in Product Service if productId exists
+    if (pId) {
+        try {
+            const prodRes = await updateProductApi(pId, {
+                ...productObj,
+                quantity: newQty
+            });
+            if (prodRes && (prodRes.success || prodRes.productId || prodRes.id)) {
+                isSuccess = true;
+            }
+        } catch (err) {
+            console.warn("Product API update notice:", err);
+        }
+    }
+
     btn.textContent = originalText;
     btn.disabled = false;
 
-    if (response && response.success !== false) {
+    if (isSuccess) {
+        // Update cached values immediately for instant UI feedback
+        cached.quantity = newQty;
+        cached.availableQuantity = newQty;
+        if (cached.product) {
+            cached.product.quantity = newQty;
+        }
+
         document.getElementById("inventory-action-modal").classList.remove("show");
-        showToast(`Stock ${type.toLowerCase()} successful!`, "success");
-        if (onRefreshCallback) onRefreshCallback();
+        showToast(`Stock ${type.toLowerCase() === 'in' ? 'addition' : (type.toLowerCase() === 'out' ? 'removal' : 'adjustment')} successful!`, "success");
+        
+        if (onRefreshCallback) {
+            await onRefreshCallback();
+        }
     } else {
-        showToast(response?.message || "Failed to update stock.", "error");
+        showToast(errorMsg || "Failed to update stock.", "error");
     }
 }
 

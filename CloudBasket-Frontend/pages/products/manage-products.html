@@ -15,6 +15,7 @@
     <link rel="stylesheet" href="../../css/logout.css">
     <link rel="stylesheet" href="../../css/sidebar.css">
     <link rel="stylesheet" href="../../css/manageProducts.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
 </head>
 <body>
 
@@ -23,6 +24,13 @@
     <!-- Header -->
     <header class="dashboard-header">
         <div class="header-left">
+            <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
             <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
                 <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
                     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
@@ -218,11 +226,7 @@
                 </div>
                 <div class="summary-info">
                     <span>TOTAL PRODUCTS</span>
-                    <h3>2,480</h3>
-                    <div class="summary-trend positive">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                        12% vs last month
-                    </div>
+                    <h3 id="summary-total-products">0</h3>
                 </div>
             </div>
             <div class="summary-card">
@@ -231,11 +235,7 @@
                 </div>
                 <div class="summary-info">
                     <span>ACTIVE PRODUCTS</span>
-                    <h3>2,331</h3>
-                    <div class="summary-trend positive">
-                        <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
-                        94% vs last month
-                    </div>
+                    <h3 id="summary-active-products">0</h3>
                 </div>
             </div>
             <div class="summary-card">
@@ -244,10 +244,7 @@
                 </div>
                 <div class="summary-info">
                     <span>INACTIVE PRODUCTS</span>
-                    <h3>149</h3>
-                    <div class="summary-trend neutral">
-                        Stable vs last month
-                    </div>
+                    <h3 id="summary-inactive-products">0</h3>
                 </div>
             </div>
             <div class="summary-card">
@@ -256,10 +253,7 @@
                 </div>
                 <div class="summary-info">
                     <span>LOW STOCK PRODUCTS</span>
-                    <h3>24</h3>
-                    <div class="summary-trend negative">
-                        Critical vs last month
-                    </div>
+                    <h3 id="summary-low-stock-products">0</h3>
                 </div>
             </div>
         </div>

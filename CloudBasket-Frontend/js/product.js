@@ -114,50 +114,79 @@ function renderProductDetails(product) {
 
     const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
     let defaultImageUrl = sanitizeUrl(imageUrl);
-    if (title.toUpperCase().includes('VIVO Y56')) {
-        defaultImageUrl = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
-    }
 
     // Image and Thumbnails
     const mainImageEl = document.getElementById('pd-image');
     mainImageEl.onerror = function() { this.onerror=null; this.src = fallbackImg; };
 
+    const prevBtn = document.getElementById('pd-prev-btn');
+    const nextBtn = document.getElementById('pd-next-btn');
+
+    let galleryUrls = [];
+    if (product.images && product.images.length > 0) {
+        galleryUrls = product.images.map(imgObj => {
+            return sanitizeUrl(typeof imgObj === 'string' ? imgObj : (imgObj.imageUrl || imgObj.url || imgObj.image));
+        }).filter(Boolean);
+    } 
+    if (galleryUrls.length === 0 && defaultImageUrl) {
+        galleryUrls = [defaultImageUrl];
+    }
+
+    let currentImgIdx = 0;
+
+    function setActiveImage(index) {
+        if (galleryUrls.length === 0) return;
+        currentImgIdx = (index + galleryUrls.length) % galleryUrls.length;
+        mainImageEl.src = galleryUrls[currentImgIdx];
+
+        const thumbs = document.querySelectorAll('.pd-thumbnail');
+        thumbs.forEach((t, i) => {
+            if (i === currentImgIdx) t.classList.add('active');
+            else t.classList.remove('active');
+        });
+    }
+
+    if (galleryUrls.length > 1) {
+        if (prevBtn) {
+            prevBtn.classList.add('has-multiple');
+            prevBtn.style.display = 'flex';
+            prevBtn.onclick = (e) => {
+                e.stopPropagation();
+                setActiveImage(currentImgIdx - 1);
+            };
+        }
+        if (nextBtn) {
+            nextBtn.classList.add('has-multiple');
+            nextBtn.style.display = 'flex';
+            nextBtn.onclick = (e) => {
+                e.stopPropagation();
+                setActiveImage(currentImgIdx + 1);
+            };
+        }
+    } else {
+        if (prevBtn) prevBtn.style.display = 'none';
+        if (nextBtn) nextBtn.style.display = 'none';
+    }
+
     const thumbnailsContainer = document.getElementById('pd-thumbnails');
     if (thumbnailsContainer) {
         thumbnailsContainer.innerHTML = '';
-        if (product.images && product.images.length > 0) {
-            
-            let firstImgUrl = sanitizeUrl(product.images[0].imageUrl);
-            if (title.toUpperCase().includes('VIVO Y56')) {
-                firstImgUrl = 'https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=500&q=80';
-            }
-            
-            mainImageEl.src = firstImgUrl;
-            
-            product.images.forEach((imgObj, index) => {
+        if (galleryUrls.length > 0) {
+            mainImageEl.src = galleryUrls[0];
+            galleryUrls.forEach((thumbUrl, index) => {
                 const thumb = document.createElement('img');
-                
-                let thumbUrl = sanitizeUrl(imgObj.imageUrl);
-                if (title.toUpperCase().includes('VIVO Y56')) {
-                    // For the demo, just force all VIVO thumbnails to the placeholder if broken, or just let them use the fallback
-                    // Actually, let's just let it be, but add onerror
-                }
-                
                 thumb.src = thumbUrl;
                 thumb.onerror = function() { this.onerror=null; this.src = fallbackImg; };
                 thumb.className = 'pd-thumbnail';
                 if (index === 0) thumb.classList.add('active');
-                
+
                 thumb.addEventListener('mouseover', () => {
-                    mainImageEl.src = thumbUrl;
-                    document.querySelectorAll('.pd-thumbnail').forEach(t => t.classList.remove('active'));
-                    thumb.classList.add('active');
+                    setActiveImage(index);
                 });
-                
+
                 thumbnailsContainer.appendChild(thumb);
             });
         } else {
-            // No multiple images, just show the single image
             mainImageEl.src = defaultImageUrl;
         }
     }
@@ -261,7 +290,13 @@ if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
 window.toggleWishlist = async function(event, id, btnElement) {
     event.stopPropagation();
     try {
-        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || btnElement.style.color === '#ef4444';
+        const svg = btnElement.querySelector('svg');
+        const svgFill = svg ? svg.getAttribute('fill') : '';
+        const isAdded = btnElement.style.color === 'rgb(239, 68, 68)' || 
+                        btnElement.style.color === '#ef4444' || 
+                        svgFill === '#ef4444' || 
+                        svgFill === 'rgb(239, 68, 68)';
+
         if (isAdded) {
             const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
                 method: 'DELETE'
@@ -270,6 +305,10 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 userWishlistIds.delete(id);
                 btnElement.style.color = '#64748b';
                 btnElement.style.fill = 'none';
+                if (svg) {
+                    svg.setAttribute('fill', 'none');
+                    svg.style.fill = 'none';
+                }
             }
         } else {
             const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
@@ -281,6 +320,10 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 userWishlistIds.add(id);
                 btnElement.style.color = '#ef4444';
                 btnElement.style.fill = '#ef4444';
+                if (svg) {
+                    svg.setAttribute('fill', '#ef4444');
+                    svg.style.fill = '#ef4444';
+                }
             }
         }
     } catch (error) {
