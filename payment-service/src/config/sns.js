@@ -1,14 +1,12 @@
 import "./env.js";
 import { SNSClient } from "@aws-sdk/client-sns";
-import { fromIni } from "@aws-sdk/credential-providers";
+import AWSXRay from "aws-xray-sdk";
 
-const credentials = process.env.AWS_PROFILE
-  ? fromIni({ profile: process.env.AWS_PROFILE })
-  : undefined;
-
-const snsClient = new SNSClient({
-  region: process.env.AWS_REGION,
-  credentials,
-});
+const snsClient = AWSXRay.captureAWSv3Client(
+  new SNSClient({
+    region: process.env.AWS_REGION,
+  })
+);
 
 export { snsClient };
+export default snsClient;

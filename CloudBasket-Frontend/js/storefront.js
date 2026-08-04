@@ -288,7 +288,7 @@ function applyFilters() {
         const matchesBrand = brand === '' || prodBrand.includes(brand) || title.includes(brand);
 
         let matchesPrice = true;
-        if (priceRange !== '') {
+        if (priceRange !== '' && priceRange !== 'price-low' && priceRange !== 'price-high') {
             const productPrice = Number(product.sellingPrice || product.price) || 0;
             if (priceRange === '10000+') {
                 matchesPrice = productPrice >= 10000;
@@ -305,9 +305,9 @@ function applyFilters() {
         return matchesSearch && matchesCategory && matchesBrand && matchesPrice;
     });
     
-    if (sortBy === 'price-low') {
+    if (sortBy === 'price-low' || priceRange === 'price-low') {
         filteredProducts.sort((a, b) => (Number(a.sellingPrice || a.price) || 0) - (Number(b.sellingPrice || b.price) || 0));
-    } else if (sortBy === 'price-high') {
+    } else if (sortBy === 'price-high' || priceRange === 'price-high') {
         filteredProducts.sort((a, b) => (Number(b.sellingPrice || b.price) || 0) - (Number(a.sellingPrice || a.price) || 0));
     }
 

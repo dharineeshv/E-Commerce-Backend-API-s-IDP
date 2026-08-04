@@ -1,10 +1,13 @@
 import { DynamoDBClient } from "@aws-sdk/client-dynamodb";
 import { DynamoDBDocumentClient, QueryCommand, PutCommand, DeleteCommand, ScanCommand } from "@aws-sdk/lib-dynamodb";
 import "../config/env.js";
+import AWSXRay from "aws-xray-sdk";
 
-const client = new DynamoDBClient({
-  region: process.env.AWS_REGION || "ap-southeast-1",
-});
+const client = AWSXRay.captureAWSv3Client(
+  new DynamoDBClient({
+    region: process.env.AWS_REGION || "ap-southeast-1",
+  })
+);
 
 const dynamodb = DynamoDBDocumentClient.from(client);
 

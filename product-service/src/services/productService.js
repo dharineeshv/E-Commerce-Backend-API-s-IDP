@@ -15,10 +15,11 @@ import {
 } from '@aws-sdk/lib-dynamodb'
 
 import { v4 as uuidv4 } from 'uuid';
+import AWSXRay from 'aws-xray-sdk';
 
-const dynamoClient = new DynamoDBClient({
+const dynamoClient = AWSXRay.captureAWSv3Client(new DynamoDBClient({
   region: process.env.AWS_REGION,
-});
+}));
 
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
 const tableName = process.env.DYNAMODB_TABLE;

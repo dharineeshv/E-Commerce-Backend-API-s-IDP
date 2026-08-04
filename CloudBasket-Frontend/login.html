@@ -54,7 +54,7 @@
                 </a>
                 <!-- Company Logo Placeholder -->
                 <div class="company-logo-header">
-                    <img src="assets/logo.png" alt="Company Logo" style="height: 36px; object-fit: contain; margin-left: 15px;">
+                    <img src="assets/logo.png" alt="Company Logo" style="height: 52px; object-fit: contain; margin-left: 15px;">
                 </div>
             </nav>
         </div>
@@ -146,8 +146,9 @@
                 <option value="Watches">Watches</option>
             </select>
             
-            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
-                <select id="brand-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500; margin-right: 10px;">
+            <div class="filter-pill-select-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="select-pill-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <select id="brand-filter" class="filter-pill-select">
                     <option value="">All Brands</option>
                     <option value="Apple">Apple</option>
                     <option value="Samsung">Samsung</option>
@@ -166,9 +167,12 @@
                 </select>
             </div>
             
-            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
-                <select id="price-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500;">
+            <div class="filter-pill-select-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="select-pill-icon"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <select id="price-filter" class="filter-pill-select">
                     <option value="">Price Range</option>
+                    <option value="price-low">Sort By: Price (Low to High)</option>
+                    <option value="price-high">Sort By: Price (High to Low)</option>
                     <option value="0-100">Under ₹100</option>
                     <option value="100-1000">₹100 - ₹1,000</option>
                     <option value="1000-5000">₹1,000 - ₹5,000</option>
@@ -177,23 +181,11 @@
                 </select>
             </div>
             
-            <div class="filter-dropdown" style="padding: 0; border: none; background: transparent;">
-                <select id="sort-filter" style="padding: 8px 16px; border: none; border-radius: 8px; outline: none; cursor: pointer; font-family: inherit; font-size: 14px; background: #dbeafe; color: #1e40af; font-weight: 500; margin-right: 10px;">
-                    <option value="relevance">Sort By: Relevance</option>
-                    <option value="price-low">Sort By: Price (Low to High)</option>
-                    <option value="price-high">Sort By: Price (High to Low)</option>
-                </select>
-            </div>
-            
             <button class="clear-filters" id="clear-filters">Clear All</button>
         </section>
 
         <!-- Product Listing Header -->
         <div class="listing-header">
-            <div class="breadcrumbs">
-                <a href="#">Home</a> &gt; <span>All Products</span>
-            </div>
-            
             <div class="listing-meta">
                 <div class="product-count">
                     <h2 id="product-count-display">Loading products...</h2>

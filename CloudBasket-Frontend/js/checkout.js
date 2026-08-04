@@ -104,13 +104,14 @@ document.addEventListener('DOMContentLoaded', () => {
         let subtotal = 0;
         let totalQuantity = 0;
         cartItems.forEach(item => {
-            const title = item.productName || item.title || 'Product';
-            let originalPrice = item.price || 0;
-            let price = originalPrice;
-            const quantity = item.quantity || 1;
+            const pId = item.productId || item.id || item.cartItemId;
+            const itemTitle = item.productName || item.title || '';
+            const matchedProd = (pId && allProductsMap[pId]) || (itemTitle && allProductsMap[itemTitle.toLowerCase().trim()]) || {};
             
-            const pId = item.productId || item.id;
-            const matchedProd = (pId && allProductsMap[pId]) || (title && allProductsMap[title.toLowerCase().trim()]) || {};
+            const title = itemTitle || matchedProd.name || matchedProd.title || 'Product';
+            let originalPrice = Number(item.price || item.unitPrice || matchedProd.sellingPrice || matchedProd.price || matchedProd.mrp || 0);
+            let price = originalPrice;
+            const quantity = Number(item.quantity) || 1;
             
             let rawImg = item.imageUrl || item.image || matchedProd.imageUrl || matchedProd.image;
             if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {
@@ -121,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const imageUrl = sanitizeUrl(rawImg);
             const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
             
-            if (activeFestivalSale) {
+            if (activeFestivalSale && !item.isFestivalDiscounted) {
                 if (activeFestivalSale.discountType === 'percentage' || activeFestivalSale.discountType === 'PERCENTAGE') {
                     price = price * (1 - (activeFestivalSale.discountValue / 100));
                 } else {

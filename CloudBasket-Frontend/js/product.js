@@ -104,9 +104,11 @@ function renderProductDetails(product) {
     const sku = product.sku || `CB-${(product.productId || product.id).toUpperCase().substring(0,6)}-${category.substring(0,3).toUpperCase()}`;
     const desc = product.description || "No description available.";
     
-    // Breadcrumbs
-    document.getElementById('bc-category').innerText = category;
-    document.getElementById('bc-title').innerText = title;
+    // Breadcrumbs (optional)
+    const bcCat = document.getElementById('bc-category');
+    if (bcCat) bcCat.innerText = category;
+    const bcTitle = document.getElementById('bc-title');
+    if (bcTitle) bcTitle.innerText = title;
 
 
 
