@@ -50,9 +50,27 @@ jobs:
           node --test user-profile-service/test/userProfileService.test.js
           node --test marketing-service/test/marketingService.test.js
 
+  security-scan:
+    name: Snyk Security Vulnerability Scan
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
+      - name: Run Snyk Security Scan for Dependencies
+        uses: snyk/actions/node@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
   deploy:
     name: Deploy to AWS S3 & CloudFront
-    needs: test
+    needs: [test, security-scan]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/customer-service-frontend-implementation'
     runs-on: ubuntu-latest
     steps:
