@@ -22,16 +22,7 @@ const handleOrderEvent = async ({ eventType, payload }) => {
     return;
   }
 
-  console.log("[orderEventHandler] Processing event", { eventType, orderId, targetStatus });
-
   const updated = await setOrderStatus(orderId, targetStatus);
-
-  console.log("[orderEventHandler] Order status updated", {
-    eventType,
-    orderId,
-    status: updated?.status,
-    updatedAt: updated?.updatedAt,
-  });
 };
 
 export { handleOrderEvent };

@@ -143,12 +143,6 @@ const publishEvent = async (eventType, payload) => {
 });
 
     const response = await snsClient.send(command);
-
-    console.log("[SNS] Event Published", {
-      eventType,
-      messageId: response.MessageId,
-    });
-
     return response;
 
   } catch (error) {

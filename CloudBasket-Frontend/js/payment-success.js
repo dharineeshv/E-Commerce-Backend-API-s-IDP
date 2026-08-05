@@ -57,10 +57,7 @@ document.addEventListener('DOMContentLoaded', async () => {
                             amount: amount,
                             paymentMethod: 'UPI'
                         })
-                    });
-                    console.log("Payment successfully registered in DB.");
                 } else if (existingPaymentRes.ok) {
-                    console.log("Payment already exists.");
                 }
             } catch (err) {
                 console.error("Failed to register payment in DB:", err);

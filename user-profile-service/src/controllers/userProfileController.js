@@ -25,11 +25,7 @@ const getProfileBySub = async (req, res, next) => {
 
 const getMyProfile = async (req, res, next) => {
   try {
-    console.log("JWT Payload:", req.user);
-
     const cognitoSub = req.user.sub;
-
-    console.log("JWT Sub:", cognitoSub);
 
     const result = await userProfileService.getMyProfile(cognitoSub);
 

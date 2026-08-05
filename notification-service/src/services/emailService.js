@@ -9,9 +9,6 @@ const sendEmail = async ({ to, subject, text }) => {
       text,
     });
 
-    console.log("Email sent successfully.");
-    console.log("Message ID:", info.messageId);
-
     return info;
 
   } catch (error) {

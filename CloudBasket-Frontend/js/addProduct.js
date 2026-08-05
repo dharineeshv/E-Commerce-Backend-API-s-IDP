@@ -24,7 +24,7 @@ import { initializeSidebar } from "./sidebar.js";
 
 document.addEventListener("DOMContentLoaded", () => {
 
-    console.log("✅ Add Product Loaded");
+
 
     initializeSidebar();
     initialize();
@@ -98,7 +98,7 @@ function initialize() {
         loadProductForEditing();
     }
     
-    console.log("✅ Initialization Complete");
+
 }
 
 async function loadProductForEditing() {
@@ -404,7 +404,7 @@ function initializeDragAndDrop() {
 
 }
 
-console.log("✅ Part 1 Loaded");
+
 
 // ==========================================================
 // LIVE PREVIEW
@@ -625,7 +625,7 @@ function updateStatusPreview() {
 
 }
 
-console.log("✅ Part 2 Loaded");
+
 
 
 // ==========================================================
@@ -828,7 +828,7 @@ function collectSpecifications() {
 
 }
 
-console.log("✅ Part 3 Loaded");
+
 
 // ==========================================================
 // PUBLISH PRODUCT
@@ -1105,7 +1105,7 @@ function resetPublishButton() {
 
 }
 
-console.log("✅ Part 4A Loaded");
+
 
 // ==========================================================
 // SUCCESS MODAL
@@ -1293,9 +1293,4 @@ updatePreview();
 calculatePrice();
 
 updateStatusPreview();
-
-console.log(
-
-    "✅ Part 4B Loaded"
-
-);
+

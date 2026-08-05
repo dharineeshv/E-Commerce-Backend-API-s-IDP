@@ -138,10 +138,7 @@ const placeOrder = async (customerId, shippingAddress, calculatedTotal) => {
   buildOrderPlacedPayload(order, shippingAddress)
 );
 
-console.log("ORDER_PLACED event published successfully", {
-  orderId: order.orderId,
-  messageId: publishResponse?.MessageId,
-});
+
 
   
   } catch (error) {
@@ -160,7 +157,7 @@ console.log("ORDER_PLACED event published successfully", {
         await axios.put(`${INVENTORY_SERVICE_URL}/api/v1/inventory/reduce/${item.productId}`, {
           amount: Number(item.quantity)
         });
-        console.log(`Inventory reduced for product ${item.productId} by ${item.quantity}`);
+
       } catch (invError) {
         console.error(`Failed to reduce inventory for product ${item.productId}:`, invError?.response?.data || invError.message);
       }
@@ -286,10 +283,7 @@ const cancelOrder = async (customerId, orderId) => {
   buildOrderCancelledPayload(updated.Attributes || order, cancelledAt)
 );
 
-console.log("ORDER_CANCELLED event published successfully", {
-  orderId,
-  messageId: publishResponse?.MessageId,
-});
+
   } catch (error) {
     console.error("Failed to publish ORDER_CANCELLED event", {
       orderId,
@@ -307,7 +301,7 @@ console.log("ORDER_CANCELLED event published successfully", {
           await axios.put(`${INVENTORY_SERVICE_URL}/api/v1/inventory/restore/${item.productId}`, {
             amount: Number(item.quantity)
           });
-          console.log(`Inventory restored for product ${item.productId} by ${item.quantity}`);
+
         } catch (invError) {
           console.error(`Failed to restore inventory for product ${item.productId}:`, invError?.response?.data || invError.message);
         }

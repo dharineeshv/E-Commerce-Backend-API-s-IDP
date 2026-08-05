@@ -189,14 +189,12 @@ function handleViewProduct(id) {
 }
 
 function handleEditProduct(id) {
-    console.log('Edit product:', id);
     window.location.href = `edit-product.html?id=${id}`;
 }
 
 let currentDeleteId = null;
 
 function handleDeleteProduct(id) {
-    console.log('Delete product:', id);
     currentDeleteId = id;
     openDeleteModal(id);
 }

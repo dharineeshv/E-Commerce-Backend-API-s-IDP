@@ -29,10 +29,6 @@ const cognitoAuthMiddleware = async (req, res, next) => {
     const payload = await verifier.verify(token);
 
     req.user = payload;
-
-    console.log("Authenticated User:");
-    console.log(payload);
-
     next();
 
   } catch (error) {

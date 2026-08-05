@@ -18,8 +18,6 @@ export const handleNotificationEvent = async (event) => {
   try {
     const { eventType, payload } = event;
 
-    console.log(`Processing notification for ${eventType}`);
-
     const template = templateMap[eventType];
 
     if (!template) {
@@ -36,8 +34,6 @@ export const handleNotificationEvent = async (event) => {
         subject,
         text,
       });
-
-      console.log(`Customer email sent to ${payload.customerEmail}`);
     } else {
       console.warn("Customer email not available.");
     }
@@ -49,8 +45,6 @@ export const handleNotificationEvent = async (event) => {
         subject: `[STORE COPY] ${subject}`,
         text,
       });
-
-      console.log("Store owner email sent.");
     }
   } catch (error) {
     console.error("Notification processing failed:", error);

@@ -104,12 +104,6 @@ const verifyEmail = async ({ email, confirmationCode }) => {
  
 const login = async ({ email, password }) => {
   try {
-
-    console.log("================================");
-    console.log("Login Email:", email);
-    console.log("Password:", password);
-    console.log("================================");
-
     const command = new InitiateAuthCommand({
       AuthFlow: "USER_PASSWORD_AUTH",
 
@@ -123,11 +117,6 @@ const login = async ({ email, password }) => {
     });
 
     const response = await cognitoClient.send(command);
-
-    console.log("================================");
-    console.log("Access Token:");
-    console.log(response.AuthenticationResult.AccessToken);
-    console.log("================================");
 
     return {
       success: true,

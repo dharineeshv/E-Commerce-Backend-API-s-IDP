@@ -7,32 +7,20 @@ const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(/\/api\/products\/?
 const USER_PROFILE_SERVICE_URL =
   process.env.USER_PROFILE_SERVICE_URL;
 
-  console.log("PRODUCT_SERVICE_URL =", PRODUCT_SERVICE_URL);
-console.log("USER_PROFILE_SERVICE_URL =", USER_PROFILE_SERVICE_URL);
+
 
 const getProductServiceItemUrl = (productId) => {
   return `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${productId}`;
 };
 
 const getCustomerIdFromSub = async (cognitoSub) => {
-  console.log("Inside getCustomerIdFromSub");
-  console.log("Cognito Sub:", cognitoSub);
-
   const response = await axios.get(
     `${USER_PROFILE_SERVICE_URL}/api/v1/profile/me/${cognitoSub}`
   );
-
-  console.log("Profile Response:", response.data);
-
   return response.data.data.customerId;
 };
 
 const sendErrorResponse = (res, error, fallbackMessage) => {
-
-  console.log("======================================");
-  console.log("Axios URL:", error.config?.url);
-  console.log("Axios Method:", error.config?.method);
-  console.log("======================================");
 
   console.error(fallbackMessage, {
     message: error.message,
@@ -76,12 +64,7 @@ const customerId = await getCustomerIdFromSub(cognitoSub);
 
     const url = getProductServiceItemUrl(productId);
 
-console.log("Calling Product URL:", url);
-
 const productResponse = await axios.get(url);
-
-console.log("Product Response:");
-console.log(JSON.stringify(productResponse.data, null, 2));
 
 const product = productResponse.data?.product;
 

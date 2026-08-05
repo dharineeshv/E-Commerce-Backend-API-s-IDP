@@ -92,20 +92,8 @@ function createProductMap(products) {
     const productMap = {};
 
     products.forEach(product => {
-
-        console.log("Product Object:", product);
-
-        console.log("Product ID:", product.productId);
-
-        console.log("Product Name:", product.name);
-
         productMap[product.productId] = product;
-
     });
-
-    console.log("Final Product Map:", productMap);
-
-    return productMap;
 
 }
 
@@ -369,16 +357,9 @@ function loadLowStockTable(
         viewInventoryBtn.style.cursor = 'pointer';
         viewInventoryBtn.onclick = () => {
             window.location.href = '../../pages/inventory/inventory.html';
-        };
     }
 
     lowStockProducts.forEach(item => {
-        console.log("----------------");
-
-console.log("Inventory Product ID:", item.productId);
-
-console.log("Matched Product:", productMap[item.productId]);
-
         tableBody.innerHTML +=
 
         `

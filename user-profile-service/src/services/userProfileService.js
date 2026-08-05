@@ -37,10 +37,6 @@ const generateCustomerId = async () => {
 };
 
 const getProfileByCognitoSub = async (cognitoSub) => {
-
-  console.log("==================================");
-  console.log("Searching Cognito Sub:", cognitoSub);
-
   const response = await docClient.send(
     new QueryCommand({
       TableName: process.env.USER_PROFILE_TABLE,
@@ -55,10 +51,6 @@ const getProfileByCognitoSub = async (cognitoSub) => {
     })
   );
 
-  console.log("Items Returned:");
-  console.log(JSON.stringify(response.Items, null, 2));
-  console.log("==================================");
-
   return response.Items?.[0] || null;
 };
 
@@ -67,7 +59,6 @@ const getProfileBySub = async (cognitoSub) => {
   let profile = await getProfileByCognitoSub(cognitoSub);
 
   if (!profile) {
-    console.log(`Auto-creating profile for missing user: ${cognitoSub}`);
     await createProfile({ cognitoSub, email: "google-sso-user@example.com" });
     profile = await getProfileByCognitoSub(cognitoSub);
   }
@@ -114,7 +105,6 @@ const getMyProfile = async (cognitoSub) => {
   let profile = await getProfileByCognitoSub(cognitoSub);
 
   if (!profile) {
-    console.log(`Auto-creating profile for missing user in getMyProfile: ${cognitoSub}`);
     await createProfile({ cognitoSub, email: "google-sso-user@example.com" });
     profile = await getProfileByCognitoSub(cognitoSub);
   }

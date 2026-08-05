@@ -10,11 +10,7 @@ const handleOrderPlaced = async ({ orderId, items }) => {
   for (const item of items) {
     try {
       await reduceInventory(item.productId, item.quantity);
-      console.log("[inventoryEventHandler] Stock reduced", {
-        orderId,
-        productId: item.productId,
-        quantity: item.quantity,
-      });
+
     } catch (error) {
       console.error("[inventoryEventHandler] Failed to reduce stock", {
         orderId,
@@ -35,11 +31,7 @@ const handleOrderCancelled = async ({ orderId, items }) => {
   for (const item of items) {
     try {
       await restoreInventory(item.productId, item.quantity);
-      console.log("[inventoryEventHandler] Stock restored", {
-        orderId,
-        productId: item.productId,
-        quantity: item.quantity,
-      });
+
     } catch (error) {
       console.error("[inventoryEventHandler] Failed to restore stock", {
         orderId,
@@ -64,7 +56,7 @@ const handleInventoryEvent = async ({ eventType, payload }) => {
     return;
   }
 
-  console.log("[inventoryEventHandler] Processing event", { eventType });
+
   await handler(payload);
 };
 
