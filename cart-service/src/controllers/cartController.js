@@ -11,15 +11,17 @@ const USER_PROFILE_SERVICE_URL =
 console.log("USER_PROFILE_SERVICE_URL =", USER_PROFILE_SERVICE_URL);
 
 const getProductServiceItemUrl = (productId) => {
-  return `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${productId}`;
+  const safeProductId = encodeURIComponent(String(productId || "").trim());
+  return `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${safeProductId}`;
 };
 
 const getCustomerIdFromSub = async (cognitoSub) => {
   console.log("Inside getCustomerIdFromSub");
   console.log("Cognito Sub:", cognitoSub);
 
+  const safeSub = encodeURIComponent(String(cognitoSub || "").trim());
   const response = await axios.get(
-    `${USER_PROFILE_SERVICE_URL}/api/v1/profile/me/${cognitoSub}`
+    `${USER_PROFILE_SERVICE_URL}/api/v1/profile/me/${safeSub}`
   );
 
   console.log("Profile Response:", response.data);
