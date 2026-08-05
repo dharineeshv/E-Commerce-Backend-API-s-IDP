@@ -33,6 +33,17 @@ for (const [svc, fn] of Object.entries(map)) {
     continue;
   }
 
+  // Ensure node_modules exists before zipping
+  const nodeModulesDir = path.join(svcDir, "node_modules");
+  if (!fs.existsSync(nodeModulesDir)) {
+    console.log(`Installing dependencies for ${svc}...`);
+    try {
+      execSync(`npm --prefix "${svcDir}" install --omit=dev --no-audit --no-fund`, { stdio: "inherit" });
+    } catch (e) {
+      console.error(`Warning: Failed npm install for ${svc}:`, e.message);
+    }
+  }
+
   if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
   
   const isWindows = process.platform === "win32";

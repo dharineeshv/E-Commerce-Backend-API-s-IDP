@@ -101,7 +101,18 @@ jobs:
         run: |
           aws cloudfront create-invalidation --distribution-id E3NI79AATXTTJN --paths "/*"
 
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '24'
+
       - name: Install Zip Utility & Deploy Backend Microservices to AWS Lambda
         run: |
           sudo apt-get update && sudo apt-get install -y zip
+          for svc in authentication-service cart-service inventory-service marketing-service notification-service order-service payment-service product-service review-service user-profile-service wishlist-service; do
+            if [ -d "$svc" ]; then
+              echo "Installing production deps for $svc..."
+              npm --prefix "$svc" install --omit=dev --no-audit --no-fund || true
+            fi
+          done
           node upload_lambdas.mjs
