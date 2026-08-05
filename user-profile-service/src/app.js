@@ -13,16 +13,8 @@ AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
 const app = express();
-app.disable("x-powered-by");
 
-const corsOptions = {
-  origin: process.env.ALLOWED_ORIGINS ? process.env.ALLOWED_ORIGINS.split(",") : "*",
-  methods: ["GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization", "X-Requested-With"],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(cors());
 app.use(express.json());
 
 // X-Ray: open segment before routes

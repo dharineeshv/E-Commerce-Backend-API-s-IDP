@@ -18,10 +18,10 @@ const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(
 
 async function verifyProductExists(productId) {
   try {
-    const safeProductId = encodeURIComponent(String(productId || "").trim());
+    // Fixed: was /products/${productId}, correct path is /api/products/${productId}
     const response = await axios.get(
-      `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${safeProductId}`
-    );
+  `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${productId}`
+);
     return response.status === 200 && response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {

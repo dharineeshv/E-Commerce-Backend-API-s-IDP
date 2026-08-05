@@ -5,9 +5,8 @@ import axios from "axios";
 const USER_PROFILE_SERVICE_URL = process.env.USER_PROFILE_SERVICE_URL;
 
 const getCustomerIdFromSub = async (cognitoSub) => {
-  const safeSub = encodeURIComponent(String(cognitoSub || "").trim());
   const response = await axios.get(
-    `${USER_PROFILE_SERVICE_URL}/api/v1/profile/me/${safeSub}`
+    `${USER_PROFILE_SERVICE_URL}/api/v1/profile/me/${cognitoSub}`
   );
 
   return response.data.data.customerId;

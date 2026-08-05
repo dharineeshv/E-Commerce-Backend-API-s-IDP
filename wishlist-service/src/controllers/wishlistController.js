@@ -6,8 +6,7 @@ const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || "http://localhost
 const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(/\/api\/products\/?$/i, "");
 
 const getProductServiceItemUrl = (productId) => {
-  const safeProductId = encodeURIComponent(String(productId || "").trim());
-  return `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${safeProductId}`;
+  return `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${productId}`;
 };
 
 const sendErrorResponse = (res, error, fallbackMessage) => {

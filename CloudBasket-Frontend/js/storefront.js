@@ -114,30 +114,24 @@ async function loadProducts() {
         const response = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
         const data = await response.json();
         
-        if (data && data.success && Array.isArray(data.products)) {
-            allProducts = data.products;
-        } else if (data && data.success && Array.isArray(data.data)) {
-            allProducts = data.data;
-        } else if (Array.isArray(data)) {
-            allProducts = data;
-        } else if (data && Array.isArray(data.products)) {
+        if (data.success && data.products) {
             allProducts = data.products;
         } else {
-            allProducts = [];
+            allProducts = data; // Fallback in case response is a direct array
         }
 
-        // If backend returns nothing or non-array, fallback to mock data
-        if (!Array.isArray(allProducts) || allProducts.length === 0) {
-            console.warn("No valid products array found from backend. Using mock data.");
+        // If backend returns nothing, fallback to mock data
+        if (!allProducts || allProducts.length === 0) {
+            console.warn("No products found from backend. Using mock data.");
             allProducts = getMockProducts();
         }
 
         if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
             try {
                 const wishRes = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}`);
-                if (wishRes && wishRes.ok) {
+                if (wishRes.ok) {
                     const wishData = await wishRes.json();
-                    if (wishData && wishData.items && Array.isArray(wishData.items)) {
+                    if (wishData.items) {
                         wishData.items.forEach(item => {
                             if (item.productDetails && (item.productDetails.productId || item.productDetails.id)) {
                                 userWishlistIds.add(item.productDetails.productId || item.productDetails.id);
@@ -153,26 +147,24 @@ async function loadProducts() {
         }
 
         // Fetch review/rating data for products asynchronously
-        if (Array.isArray(allProducts)) {
-            await Promise.all(allProducts.map(async (product) => {
-                const pId = product.productId || product.id;
-                if (pId) {
-                    try {
-                        const revRes = await fetchProductReviews(pId);
-                        if (revRes && revRes.summary) {
-                            product.rating = revRes.summary.averageRating || product.rating || 4.5;
-                            product.reviewsCount = revRes.summary.totalReviews !== undefined ? revRes.summary.totalReviews : (product.reviews || 0);
-                        }
-                    } catch (e) {
-                        console.error("Error fetching rating summary for product", pId, e);
+        await Promise.all(allProducts.map(async (product) => {
+            const pId = product.productId || product.id;
+            if (pId) {
+                try {
+                    const revRes = await fetchProductReviews(pId);
+                    if (revRes && revRes.summary) {
+                        product.rating = revRes.summary.averageRating || product.rating || 4.5;
+                        product.reviewsCount = revRes.summary.totalReviews !== undefined ? revRes.summary.totalReviews : (product.reviews || 0);
                     }
+                } catch (e) {
+                    console.error("Error fetching rating summary for product", pId, e);
                 }
-                if (!product.rating) {
-                    product.rating = 4.5;
-                    product.reviewsCount = product.reviews || 8;
-                }
-            }));
-        }
+            }
+            if (!product.rating) {
+                product.rating = 4.5;
+                product.reviewsCount = product.reviews || 8;
+            }
+        }));
 
         filteredProducts = [...allProducts];
         renderProducts(filteredProducts);
