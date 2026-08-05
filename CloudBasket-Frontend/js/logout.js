@@ -2,8 +2,10 @@
 // Logout Handler
 // ==========================================================
 
+let isLogoutInitialized = false;
+
 export function initializeLogout() {
-    // Dynamically inject logout-modal if missing from current DOM
+    // Ensure modal HTML exists in DOM
     let modal = document.getElementById("logout-modal");
     if (!modal) {
         modal = document.createElement("div");
@@ -29,52 +31,53 @@ export function initializeLogout() {
         document.body.appendChild(modal);
     }
 
-    // Event delegation for all logout buttons across the app
+    if (isLogoutInitialized) return;
+    isLogoutInitialized = true;
+
+    // Robust Global Event Delegation for opening/closing/confirming logout
     document.addEventListener("click", (event) => {
-        const logoutTarget = event.target.closest('#logout-button, .logout');
-        if (logoutTarget) {
+        const logoutTrigger = event.target.closest('#logout-button, .logout, .logout-btn');
+        const confirmBtn = event.target.closest('#confirm-logout');
+        const cancelBtn = event.target.closest('#cancel-logout');
+        const currentModal = document.getElementById("logout-modal");
+
+        if (logoutTrigger) {
             event.preventDefault();
             event.stopPropagation();
-            const currentModal = document.getElementById("logout-modal");
-            if (currentModal) {
-                currentModal.classList.add("show");
-                currentModal.classList.add("active");
+            const modalTarget = currentModal || document.getElementById("logout-modal");
+            if (modalTarget) {
+                modalTarget.classList.add("show");
+                modalTarget.classList.add("active");
+                modalTarget.style.display = "flex";
+                modalTarget.style.opacity = "1";
+                modalTarget.style.visibility = "visible";
             }
+            return;
+        }
+
+        if (confirmBtn) {
+            event.preventDefault();
+            event.stopPropagation();
+            performLogout();
+            return;
+        }
+
+        if (cancelBtn || (currentModal && event.target === currentModal)) {
+            event.preventDefault();
+            const modalTarget = currentModal || document.getElementById("logout-modal");
+            if (modalTarget) {
+                modalTarget.classList.remove("show");
+                modalTarget.classList.remove("active");
+                modalTarget.style.display = "none";
+                modalTarget.style.opacity = "0";
+                modalTarget.style.visibility = "hidden";
+            }
+            return;
         }
     });
-
-    const cancel = document.getElementById("cancel-logout");
-    const confirm = document.getElementById("confirm-logout");
-
-    if (cancel) {
-        cancel.addEventListener("click", (e) => {
-            e.preventDefault();
-            const currentModal = document.getElementById("logout-modal");
-            if (currentModal) {
-                currentModal.classList.remove("show");
-                currentModal.classList.remove("active");
-            }
-        });
-    }
-
-    if (modal) {
-        modal.addEventListener("click", (event) => {
-            if (event.target === modal) {
-                modal.classList.remove("show");
-                modal.classList.remove("active");
-            }
-        });
-    }
-
-    if (confirm) {
-        confirm.addEventListener("click", (e) => {
-            e.preventDefault();
-            performLogout();
-        });
-    }
 }
 
-function performLogout() {
+export function performLogout() {
     // Preserve customer reviews across logout sessions
     const preservedItems = {};
     for (let i = 0; i < localStorage.length; i++) {
