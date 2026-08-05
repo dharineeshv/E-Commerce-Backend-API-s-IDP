@@ -12,6 +12,7 @@ AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
 const app = express();
+app.disable("x-powered-by");
 
 app.use(express.json());
 app.use(cors());
