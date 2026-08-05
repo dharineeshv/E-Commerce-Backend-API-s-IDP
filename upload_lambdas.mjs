@@ -33,7 +33,7 @@ for (const [svc, fn] of Object.entries(map)) {
     continue;
   }
 
-  // Ensure node_modules exists before zipping
+  // Ensure node_modules dependencies are installed
   const nodeModulesDir = path.join(svcDir, "node_modules");
   if (!fs.existsSync(nodeModulesDir)) {
     console.log(`Installing dependencies for ${svc}...`);
@@ -46,13 +46,15 @@ for (const [svc, fn] of Object.entries(map)) {
 
   if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
   
+  // Zip from baseDir so zip contains the service folder name (e.g. cart-service/lambda.js)
+  // to match AWS Lambda Handler configuration: "cart-service/lambda.handler"
   const isWindows = process.platform === "win32";
   const zipCmd = isWindows 
-    ? `powershell -Command "Compress-Archive -Path '${svcDir}\\*' -DestinationPath '${zipPath}' -Force"`
-    : `cd "${svcDir}" && zip -r "${zipPath}" . -x "*.git*"`;
+    ? `powershell -Command "Compress-Archive -Path '${svc}' -DestinationPath '${zipPath}' -Force"`
+    : `zip -r "${zipPath}" "${svc}" -x "*.git*"`;
 
   console.log(`Zipping ${svc}...`);
-  execSync(zipCmd, { stdio: "inherit" });
+  execSync(zipCmd, { stdio: "inherit", cwd: baseDir });
   
   const stats = fs.statSync(zipPath);
   console.log(`Zip size: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
