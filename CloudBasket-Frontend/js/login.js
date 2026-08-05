@@ -166,20 +166,29 @@ showToast(
 
     }
 
-    catch(error){
+    catch(error) {
+        console.error("Login error:", error);
 
-        console.error(error);
+        let userMsg = "Incorrect email or password.";
+        if (error && error.message) {
+            let msg = error.message.split(/\r?\n|\s+at\s+/)[0].trim();
+            msg = msg.replace(/^Error:\s*/i, '').replace(/username/gi, 'email');
+            
+            const raw = msg.toLowerCase();
+            if (raw.includes("json") || raw.includes("unexpected") || raw.includes("syntax") || raw.includes("file:///") || raw.includes("processticks")) {
+                userMsg = "Incorrect email or password.";
+            } else if (raw.includes("network") || raw.includes("failed to fetch")) {
+                userMsg = "Network connection issue. Please check your connection.";
+            } else if (msg.length > 0 && msg.length < 80) {
+                userMsg = msg;
+            }
+        }
 
         showToast(
-
             "error",
-
             "Login Failed",
-
-            error.message || "Invalid email or password."
-
+            userMsg
         );
-
     }
 
     finally{

@@ -22,25 +22,25 @@ async function loadFestivalSale() {
     const banner = document.getElementById("festival-banner");
 
     if (!response || !response.success || !response.data) {
-
-        titleElement.textContent = "No Active Campaign";
-        descriptionElement.textContent = "";
-        discountElement.textContent = "--";
-        durationElement.textContent = "--";
-        banner.src = "../../assets/images/no-festival.png";
+        const festivalStatus = document.getElementById("festival-status");
+        if (festivalStatus) {
+            festivalStatus.innerHTML = `<span style="font-size: 0.85rem; font-weight: 600; color: #64748b;">No Active Sale</span>`;
+        }
+        if (titleElement) titleElement.textContent = "No Active Campaign";
+        if (descriptionElement) descriptionElement.textContent = "";
+        if (discountElement) discountElement.textContent = "--";
+        if (durationElement) durationElement.textContent = "--";
+        if (banner) banner.src = "../../assets/images/no-festival.png";
         return;
-
     }
 
     const festival = response.data;
 
     const festivalStatus = document.getElementById("festival-status");
 
-if (festivalStatus) {
-
-    festivalStatus.textContent = `${festival.title} Live`;
-
-}
+    if (festivalStatus) {
+        festivalStatus.innerHTML = `<span style="display: block; font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2; word-break: break-word; overflow-wrap: break-word;" title="${festival.title}">${festival.title}</span><span style="display: inline-block; margin-top: 3px; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">● Active</span>`;
+    }
 
     titleElement.textContent = `${festival.title} Live`;
     descriptionElement.textContent = festival.subtitle || "";

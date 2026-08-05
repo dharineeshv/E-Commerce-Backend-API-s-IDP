@@ -244,6 +244,61 @@ function syncCategoryPills(val) {
     });
 }
 
+window.filterStorefrontBy = function(keyword) {
+    if (!keyword) return;
+
+    const categoryFilter = document.getElementById('category-filter');
+    const searchInput = document.getElementById('search-input');
+    const kwLower = keyword.toLowerCase();
+
+    // Reset search input unless needed
+    if (searchInput) searchInput.value = '';
+
+    // Check if category-filter has an option
+    let optionMatched = false;
+    if (categoryFilter) {
+        for (let i = 0; i < categoryFilter.options.length; i++) {
+            const optVal = categoryFilter.options[i].value.toLowerCase();
+            if (optVal && (optVal === kwLower || kwLower.includes(optVal) || optVal.includes(kwLower))) {
+                categoryFilter.value = categoryFilter.options[i].value;
+                optionMatched = true;
+                break;
+            }
+        }
+    }
+
+    // Sync category pills
+    const categoryPills = document.querySelectorAll('.category-pill');
+    let pillMatched = false;
+    categoryPills.forEach(pill => {
+        const pCat = (pill.getAttribute('data-category') || '').toLowerCase();
+        if (pCat && (pCat === kwLower || kwLower.includes(pCat) || pCat.includes(kwLower))) {
+            pill.classList.add('active');
+            if (categoryFilter && !optionMatched) {
+                categoryFilter.value = pill.getAttribute('data-category');
+                optionMatched = true;
+            }
+            pillMatched = true;
+        } else {
+            pill.classList.remove('active');
+        }
+    });
+
+    // Fallback: If not matched in category dropdown/pills, filter using search input
+    if (!optionMatched && !pillMatched) {
+        if (categoryFilter) categoryFilter.value = '';
+        if (searchInput) searchInput.value = keyword;
+    }
+
+    applyFilters();
+
+    // Scroll smoothly to products grid
+    const prodGrid = document.getElementById('product-grid') || document.querySelector('.products-section') || document.querySelector('.filters-bar');
+    if (prodGrid) {
+        prodGrid.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+};
+
 function applyFilters() {
     let searchTerm = '';
     const searchInput = document.getElementById('search-input');
@@ -279,11 +334,21 @@ function applyFilters() {
         const title = (product.name || product.title || '').toLowerCase();
         const desc = (product.description || '').toLowerCase();
         const prodBrand = (product.brand || '').toLowerCase();
+        const prodCategory = (product.category || '').toLowerCase();
 
-        const matchesSearch = title.includes(searchTerm) || desc.includes(searchTerm) || prodBrand.includes(searchTerm);
+        const matchesSearch = searchTerm === '' || 
+            title.includes(searchTerm) || 
+            desc.includes(searchTerm) || 
+            prodBrand.includes(searchTerm) ||
+            prodCategory.includes(searchTerm);
         
-        const prodCategory = (product.category || 'CATEGORY').toLowerCase();
-        const matchesCategory = category === '' || prodCategory === category.toLowerCase();
+        const catLower = category.toLowerCase();
+        const matchesCategory = category === '' || 
+            prodCategory === catLower || 
+            prodCategory.includes(catLower) || 
+            catLower.includes(prodCategory) ||
+            title.includes(catLower) || 
+            desc.includes(catLower);
 
         const matchesBrand = brand === '' || prodBrand.includes(brand) || title.includes(brand);
 

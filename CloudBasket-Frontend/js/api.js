@@ -9,36 +9,57 @@ const COGNITO_DOMAIN = "https://ap-southeast-1npoiper2z.auth.ap-southeast-1.amaz
 const COGNITO_CLIENT_ID = "4i9ucuisno2545vd77lngcps27";
 const getRedirectUri = () => window.location.origin + window.location.pathname;
 
+// Clean raw stack trace text from error messages
+function cleanErrorMessage(msg) {
+    if (!msg || typeof msg !== 'string') return "Incorrect email or password.";
+    let clean = msg.split(/\r?\n|\s+at\s+/)[0].trim();
+    clean = clean.replace(/^Error:\s*/i, '');
+    clean = clean.replace(/username/gi, 'email');
+    if (!clean || clean.length > 80 || clean.includes("file:///") || clean.includes("processTicks")) {
+        return "Incorrect email or password.";
+    }
+    return clean;
+}
+
 // ==========================================
 // Common API Request
 // ==========================================
 
 async function apiRequest(endpoint, method = "GET", body = null) {
-
     const options = {
-
         method,
-
         headers: {
             "Content-Type": "application/json"
         }
-
     };
 
     if (body) {
         options.body = JSON.stringify(body);
     }
 
-    const response = await fetch(API_BASE_URL + endpoint, options);
+    try {
+        const response = await fetch(API_BASE_URL + endpoint, options);
 
-    const data = await response.json();
+        let data;
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+            data = await response.json();
+        } else {
+            const text = await response.text();
+            data = { message: text };
+        }
 
-    if (!response.ok) {
+        if (!response.ok) {
+            const rawMsg = data?.message || data?.error || data?.errorMessage || "Incorrect email or password.";
+            throw new Error(cleanErrorMessage(rawMsg));
+        }
 
-        throw data;
-
+        return data;
+    } catch (err) {
+        if (err instanceof SyntaxError || (err.message && (err.message.includes("JSON") || err.message.includes("Unexpected token")))) {
+            throw new Error("Incorrect email or password.");
+        }
+        err.message = cleanErrorMessage(err.message);
+        throw err;
     }
-
-    return data;
-
 }

@@ -100,3 +100,8 @@ jobs:
       - name: Invalidate Secondary CloudFront Distribution (E3NI79AATXTTJN)
         run: |
           aws cloudfront create-invalidation --distribution-id E3NI79AATXTTJN --paths "/*"
+
+      - name: Install Zip Utility & Deploy Backend Microservices to AWS Lambda
+        run: |
+          sudo apt-get update && sudo apt-get install -y zip
+          node upload_lambdas.mjs

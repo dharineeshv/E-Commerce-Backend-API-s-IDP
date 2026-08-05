@@ -122,6 +122,31 @@ document.addEventListener("DOMContentLoaded", () => {
         }
     }
 
+    function formatRemainingTime(endDateStr) {
+        if (!endDateStr) return "Limited Time";
+        const endDate = new Date(endDateStr);
+        const now = new Date();
+        const diffMs = endDate - now;
+
+        if (isNaN(endDate.getTime())) return "Limited Time";
+        if (diffMs <= 0) return "Expired";
+
+        const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+        const diffDays = Math.floor(diffHours / 24);
+        const remainingHours = diffHours % 24;
+
+        if (diffDays > 1) {
+            return `Ends in ${diffDays} days`;
+        } else if (diffDays === 1) {
+            return `Ends in 1 day ${remainingHours > 0 ? remainingHours + 'h' : ''}`.trim();
+        } else if (diffHours > 0) {
+            return `Ends in ${diffHours} hour${diffHours > 1 ? 's' : ''}`;
+        } else {
+            const diffMins = Math.max(1, Math.floor(diffMs / (1000 * 60)));
+            return `Ends in ${diffMins} min${diffMins > 1 ? 's' : ''}`;
+        }
+    }
+
     function updateSliderContent(festivals, coupons) {
         const now = new Date();
         const activeFestival = festivals.find(f => {
@@ -134,17 +159,26 @@ document.addEventListener("DOMContentLoaded", () => {
         if (activeFestival) {
             const slide = document.getElementById('slider-festival');
             if (slide) {
-                slide.style.backgroundImage = `url('${activeFestival.bannerImageUrl}')`;
+                if (activeFestival.bannerImageUrl) {
+                    slide.style.backgroundImage = `url('${activeFestival.bannerImageUrl}')`;
+                }
                 
                 const title = document.getElementById('slider-festival-title');
                 const desc = document.getElementById('slider-festival-desc');
                 const discount = document.getElementById('slider-festival-discount');
+                const endsText = document.getElementById('slider-festival-ends-text');
                 
                 if (title) title.textContent = activeFestival.title || "Festival Sale";
-                if (desc) desc.textContent = activeFestival.subtitle || "Enjoy the latest discounts!";
+                if (desc) desc.textContent = activeFestival.subtitle || activeFestival.description || "Enjoy the latest discounts!";
                 if (discount) {
-                    const discountText = activeFestival.discountType === 'PERCENTAGE' ? `FLAT ${activeFestival.discountValue}%` : `FLAT ₹${activeFestival.discountValue}`;
-                    discount.textContent = discountText;
+                    const typeUpper = (activeFestival.discountType || '').toUpperCase();
+                    const discountText = (typeUpper === 'PERCENTAGE' || typeUpper === 'PERCENT') 
+                        ? `${activeFestival.discountValue}% OFF` 
+                        : `₹${activeFestival.discountValue} OFF`;
+                    discount.textContent = activeFestival.offerText || discountText;
+                }
+                if (endsText) {
+                    endsText.textContent = formatRemainingTime(activeFestival.endDate);
                 }
             }
         }
@@ -163,12 +197,19 @@ document.addEventListener("DOMContentLoaded", () => {
                 const title = document.getElementById('slider-coupon-title');
                 const desc = document.getElementById('slider-coupon-desc');
                 const discount = document.getElementById('slider-coupon-discount');
+                const endsText = document.getElementById('slider-coupon-ends-text');
                 
                 if (title) title.textContent = activeCoupon.title || activeCoupon.couponCode;
                 if (desc) desc.textContent = activeCoupon.description || "Grab this limited time coupon!";
                 if (discount) {
-                    const discountText = activeCoupon.discountType === 'PERCENTAGE' ? `FLAT ${activeCoupon.discountValue}%` : `FLAT ₹${activeCoupon.discountValue}`;
-                    discount.textContent = discountText;
+                    const typeUpper = (activeCoupon.discountType || '').toUpperCase();
+                    const discountText = (typeUpper === 'PERCENTAGE' || typeUpper === 'PERCENT') 
+                        ? `${activeCoupon.discountValue}% OFF` 
+                        : `₹${activeCoupon.discountValue} OFF`;
+                    discount.textContent = activeCoupon.offerText || discountText;
+                }
+                if (endsText) {
+                    endsText.textContent = formatRemainingTime(activeCoupon.expiryDate || activeCoupon.endDate);
                 }
             }
         }

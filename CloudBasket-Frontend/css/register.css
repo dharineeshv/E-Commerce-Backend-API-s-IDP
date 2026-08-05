@@ -8,18 +8,16 @@
     box-sizing: border-box;
 }
 
-body {
-    font-family: "Poppins", sans-serif;
-    min-height: 100vh;
-
-    background: linear-gradient(135deg,#eef4ff,#f6f8ff,#eef4ff);
-
-    overflow-x: hidden;
-
-    display: flex;
-
-    flex-direction: column;
-
+body, html {
+    font-family: "Plus Jakarta Sans", "Poppins", sans-serif;
+    width: 100% !important;
+    height: 100% !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+    zoom: 1 !important; /* Override common.css zoom: 0.75 to match index.html */
+    background-color: #ffffff !important;
 }
 
 /* ===============================
@@ -27,41 +25,35 @@ BACKGROUND
 ================================== */
 
 .background-blur{
-
     position:fixed;
-
     inset:0;
-
     z-index:-1;
-
     background:
     radial-gradient(circle at top left,#4f6dff30,transparent 40%),
     radial-gradient(circle at bottom right,#6f4dff25,transparent 35%),
     linear-gradient(135deg,#eef4ff,#f8f9ff);
+    animation: pulseBackgroundGlow 12s ease-in-out infinite alternate;
+}
 
+@keyframes pulseBackgroundGlow {
+    0% { filter: hue-rotate(0deg) contrast(1); }
+    100% { filter: hue-rotate(15deg) contrast(1.05); }
 }
 
 /* ===============================
-MAIN
+MAIN - MATCHING INDEX.HTML PAGE WRAPPER
 ================================== */
 
 .register-container{
-
-    width:100%;
-    zoom: 0.8;
-
-    flex:1;
-
-    display:flex;
-
-    align-items:center;
-
-    justify-content:center;
-
-    padding:40px;
-
-    gap:60px;
-
+    display: flex !important;
+    width: 100vw !important;
+    height: 100vh !important;
+    min-height: 100vh !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    zoom: 1 !important;
+    overflow: hidden !important;
+    gap: 0 !important;
 }
 
 /* ===============================
@@ -69,63 +61,51 @@ LEFT
 ================================== */
 
 .left-panel{
-
-    width:50%;
-
-    display:flex;
-
-    flex-direction:column;
-
-    justify-content:center;
-
-    align-items:center;
-
-    animation:fadeInLeft .8s;
-
+    flex: 1.1;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 40px 60px;
+    overflow: hidden;
+    animation: fadeInLeft .8s;
 }
 
 .illustration{
+    width: 100%;
+    max-width: 480px;
+    max-height: 420px;
+    object-fit: contain;
+    animation: floatIllustration 6s ease-in-out infinite alternate;
+}
 
-    width:100%;
-
-    max-width:650px;
-
-    object-fit:contain;
-
+@keyframes floatIllustration {
+    0% { transform: translateY(0px) rotate(0deg); }
+    100% { transform: translateY(-15px) rotate(1.2deg); }
 }
 
 .welcome-text{
-
-    margin-top:30px;
-
-    text-align:center;
-
+    margin-top: 20px;
+    text-align: center;
 }
 
 .welcome-text h1{
-
-    font-size:54px;
-
-    color:#222;
-
-    margin-bottom:15px;
-
+    font-size: 42px;
+    color: #222;
+    margin-bottom: 10px;
 }
 
 .welcome-text span{
-
-    color:#2563EB;
-
+    color: #2563EB;
 }
 
 .welcome-text p{
-
-    color:#6b7280;
-
-    font-size:22px;
-
-    line-height:38px;
-
+    color: #6b7280;
+    font-size: 16px;
+    line-height: 26px;
+    max-width: 480px;
 }
 
 /* ===============================
@@ -133,65 +113,57 @@ RIGHT
 ================================== */
 
 .right-panel{
-
-    width:50%;
-
-    display:flex;
-
-    justify-content:center;
-
-    align-items:center;
-
+    flex: 1;
+    width: 50%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 15px 30px;
+    overflow: hidden;
+    background: #ffffff;
 }
 
 .register-card{
+    width: 100%;
+    max-width: 440px;
+    background: #fff;
+    border-radius: 20px;
+    padding: 24px 30px;
+    box-shadow: 0 15px 45px rgba(0,0,0,.06);
+    animation: fadeInUp .8s cubic-bezier(0.16, 1, 0.3, 1);
+    transition: transform 0.35s ease, box-shadow 0.35s ease;
+    margin: auto;
+}
 
-    width:100%;
-
-    max-width:500px;
-
-    background:#fff;
-
-    border-radius:30px;
-
-    padding:45px;
-
-    box-shadow:0 25px 60px rgba(0,0,0,.08);
-
-    animation:fadeInUp .8s;
-
+.register-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 50px rgba(37, 99, 235, 0.10);
 }
 
 .logo{
+    width: 80px;
+    display: block;
+    margin: auto;
+    transition: transform 0.3s ease;
+}
 
-    width:85px;
-
-    display:block;
-
-    margin:auto;
-
+.logo:hover {
+    transform: scale(1.08) rotate(-3deg);
 }
 
 .register-card h2{
-
-    text-align:center;
-
-    margin-top:18px;
-
-    font-size:38px;
-
-    color:#1f2937;
-
+    text-align: center;
+    margin-top: 6px;
+    font-size: 26px;
+    color: #1f2937;
 }
 
 .subtitle{
-
-    text-align:center;
-
-    margin:12px 0 35px;
-
-    color:#6b7280;
-
+    text-align: center;
+    margin: 4px 0 16px;
+    color: #6b7280;
+    font-size: 13px;
 }
 
 /* ===============================
@@ -199,77 +171,49 @@ FORM
 ================================== */
 
 .input-group{
-
-    margin-bottom:22px;
-
+    margin-bottom: 12px;
 }
 
 .input-group label{
-
-    display:block;
-
-    margin-bottom:8px;
-
-    font-weight:600;
-
-    color:#374151;
-
+    display: block;
+    margin-bottom: 4px;
+    font-weight: 600;
+    font-size: 13px;
+    color: #374151;
 }
 
 .input-group input{
-
-    width:100%;
-
-    height:58px;
-
-    border-radius:16px;
-
-    border:1px solid #dbe2ef;
-
-    padding:0 20px;
-
-    font-size:16px;
-
-    transition:.3s;
-
+    width: 100%;
+    height: 46px;
+    border-radius: 12px;
+    border: 1px solid #dbe2ef;
+    padding: 0 16px;
+    font-size: 14px;
+    transition: .3s;
 }
 
 .input-group input:focus{
-
-    outline:none;
-
-    border-color:#2563EB;
-
-    box-shadow:0 0 0 5px rgba(37,99,235,.15);
-
+    outline: none;
+    border-color: #2563EB;
+    box-shadow: 0 0 0 4px rgba(37,99,235,.15);
 }
 
 .password-wrapper{
-
-    position:relative;
-
+    position: relative;
 }
 
 .password-wrapper input{
-
-    padding-right:60px;
-
+    padding-right: 50px;
 }
 
 .toggle-password{
-
-    position:absolute;
-
-    right:20px;
-
-    top:50%;
-
-    transform:translateY(-50%);
-
-    cursor:pointer;
-
-    color:#888;
-
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    cursor: pointer;
+    color: #888;
+    font-size: 14px;
 }
 
 /* ===============================
@@ -277,47 +221,29 @@ PASSWORD RULES
 ================================== */
 
 .password-rules{
-
-    display:grid;
-
-    grid-template-columns:1fr 1fr;
-
-    gap:12px;
-
-    margin-bottom:30px;
-
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px 12px;
+    margin-bottom: 16px;
 }
 
 .password-rules div{
-
-    display:flex;
-
-    align-items:center;
-
-    gap:8px;
-
-    font-size:14px;
-
-    color:#9ca3af;
-
-    transition:.25s;
-
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: #9ca3af;
+    transition: .25s;
 }
 
 .password-rules .valid{
-
-    color:#22c55e;
-
-    font-weight:600;
-
+    color: #22c55e;
+    font-weight: 600;
 }
 
 .password-rules .invalid{
-
-    color:#ef4444;
-
-    font-weight:600;
-
+    color: #ef4444;
+    font-weight: 600;
 }
 
 /* ===============================
@@ -325,13 +251,9 @@ MATCH
 ================================== */
 
 #passwordMatch{
-
-    margin-top:8px;
-
-    display:block;
-
-    font-size:14px;
-
+    margin-top: 4px;
+    display: block;
+    font-size: 12px;
 }
 
 /* ===============================
@@ -339,35 +261,23 @@ BUTTON
 ================================== */
 
 .register-btn{
-
-    width:100%;
-
-    height:60px;
-
-    border:none;
-
-    border-radius:18px;
-
-    cursor:pointer;
-
-    color:#fff;
-
-    font-size:18px;
-
-    font-weight:600;
-
-    background:linear-gradient(90deg,#2563EB,#4F46E5);
-
-    transition:.35s;
-
+    width: 100%;
+    height: 48px;
+    border: none;
+    border-radius: 14px;
+    background: #2563EB;
+    color: #fff;
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 8px 20px rgba(37,99,235,.25);
 }
 
 .register-btn:hover{
-
-    transform:translateY(-2px);
-
-    box-shadow:0 12px 30px rgba(37,99,235,.30);
-
+    background: linear-gradient(135deg, #1d4ed8, #2563eb);
+    transform: translateY(-2px);
+    box-shadow: 0 12px 25px rgba(37,99,235,.35);
 }
 
 /* ===============================
@@ -375,39 +285,16 @@ LOGIN LINK
 ================================== */
 
 .login-link{
-
-    text-align:center;
-
-    margin-top:30px;
-
-    color:#666;
-
+    text-align: center;
+    margin-top: 14px;
+    color: #666;
+    font-size: 13px;
 }
 
 .login-link a{
-
-    text-decoration:none;
-
-    color:#2563EB;
-
-    font-weight:600;
-
-}
-
-/* ===============================
-FOOTER
-================================== */
-
-footer{
-
-    text-align:center;
-
-    padding:20px;
-
-    color:#666;
-
-    font-size:14px;
-
+    text-decoration: none;
+    color: #2563EB;
+    font-weight: 600;
 }
 
 /* ===============================

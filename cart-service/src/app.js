@@ -7,6 +7,7 @@ import https from "https";
 import cartRoutes from "./routes/cartRoutes.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 

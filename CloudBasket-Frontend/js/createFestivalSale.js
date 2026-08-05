@@ -28,10 +28,10 @@ document.addEventListener("DOMContentLoaded", () => {
         const val = parseFloat(discountValueInput.value) || 0;
         let discountText = "";
 
-        if (type === "percentage") {
-            discountText = `FLAT ₹{val}%`;
+        if (type === "percentage" || type === "PERCENTAGE") {
+            discountText = `${val}% OFF`;
         } else {
-            discountText = `FLAT ₹${val}`;
+            discountText = `₹${val} OFF`;
         }
 
         previewDiscountDisplay.innerHTML = `${discountText} <span style="color:#ef4444; font-size:0.9rem; margin-left: 10px;"><i class="icon-clock"></i> Limited Time</span>`;

@@ -54,7 +54,7 @@
                 </a>
                 <!-- Company Logo Placeholder -->
                 <div class="company-logo-header">
-                    <img src="assets/logo.png" alt="Company Logo" style="height: 52px; object-fit: contain; margin-left: 15px;">
+                    <img src="assets/logo.png" alt="Company Logo" style="height: 42px; object-fit: contain; margin-left: 15px;">
                 </div>
             </nav>
         </div>
@@ -71,7 +71,7 @@
                         <span class="badge badge-orange">EXCLUSIVE DEAL</span>
                         <h2>Enterprise Admin<br>Upgrade Your<br>Workflow</h2>
                         <p>Save up to 50% on enterprise-grade hardware and<br>productivity suites.</p>
-                        <button class="btn btn-orange">Shop Enterprise</button>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Electronics')">Shop Enterprise</button>
                     </div>
                 </div>
                 
@@ -82,7 +82,7 @@
                         <span class="badge badge-orange">NEW ARRIVAL</span>
                         <h2>Premium Audio<br>Experience</h2>
                         <p>Discover our new range of noise-cancelling headphones.</p>
-                        <button class="btn btn-orange">Shop Audio</button>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Audio')">Shop Audio</button>
                     </div>
                 </div>
                 
@@ -93,7 +93,7 @@
                         <span class="badge badge-orange">PREMIUM MOBILES</span>
                         <h2>Buy Different<br>Premium Mobiles</h2>
                         <p>Discover our new range of flagship smartphones today.</p>
-                        <button class="btn btn-orange" onclick="document.getElementById('category-filter').value = 'Electronics'; document.getElementById('category-filter').dispatchEvent(new Event('change'));">Shop Mobiles</button>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Mobiles')">Shop Mobiles</button>
                     </div>
                 </div>
                 
@@ -104,7 +104,7 @@
                         <span class="badge badge-orange">TOP AUDIO</span>
                         <h2>True Wireless<br>Earbuds</h2>
                         <p>Experience crystal clear sound with our latest ear buds.</p>
-                        <button class="btn btn-orange" onclick="document.getElementById('category-filter').value = 'Electronics'; document.getElementById('category-filter').dispatchEvent(new Event('change'));">Shop Earbuds</button>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Earbuds')">Shop Earbuds</button>
                     </div>
                 </div>
             </div>
@@ -128,6 +128,10 @@
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>
                     Laptops
                 </button>
+                <button type="button" class="category-pill" data-category="Audio">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                    Audio
+                </button>
                 <button type="button" class="category-pill" data-category="Earbuds">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
                     Earbuds
@@ -142,6 +146,7 @@
                 <option value="">All Categories</option>
                 <option value="Mobiles">Mobiles</option>
                 <option value="Laptops">Laptops</option>
+                <option value="Audio">Audio</option>
                 <option value="Earbuds">Earbuds</option>
                 <option value="Watches">Watches</option>
             </select>

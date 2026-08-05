@@ -50,9 +50,11 @@ a {
 
 .logo {
     font-weight: 800;
-    font-size: 32px;
+    font-size: 28px;
     color: #0f4a8a;
     letter-spacing: -0.5px;
+    display: flex;
+    align-items: center;
 }
 
 .search-bar {
@@ -690,6 +692,14 @@ a {
     padding-left: 15px;
     display: flex;
     align-items: center;
+}
+
+.company-logo-header img {
+    height: 42px !important;
+    max-height: 42px !important;
+    width: auto !important;
+    object-fit: contain !important;
+    margin-left: 15px !important;
 }
 
 /* Footer Styles */
