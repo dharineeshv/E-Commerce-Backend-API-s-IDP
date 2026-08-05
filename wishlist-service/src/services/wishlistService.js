@@ -28,16 +28,33 @@ export const addProductToWishlist = async (customerId, productId) => {
 };
 
 export const getWishlist = async (customerId) => {
-  const params = {
-    TableName: WISHLIST_TABLE,
-    KeyConditionExpression: "customerId = :customerId",
-    ExpressionAttributeValues: {
-      ":customerId": customerId,
-    },
-  };
-
-  const data = await dynamodb.send(new QueryCommand(params));
-  return data.Items || [];
+  try {
+    const params = {
+      TableName: WISHLIST_TABLE,
+      KeyConditionExpression: "customerId = :customerId",
+      ExpressionAttributeValues: {
+        ":customerId": customerId,
+      },
+    };
+    const data = await dynamodb.send(new QueryCommand(params));
+    return data.Items || [];
+  } catch (err) {
+    console.error("QueryCommand failed on Wishlist, trying ScanCommand fallback:", err.message);
+    try {
+      const scanParams = {
+        TableName: WISHLIST_TABLE,
+        FilterExpression: "customerId = :customerId",
+        ExpressionAttributeValues: {
+          ":customerId": customerId,
+        },
+      };
+      const scanData = await dynamodb.send(new ScanCommand(scanParams));
+      return scanData.Items || [];
+    } catch (scanErr) {
+      console.error("ScanCommand also failed on Wishlist:", scanErr.message);
+      return [];
+    }
+  }
 };
 
 export const checkProductInWishlist = async (customerId, productId) => {
