@@ -5,13 +5,20 @@
     justify-content: center;
     align-items: center;
     padding: 60px 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .success-container {
     background: transparent;
     max-width: 650px;
     width: 100%;
+    margin: 0 auto;
     text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
 }
 
 .success-icon-wrap {

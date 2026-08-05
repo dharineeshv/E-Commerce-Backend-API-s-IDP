@@ -77,97 +77,53 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
 
             // --- Populate PDF Template ---
-            const invoiceNoEl = document.getElementById('pdf-invoice-no');
-            if (invoiceNoEl) invoiceNoEl.textContent = `CB-2026-${orderId.substring(0, 6).toUpperCase()}`;
+            const custIdEl = document.getElementById('pdf-cust-id');
+            if (custIdEl) custIdEl.textContent = `#${order.customerId || 'cust-002'}`;
 
-            const dateEl = document.getElementById('pdf-date');
-            if (dateEl) dateEl.textContent = dateObj.toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' });
+            const dateStrEl = document.getElementById('pdf-date-str');
+            if (dateStrEl) dateStrEl.textContent = dateObj.toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' });
 
             const totalFormatted = `₹${Number(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            
-            const subtotalVal = Number(amount) / 1.08;
-            const taxVal = Number(amount) - subtotalVal;
 
             const subtotalEl = document.getElementById('pdf-subtotal-amount');
-            if (subtotalEl) subtotalEl.textContent = `₹${subtotalVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            if (subtotalEl) subtotalEl.textContent = totalFormatted;
 
             const taxEl = document.getElementById('pdf-tax-amount');
-            if (taxEl) taxEl.textContent = `₹${taxVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+            if (taxEl) taxEl.textContent = `₹0.00`;
 
             const totalEl = document.getElementById('pdf-total-amount');
             if (totalEl) totalEl.textContent = totalFormatted;
 
-            // Customer Details
-            let custName = "Valued Customer";
-            let custEmail = "customer@example.com";
-            let addrLine1 = "456 Server Road, Rack 2";
-            let addrLine2 = "Data City, TX 75001";
-
-            if (order.shippingAddress) {
-                const addr = order.shippingAddress;
-                if (addr.name) custName = addr.name;
-                else if (addr.fullName) custName = addr.fullName;
-                else if (addr.firstName) custName = `${addr.firstName} ${addr.lastName || ''}`.trim();
-
-                if (addr.email && !addr.email.includes("example.com")) custEmail = addr.email;
-                if (addr.addressLine1 || addr.street) addrLine1 = addr.addressLine1 || addr.street;
-                if (addr.city || addr.state) addrLine2 = `${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || addr.postalCode || ''}`.trim();
-            }
-
-            if (custEmail === "customer@example.com" && order.customerId) {
-                try {
-                    const profileResponse = await apiFetch(`${API.userProfileService}/api/v1/profile/${order.customerId}`);
-                    if (profileResponse.ok) {
-                        const profileResult = await profileResponse.json();
-                        if (profileResult.data) {
-                            if (profileResult.data.email) custEmail = profileResult.data.email;
-                            if (profileResult.data.fullName) custName = profileResult.data.fullName;
-                        }
-                    }
-                } catch(e) {
-                    console.error("Error fetching profile for invoice", e);
-                }
-            }
-
-            document.getElementById('pdf-customer-name').textContent = custName;
-            document.getElementById('pdf-customer-email').textContent = custEmail;
-            document.getElementById('pdf-customer-address').textContent = addrLine1;
-            document.getElementById('pdf-customer-city').textContent = addrLine2;
-
-            // Items Table (Matching 5 Columns: Item | Description | Qty | Unit Price | Amount)
+            // Items Table (4 Columns matching Screenshot 2: DESCRIPTION | QTY | PRICE | TOTAL)
             const pdfItemsContainer = document.getElementById('pdf-items-container');
             pdfItemsContainer.innerHTML = '';
 
             if (order.items && order.items.length > 0) {
-                order.items.forEach((item, idx) => {
+                order.items.forEach((item) => {
                     const row = document.createElement('tr');
-                    row.style.borderBottom = "1px solid #e2e8f0";
-                    row.style.backgroundColor = idx % 2 === 0 ? "#ffffff" : "#f8fafc";
+                    row.style.borderBottom = "1px solid #f1f5f9";
 
-                    const itemName = item.name || item.productName || 'Cloud Product';
-                    const itemDesc = item.category || item.description || 'Cloud Basket Product';
+                    const itemName = item.name || item.productName || item.productId || 'Cloud Basket Product';
                     const itemQty = item.quantity || 1;
-                    const itemPrice = item.price || 0;
+                    const itemPrice = item.price || (amount / itemQty);
                     const itemTotal = itemQty * itemPrice;
 
                     row.innerHTML = `
-                        <td style="padding: 10px 14px; color: #1e293b; font-size: 13px; font-weight: 600;">${itemName}</td>
-                        <td style="padding: 10px 14px; color: #64748b; font-size: 13px;">${itemDesc}</td>
-                        <td style="padding: 10px 14px; text-align: center; color: #475569; font-size: 13px;">${itemQty}</td>
-                        <td style="padding: 10px 14px; text-align: right; color: #475569; font-size: 13px;">₹${Number(itemPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                        <td style="padding: 10px 14px; text-align: right; color: #1e293b; font-size: 13px; font-weight: 600;">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="padding: 12px 0; color: #334155; font-size: 13px;">${itemName}</td>
+                        <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">${itemQty}</td>
+                        <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">₹${Number(itemPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     `;
                     pdfItemsContainer.appendChild(row);
                 });
             } else {
                 const row = document.createElement('tr');
-                row.style.backgroundColor = "#ffffff";
+                row.style.borderBottom = "1px solid #f1f5f9";
                 row.innerHTML = `
-                    <td style="padding: 10px 14px; color: #1e293b; font-size: 13px; font-weight: 600;">CloudBasket Order Item</td>
-                    <td style="padding: 10px 14px; color: #64748b; font-size: 13px;">Order Items Package</td>
-                    <td style="padding: 10px 14px; text-align: center; color: #475569; font-size: 13px;">1</td>
-                    <td style="padding: 10px 14px; text-align: right; color: #475569; font-size: 13px;">${totalFormatted}</td>
-                    <td style="padding: 10px 14px; text-align: right; color: #1e293b; font-size: 13px; font-weight: 600;">${totalFormatted}</td>
+                    <td style="padding: 12px 0; color: #334155; font-size: 13px;">Order Items Package</td>
+                    <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">1</td>
+                    <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">${totalFormatted}</td>
+                    <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">${totalFormatted}</td>
                 `;
                 pdfItemsContainer.appendChild(row);
             }
@@ -198,13 +154,13 @@ window.downloadReceipt = function() {
     element.style.top = '0';
     element.style.left = '0';
     
-    const invoiceNo = document.getElementById('pdf-invoice-no')?.textContent || 'CB-2026-085';
+    const custId = document.getElementById('pdf-cust-id')?.textContent.replace('#', '') || 'cust-002';
     
     const opt = {
         margin:       15,
-        filename:     `CloudBasket-Invoice-${invoiceNo}.pdf`,
+        filename:     `CloudBasket-Receipt-${custId}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false, width: 790, windowWidth: 790 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false, width: 750, windowWidth: 750 },
         jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
     };
     
