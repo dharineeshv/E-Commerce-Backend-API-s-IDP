@@ -189,7 +189,6 @@ window.downloadReceipt = function() {
     const wrapper = document.getElementById('invoice-template-wrapper');
     if (!element) return;
     
-    // Temporarily make wrapper visible in DOM layout so html2canvas renders full graphics
     if (wrapper) {
         wrapper.style.height = 'auto';
         wrapper.style.overflow = 'visible';
@@ -202,11 +201,11 @@ window.downloadReceipt = function() {
     const invoiceNo = document.getElementById('pdf-invoice-no')?.textContent || 'CB-2026-085';
     
     const opt = {
-        margin:       [0.3, 0.3, 0.3, 0.3],
+        margin:       15,
         filename:     `CloudBasket-Invoice-${invoiceNo}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 800 },
-        jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
+        html2canvas:  { scale: 2, useCORS: true, logging: false, width: 790, windowWidth: 790 },
+        jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
     };
     
     html2pdf().set(opt).from(element).save().then(() => {

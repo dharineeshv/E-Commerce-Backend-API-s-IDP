@@ -136,95 +136,104 @@
 
         <!-- Hidden Invoice Template matching Screenshot 2 -->
         <div id="invoice-template-wrapper" style="height: 0; overflow: hidden; position: relative;">
-            <div id="invoice-template" style="display: none; width: 750px; padding: 40px 45px; background: #ffffff; font-family: 'Inter', system-ui, -apple-system, sans-serif; color: #334155; box-sizing: border-box;">
-                <!-- Top Header Bar -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
-                <!-- Company Info (Top Left) -->
-                <div>
-                    <h1 style="margin: 0 0 6px 0; color: #2563eb; font-size: 32px; font-weight: 800; letter-spacing: -0.5px;">CloudBasket</h1>
-                    <div style="color: #64748b; font-size: 14px; line-height: 1.5;">
-                        123 Cloud Avenue, Tech Park<br>
-                        Silicon Valley, CA 94025<br>
-                        billing@cloudbasket.com
-                    </div>
-                </div>
-                <!-- Invoice Metadata (Top Right) -->
-                <div style="text-align: right;">
-                    <h1 style="margin: 0 0 6px 0; color: #475569; font-size: 32px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">INVOICE</h1>
-                    <div style="color: #475569; font-size: 14px; line-height: 1.5; font-weight: 600;">
-                        Invoice #: <span id="pdf-invoice-no" style="font-weight: 700;">CB-2026-085</span><br>
-                        Date: <span id="pdf-date" style="font-weight: 600;">August 5, 2026</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Blue Horizontal Divider Line -->
-            <div style="height: 3px; background-color: #3b82f6; width: 100%; margin: 15px 0 25px 0; border-radius: 2px;"></div>
-
-            <!-- Bill To Section -->
-            <div style="margin-bottom: 30px;">
-                <div style="font-size: 13px; font-weight: 800; color: #475569; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">BILL TO:</div>
-                <div style="font-size: 16px; font-weight: 700; color: #1e293b; margin-bottom: 3px;" id="pdf-customer-name">Valued Customer</div>
-                <div style="font-size: 14px; color: #475569; line-height: 1.5;">
-                    Customer Email: <span id="pdf-customer-email">customer@example.com</span><br>
-                    <span id="pdf-customer-address">456 Server Road, Rack 2</span><br>
-                    <span id="pdf-customer-city">Data City, TX 75001</span>
-                </div>
-            </div>
-
-            <!-- Items Table -->
-            <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
-                <thead>
-                    <tr style="background-color: #3b82f6; color: #ffffff;">
-                        <th style="padding: 10px 14px; text-align: left; font-size: 13px; font-weight: 700; border-top-left-radius: 4px;">Item</th>
-                        <th style="padding: 10px 14px; text-align: left; font-size: 13px; font-weight: 700;">Description</th>
-                        <th style="padding: 10px 14px; text-align: center; font-size: 13px; font-weight: 700; width: 60px;">Qty</th>
-                        <th style="padding: 10px 14px; text-align: right; font-size: 13px; font-weight: 700; width: 110px;">Unit Price</th>
-                        <th style="padding: 10px 14px; text-align: right; font-size: 13px; font-weight: 700; width: 110px; border-top-right-radius: 4px;">Amount</th>
+            <div id="invoice-template" style="display: block; width: 790px; padding: 40px; background: #ffffff; font-family: Arial, Helvetica, sans-serif; color: #334155; box-sizing: border-box; font-size: 14px; line-height: 1.5;">
+                
+                <!-- Header Table (Top Left: CloudBasket, Top Right: INVOICE) -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 10px;">
+                    <tr>
+                        <td style="vertical-align: top; text-align: left;">
+                            <div style="color: #2563eb; font-size: 32px; font-weight: bold; margin-bottom: 6px; letter-spacing: -0.5px;">CloudBasket</div>
+                            <div style="color: #64748b; font-size: 13px; line-height: 1.5;">
+                                123 Cloud Avenue, Tech Park<br>
+                                Silicon Valley, CA 94025<br>
+                                billing@cloudbasket.com
+                            </div>
+                        </td>
+                        <td style="vertical-align: top; text-align: right;">
+                            <div style="color: #475569; font-size: 32px; font-weight: bold; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 2px;">INVOICE</div>
+                            <div style="color: #475569; font-size: 13px; line-height: 1.6; font-weight: 600;">
+                                Invoice #: <span id="pdf-invoice-no" style="font-weight: bold;">CB-2026-085</span><br>
+                                Date: <span id="pdf-date" style="font-weight: 600;">August 5, 2026</span>
+                            </div>
+                        </td>
                     </tr>
-                </thead>
-                <tbody id="pdf-items-container">
-                    <!-- Items injected dynamically -->
-                </tbody>
-            </table>
+                </table>
 
-            <!-- Totals Block (Right Aligned) -->
-            <div style="display: flex; justify-content: flex-end; margin-bottom: 40px;">
-                <div style="width: 260px;">
-                    <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #475569;">
-                        <span>Subtotal:</span>
-                        <span id="pdf-subtotal-amount" style="font-weight: 600;">₹0.00</span>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; padding: 4px 0; font-size: 14px; color: #475569;">
-                        <span>Tax (8%):</span>
-                        <span id="pdf-tax-amount" style="font-weight: 600;">₹0.00</span>
-                    </div>
-                    <div style="height: 2px; background-color: #3b82f6; margin: 6px 0;"></div>
-                    <div style="display: flex; justify-content: space-between; padding: 6px 0; font-size: 20px; color: #0f172a; font-weight: 800;">
-                        <span>Total:</span>
-                        <span id="pdf-total-amount" style="color: #0f172a;">₹0.00</span>
-                    </div>
-                </div>
-            </div>
+                <!-- Blue Horizontal Divider Line -->
+                <div style="height: 3px; background-color: #3b82f6; width: 100%; margin: 15px 0 25px 0;"></div>
 
-            <!-- Footer: Seal badge (Left) and Thank You text (Right) -->
-            <div style="display: flex; justify-content: space-between; align-items: flex-end; margin-top: 40px; padding-top: 20px;">
-                <!-- Official Seal Stamp -->
-                <div>
-                    <div style="width: 105px; height: 105px; border: 2px dashed #2563eb; border-radius: 50%; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #1e40af; text-align: center; background-color: #eff6ff; box-sizing: border-box; transform: rotate(-8deg);">
-                        <div style="font-size: 9px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">CLOUDBASKET</div>
-                        <div style="font-size: 22px; font-weight: 900; line-height: 1; margin: 2px 0;">✓</div>
-                        <div style="font-size: 8px; font-weight: 800; letter-spacing: 0.5px; text-transform: uppercase;">OFFICIAL SEAL</div>
+                <!-- Bill To Section -->
+                <div style="margin-bottom: 30px;">
+                    <div style="font-size: 13px; font-weight: bold; color: #475569; letter-spacing: 0.5px; margin-bottom: 6px; text-transform: uppercase;">BILL TO:</div>
+                    <div style="font-size: 16px; font-weight: bold; color: #1e293b; margin-bottom: 4px;" id="pdf-customer-name">Valued Customer</div>
+                    <div style="font-size: 13px; color: #475569; line-height: 1.6;">
+                        Customer Email: <span id="pdf-customer-email">customer@example.com</span><br>
+                        <span id="pdf-customer-address">456 Server Road, Rack 2</span><br>
+                        <span id="pdf-customer-city">Data City, TX 75001</span>
                     </div>
                 </div>
-                <!-- Thank You Info -->
-                <div style="text-align: right; color: #64748b; font-size: 13px; line-height: 1.6;">
-                    <div style="font-weight: 700; color: #334155; font-size: 14px; margin-bottom: 2px;">Thank you for choosing CloudBasket!</div>
-                    <div>Payment is due within 15 days.</div>
-                    <div>For inquiries, contact billing@cloudbasket.com</div>
-                </div>
+
+                <!-- Items Table -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
+                    <thead>
+                        <tr style="background-color: #3b82f6; color: #ffffff;">
+                            <th style="padding: 12px 14px; text-align: left; font-size: 13px; font-weight: bold;">Item</th>
+                            <th style="padding: 12px 14px; text-align: left; font-size: 13px; font-weight: bold;">Description</th>
+                            <th style="padding: 12px 14px; text-align: center; font-size: 13px; font-weight: bold; width: 60px;">Qty</th>
+                            <th style="padding: 12px 14px; text-align: right; font-size: 13px; font-weight: bold; width: 120px;">Unit Price</th>
+                            <th style="padding: 12px 14px; text-align: right; font-size: 13px; font-weight: bold; width: 120px;">Amount</th>
+                        </tr>
+                    </thead>
+                    <tbody id="pdf-items-container">
+                        <!-- Items injected dynamically -->
+                    </tbody>
+                </table>
+
+                <!-- Totals Block -->
+                <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
+                    <tr>
+                        <td></td>
+                        <td style="width: 270px; vertical-align: top;">
+                            <table style="width: 100%; border-collapse: collapse;">
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 14px; color: #475569;">Subtotal:</td>
+                                    <td style="padding: 4px 0; font-size: 14px; color: #475569; text-align: right; font-weight: 600;" id="pdf-subtotal-amount">₹0.00</td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 4px 0; font-size: 14px; color: #475569;">Tax (8%):</td>
+                                    <td style="padding: 4px 0; font-size: 14px; color: #475569; text-align: right; font-weight: 600;" id="pdf-tax-amount">₹0.00</td>
+                                </tr>
+                                <tr>
+                                    <td colspan="2" style="padding: 4px 0;"><div style="height: 2px; background-color: #3b82f6; width: 100%;"></div></td>
+                                </tr>
+                                <tr>
+                                    <td style="padding: 6px 0; font-size: 20px; color: #0f172a; font-weight: bold;">Total:</td>
+                                    <td style="padding: 6px 0; font-size: 20px; color: #0f172a; text-align: right; font-weight: bold;" id="pdf-total-amount">₹0.00</td>
+                                </tr>
+                            </table>
+                        </td>
+                    </tr>
+                </table>
+
+                <!-- Footer Section -->
+                <table style="width: 100%; border-collapse: collapse; margin-top: 40px; padding-top: 20px; border-top: 1px solid #e2e8f0;">
+                    <tr>
+                        <td style="vertical-align: bottom; width: 140px;">
+                            <div style="width: 100px; height: 100px; border: 2px dashed #2563eb; border-radius: 50%; text-align: center; color: #1e40af; background-color: #eff6ff; box-sizing: border-box; padding-top: 18px;">
+                                <div style="font-size: 9px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">CLOUDBASKET</div>
+                                <div style="font-size: 20px; font-weight: bold; line-height: 1.1; margin: 2px 0;">✓</div>
+                                <div style="font-size: 8px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;">OFFICIAL SEAL</div>
+                            </div>
+                        </td>
+                        <td style="vertical-align: bottom; text-align: right; color: #64748b; font-size: 13px; line-height: 1.6;">
+                            <div style="font-weight: bold; color: #334155; font-size: 14px; margin-bottom: 2px;">Thank you for choosing CloudBasket!</div>
+                            <div>Payment is due within 15 days.</div>
+                            <div>For inquiries, contact billing@cloudbasket.com</div>
+                        </td>
+                    </tr>
+                </table>
+
             </div>
-        </div>
         </div>
 
     </main>
