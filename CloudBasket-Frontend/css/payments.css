@@ -510,24 +510,46 @@
 }
 
 
-/* Receipt Modal */
+/* Receipt Modal & Overlay Unblur Fix */
+#receipt-modal-overlay {
+    position: fixed !important;
+    inset: 0 !important;
+    background: rgba(15, 23, 42, 0.5) !important;
+    backdrop-filter: blur(4px) !important;
+    -webkit-backdrop-filter: blur(4px) !important;
+    z-index: 99990 !important;
+    display: none !important;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+#receipt-modal-overlay.active {
+    display: block !important;
+    opacity: 1 !important;
+}
+
 .receipt-modal {
-    position: fixed;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: white;
-    width: 600px;
-    max-width: 90%;
-    border-radius: 8px;
-    z-index: 1001;
-    display: none; /* hidden by default */
-    padding: 40px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+    position: fixed !important;
+    top: 50% !important;
+    left: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    background: #ffffff !important;
+    width: 620px !important;
+    max-width: 92% !important;
+    max-height: 90vh !important;
+    overflow-y: auto !important;
+    border-radius: 16px !important;
+    z-index: 99999 !important;
+    display: none !important;
+    padding: 36px !important;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.35) !important;
+    filter: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
 }
 
 .receipt-modal.active {
-    display: block;
+    display: block !important;
 }
 
 .receipt-header {
