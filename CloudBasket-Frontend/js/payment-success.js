@@ -77,88 +77,97 @@ document.addEventListener('DOMContentLoaded', async () => {
             `;
 
             // --- Populate PDF Template ---
-            document.getElementById('pdf-order-id').textContent = `#${orderId}`;
-            document.getElementById('pdf-date').textContent = dateObj.toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' });
-            
+            const invoiceNoEl = document.getElementById('pdf-invoice-no');
+            if (invoiceNoEl) invoiceNoEl.textContent = `CB-2026-${orderId.substring(0, 6).toUpperCase()}`;
+
+            const dateEl = document.getElementById('pdf-date');
+            if (dateEl) dateEl.textContent = dateObj.toLocaleDateString("en-US", { month: 'long', day: 'numeric', year: 'numeric' });
+
             const totalFormatted = `₹${Number(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            document.getElementById('pdf-total-amount').textContent = totalFormatted;
-
-            // Extract customer details if available in the shipping address or use fallbacks
-            let custName = "CloudBasket Customer";
-            let custEmail = "Not Provided";
             
-            if (order.shippingAddress) {
-                if (order.shippingAddress.name) custName = order.shippingAddress.name;
-                else if (order.shippingAddress.fullName) custName = order.shippingAddress.fullName;
-                else if (order.shippingAddress.firstName) custName = `${order.shippingAddress.firstName} ${order.shippingAddress.lastName || ''}`.trim();
-                
-                if (order.shippingAddress.email && order.shippingAddress.email !== "customer@example.com") {
-                    custEmail = order.shippingAddress.email;
-                } else if (order.customerId) {
-                    try {
-                        const profileResponse = await apiFetch(`${API.userProfileService}/api/v1/profile/${order.customerId}`);
-                        if (profileResponse.ok) {
-                            const profileResult = await profileResponse.json();
-                            if (profileResult.data && profileResult.data.email) {
-                                custEmail = profileResult.data.email;
-                            }
-                        }
-                    } catch(e) {
-                        console.error("Error fetching profile for invoice", e);
-                    }
-                }
-                if (custEmail === "google-sso-user@example.com") {
-                    custEmail = "Google SSO User";
-                }
-            }
-            
-            document.getElementById('pdf-customer-name').textContent = custName;
-            document.getElementById('pdf-customer-email').textContent = custEmail;
-            document.getElementById('pdf-customer-id').textContent = order.customerId || 'Not Provided';
+            const subtotalVal = Number(amount) / 1.08;
+            const taxVal = Number(amount) - subtotalVal;
 
-            // Populate Shipping Address
-            let shippingText = "Not Provided";
+            const subtotalEl = document.getElementById('pdf-subtotal-amount');
+            if (subtotalEl) subtotalEl.textContent = `₹${subtotalVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            const taxEl = document.getElementById('pdf-tax-amount');
+            if (taxEl) taxEl.textContent = `₹${taxVal.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+
+            const totalEl = document.getElementById('pdf-total-amount');
+            if (totalEl) totalEl.textContent = totalFormatted;
+
+            // Customer Details
+            let custName = "Valued Customer";
+            let custEmail = "customer@example.com";
+            let addrLine1 = "456 Server Road, Rack 2";
+            let addrLine2 = "Data City, TX 75001";
+
             if (order.shippingAddress) {
                 const addr = order.shippingAddress;
-                shippingText = `${addr.addressLine1 || addr.street || ''} <br>
-                                ${addr.addressLine2 || ''} <br>
-                                ${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || addr.postalCode || ''} <br>
-                                ${addr.country || ''}`.replace(/<br>\s*<br>/g, '<br>').trim();
-            }
-            document.getElementById('pdf-shipping-address').innerHTML = shippingText;
+                if (addr.name) custName = addr.name;
+                else if (addr.fullName) custName = addr.fullName;
+                else if (addr.firstName) custName = `${addr.firstName} ${addr.lastName || ''}`.trim();
 
-            // Populate Items Table
+                if (addr.email && !addr.email.includes("example.com")) custEmail = addr.email;
+                if (addr.addressLine1 || addr.street) addrLine1 = addr.addressLine1 || addr.street;
+                if (addr.city || addr.state) addrLine2 = `${addr.city || ''}, ${addr.state || ''} ${addr.zipCode || addr.postalCode || ''}`.trim();
+            }
+
+            if (custEmail === "customer@example.com" && order.customerId) {
+                try {
+                    const profileResponse = await apiFetch(`${API.userProfileService}/api/v1/profile/${order.customerId}`);
+                    if (profileResponse.ok) {
+                        const profileResult = await profileResponse.json();
+                        if (profileResult.data) {
+                            if (profileResult.data.email) custEmail = profileResult.data.email;
+                            if (profileResult.data.fullName) custName = profileResult.data.fullName;
+                        }
+                    }
+                } catch(e) {
+                    console.error("Error fetching profile for invoice", e);
+                }
+            }
+
+            document.getElementById('pdf-customer-name').textContent = custName;
+            document.getElementById('pdf-customer-email').textContent = custEmail;
+            document.getElementById('pdf-customer-address').textContent = addrLine1;
+            document.getElementById('pdf-customer-city').textContent = addrLine2;
+
+            // Items Table (Matching 5 Columns: Item | Description | Qty | Unit Price | Amount)
             const pdfItemsContainer = document.getElementById('pdf-items-container');
             pdfItemsContainer.innerHTML = '';
-            
+
             if (order.items && order.items.length > 0) {
-                order.items.forEach(item => {
+                order.items.forEach((item, idx) => {
                     const row = document.createElement('tr');
                     row.style.borderBottom = "1px solid #e2e8f0";
-                    
-                    const itemName = item.name || item.productName || 'Unknown Item';
-                    const prodId = item.productId || 'N/A';
+                    row.style.backgroundColor = idx % 2 === 0 ? "#ffffff" : "#f8fafc";
+
+                    const itemName = item.name || item.productName || 'Cloud Product';
+                    const itemDesc = item.category || item.description || 'Cloud Basket Product';
                     const itemQty = item.quantity || 1;
                     const itemPrice = item.price || 0;
                     const itemTotal = itemQty * itemPrice;
-                    
+
                     row.innerHTML = `
-                        <td style="padding: 12px; color: #334155; font-size: 15px;">
-                            ${itemName}
-                            <div style="font-size: 12px; color: #94a3b8; margin-top: 4px;">ID: ${prodId}</div>
-                        </td>
-                        <td style="padding: 12px; text-align: center; color: #64748b; font-size: 15px;">${itemQty}</td>
-                        <td style="padding: 12px; text-align: right; color: #334155; font-size: 15px; font-weight: 500;">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="padding: 10px 14px; color: #1e293b; font-size: 13px; font-weight: 600;">${itemName}</td>
+                        <td style="padding: 10px 14px; color: #64748b; font-size: 13px;">${itemDesc}</td>
+                        <td style="padding: 10px 14px; text-align: center; color: #475569; font-size: 13px;">${itemQty}</td>
+                        <td style="padding: 10px 14px; text-align: right; color: #475569; font-size: 13px;">₹${Number(itemPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                        <td style="padding: 10px 14px; text-align: right; color: #1e293b; font-size: 13px; font-weight: 600;">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     `;
                     pdfItemsContainer.appendChild(row);
                 });
             } else {
-                // Fallback if no items array exists
                 const row = document.createElement('tr');
+                row.style.backgroundColor = "#ffffff";
                 row.innerHTML = `
-                    <td style="padding: 12px; color: #334155; font-size: 15px;">Order Total (Items not specified)</td>
-                    <td style="padding: 12px; text-align: center; color: #64748b; font-size: 15px;">1</td>
-                    <td style="padding: 12px; text-align: right; color: #334155; font-size: 15px; font-weight: 500;">${totalFormatted}</td>
+                    <td style="padding: 10px 14px; color: #1e293b; font-size: 13px; font-weight: 600;">CloudBasket Order Item</td>
+                    <td style="padding: 10px 14px; color: #64748b; font-size: 13px;">Order Items Package</td>
+                    <td style="padding: 10px 14px; text-align: center; color: #475569; font-size: 13px;">1</td>
+                    <td style="padding: 10px 14px; text-align: right; color: #475569; font-size: 13px;">${totalFormatted}</td>
+                    <td style="padding: 10px 14px; text-align: right; color: #1e293b; font-size: 13px; font-weight: 600;">${totalFormatted}</td>
                 `;
                 pdfItemsContainer.appendChild(row);
             }
@@ -177,31 +186,31 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Global function for the download button
 window.downloadReceipt = function() {
     const element = document.getElementById('invoice-template');
+    if (!element) return;
     
-    // Safely position it behind the UI so html2canvas renders it properly without cropping
     element.style.display = 'block';
-    element.style.position = 'absolute';
-    element.style.top = '0';
+    element.style.position = 'fixed';
+    element.style.top = '-9999px';
     element.style.left = '0';
-    element.style.zIndex = '-9999';
+    element.style.zIndex = '99999';
+    
+    const invoiceNo = document.getElementById('pdf-invoice-no')?.textContent || 'CB-2026-085';
     
     const opt = {
-        margin:       0.3,
-        filename:     'CloudBasket-Receipt.pdf',
+        margin:       [0.3, 0.3, 0.3, 0.3],
+        filename:     `CloudBasket-Invoice-${invoiceNo}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, windowWidth: 1000 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     
-    // Generate PDF
     html2pdf().set(opt).from(element).save().then(() => {
-        // Hide again after generation
         element.style.display = 'none';
         element.style.position = 'static';
-        element.style.zIndex = 'auto';
     }).catch(err => {
         console.error("PDF Generation Error:", err);
         element.style.display = 'none';
-        alert("Failed to generate PDF receipt. Please try again.");
+        element.style.position = 'static';
+        alert("Failed to generate PDF invoice. Please try again.");
     });
 };
