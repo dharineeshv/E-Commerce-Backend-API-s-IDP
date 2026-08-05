@@ -186,13 +186,18 @@ document.addEventListener('DOMContentLoaded', async () => {
 // Global function for the download button
 window.downloadReceipt = function() {
     const element = document.getElementById('invoice-template');
+    const wrapper = document.getElementById('invoice-template-wrapper');
     if (!element) return;
     
+    // Temporarily make wrapper visible in DOM layout so html2canvas renders full graphics
+    if (wrapper) {
+        wrapper.style.height = 'auto';
+        wrapper.style.overflow = 'visible';
+    }
     element.style.display = 'block';
-    element.style.position = 'fixed';
-    element.style.top = '-9999px';
+    element.style.position = 'relative';
+    element.style.top = '0';
     element.style.left = '0';
-    element.style.zIndex = '99999';
     
     const invoiceNo = document.getElementById('pdf-invoice-no')?.textContent || 'CB-2026-085';
     
@@ -200,17 +205,22 @@ window.downloadReceipt = function() {
         margin:       [0.3, 0.3, 0.3, 0.3],
         filename:     `CloudBasket-Invoice-${invoiceNo}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false },
+        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 800 },
         jsPDF:        { unit: 'in', format: 'letter', orientation: 'portrait' }
     };
     
     html2pdf().set(opt).from(element).save().then(() => {
         element.style.display = 'none';
-        element.style.position = 'static';
+        if (wrapper) {
+            wrapper.style.height = '0';
+            wrapper.style.overflow = 'hidden';
+        }
     }).catch(err => {
         console.error("PDF Generation Error:", err);
         element.style.display = 'none';
-        element.style.position = 'static';
-        alert("Failed to generate PDF invoice. Please try again.");
+        if (wrapper) {
+            wrapper.style.height = '0';
+            wrapper.style.overflow = 'hidden';
+        }
     });
 };
