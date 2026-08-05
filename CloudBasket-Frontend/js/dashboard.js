@@ -179,7 +179,7 @@ async function loadOrders() {
     const today = new Date();
     const todayString = today.toISOString().split("T")[0];
 
-    const todayRevenue = orders
+    const todayRevenue = Math.round(orders
         .filter((order) => {
             const status = (order.orderStatus ?? order.status ?? "").toString().toUpperCase();
             const createdAt = order.createdAt || order.createdDate || order.orderDate || "";
@@ -188,7 +188,7 @@ async function loadOrders() {
                 createdAt.toString().startsWith(todayString)
             );
         })
-        .reduce((sum, order) => sum + Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? 0), 0);
+        .reduce((sum, order) => sum + Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? 0), 0));
 
     animateCounter("today-revenue", todayRevenue);
 

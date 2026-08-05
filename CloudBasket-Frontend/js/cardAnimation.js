@@ -8,6 +8,13 @@ export function animateCounter(elementId, targetValue) {
 
     if (!element) return;
 
+    const intTarget = Math.round(Number(targetValue) || 0);
+
+    if (intTarget === 0) {
+        element.textContent = "0";
+        return;
+    }
+
     let current = 0;
 
     const duration = 1000;
@@ -15,21 +22,21 @@ export function animateCounter(elementId, targetValue) {
     const interval = 20;
 
     const increment =
-        Math.ceil(targetValue / (duration / interval));
+        Math.max(1, Math.ceil(intTarget / (duration / interval)));
 
     const timer = setInterval(() => {
 
         current += increment;
 
-        if (current >= targetValue) {
+        if (current >= intTarget) {
 
-            current = targetValue;
+            current = intTarget;
 
             clearInterval(timer);
 
         }
 
-        element.textContent = current;
+        element.textContent = Math.round(current);
 
     }, interval);
 
