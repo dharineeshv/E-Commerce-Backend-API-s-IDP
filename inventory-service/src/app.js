@@ -8,6 +8,7 @@ import inventoryRoutes from "./routes/inventoryRoutes.js";
 import { API_VERSION } from "./constants/api.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
@@ -17,7 +18,9 @@ app.use(express.json());
 app.use(cors());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("inventory-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("inventory-service"));
+}
 
 app.use(`${API_VERSION}/inventory`, inventoryRoutes);
 
@@ -35,6 +38,8 @@ app.use((err, req, res, next) => {
 });
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;

@@ -17,7 +17,9 @@ app.use(express.json());
 app.use(cors());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("cart-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("cart-service"));
+}
 
 app.use("/api/v1/cart", cartRoutes);
 
@@ -35,6 +37,8 @@ app.get("/", (req, res) => {
 });
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;

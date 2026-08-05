@@ -7,6 +7,7 @@ import https from "https";
 import wishlistRoutes from "./routes/wishlistRoutes.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
@@ -16,7 +17,9 @@ app.use(express.json());
 app.use(cors());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("wishlist-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("wishlist-service"));
+}
 
 app.use("/api/v1/wishlist", wishlistRoutes);
 
@@ -34,6 +37,8 @@ app.get("/", (req, res) => {
 });
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;

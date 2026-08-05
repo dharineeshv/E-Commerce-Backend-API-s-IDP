@@ -8,6 +8,7 @@ import https from "https";
 import userProfileRoutes from "./routes/userProfileRoutes.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
@@ -17,7 +18,9 @@ app.use(cors());
 app.use(express.json());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("user-profile-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("user-profile-service"));
+}
 
 app.use(`${API_VERSION}/profile`, userProfileRoutes);
 
@@ -29,6 +32,8 @@ app.get("/health", (req, res) => {
 });
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;

@@ -8,6 +8,7 @@ import orderRoutes from "./routes/orderRoutes.js";
 import { API_VERSION } from "./constants/api.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
@@ -17,7 +18,9 @@ app.use(express.json());
 app.use(cors());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("order-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("order-service"));
+}
 
 app.use(`${API_VERSION}/order`, orderRoutes);
 
@@ -26,6 +29,8 @@ app.get("/", (req, res) => {
 });
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;

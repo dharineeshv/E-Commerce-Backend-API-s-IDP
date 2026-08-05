@@ -9,6 +9,7 @@ import { API_VERSION } from "./constants/api.js";
 import festivalSaleRoutes from "./routes/festivalSaleRoutes.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
@@ -18,7 +19,9 @@ app.use(cors());
 app.use(express.json());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("marketing-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("marketing-service"));
+}
 
 app.get("/health", (req, res) => {
     res.status(200).json({
@@ -34,6 +37,8 @@ app.use(`${API_VERSION}/marketing`, festivalSaleRoutes);
 app.use(errorMiddleware);
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;

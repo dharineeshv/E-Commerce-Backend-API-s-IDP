@@ -9,6 +9,7 @@ import razorpayRoutes from "./routes/razorpayRoutes.js";
 import { API_VERSION } from "./constants/api.js";
 
 // Capture all outbound HTTP/HTTPS calls
+AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
@@ -17,7 +18,9 @@ app.use(express.json());
 app.use(cors());
 
 // X-Ray: open segment before routes
-app.use(AWSXRay.express.openSegment("payment-service"));
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.openSegment("payment-service"));
+}
 
 app.use(`${API_VERSION}/payment/razorpay`, razorpayRoutes);
 app.use(`${API_VERSION}/payment`, paymentRoutes);
@@ -36,6 +39,8 @@ app.use((err, req, res, next) => {
 });
 
 // X-Ray: close segment after routes
-app.use(AWSXRay.express.closeSegment());
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  app.use(AWSXRay.express.closeSegment());
+}
 
 export default app;
