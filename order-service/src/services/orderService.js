@@ -1,4 +1,5 @@
 import "../config/env.js";
+import axios from "axios";
 import {
   PutCommand,
   GetCommand,
@@ -151,6 +152,21 @@ console.log("ORDER_PLACED event published successfully", {
     });
   }
 
+  // Reduce inventory stock for purchased products
+  const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
+  for (const item of orderItems) {
+    if (item.productId && item.quantity) {
+      try {
+        await axios.put(`${INVENTORY_SERVICE_URL}/api/v1/inventory/reduce/${item.productId}`, {
+          amount: Number(item.quantity)
+        });
+        console.log(`Inventory reduced for product ${item.productId} by ${item.quantity}`);
+      } catch (invError) {
+        console.error(`Failed to reduce inventory for product ${item.productId}:`, invError?.response?.data || invError.message);
+      }
+    }
+  }
+
   // Clear cart after successful order placement
   await clearCartItems(customerId);
 
@@ -280,6 +296,23 @@ console.log("ORDER_CANCELLED event published successfully", {
       message: error.message,
       stack: error.stack,
     });
+  }
+
+  // Restore inventory stock for cancelled order items
+  const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
+  if (order.items && Array.isArray(order.items)) {
+    for (const item of order.items) {
+      if (item.productId && item.quantity) {
+        try {
+          await axios.put(`${INVENTORY_SERVICE_URL}/api/v1/inventory/restore/${item.productId}`, {
+            amount: Number(item.quantity)
+          });
+          console.log(`Inventory restored for product ${item.productId} by ${item.quantity}`);
+        } catch (invError) {
+          console.error(`Failed to restore inventory for product ${item.productId}:`, invError?.response?.data || invError.message);
+        }
+      }
+    }
   }
 
   return {

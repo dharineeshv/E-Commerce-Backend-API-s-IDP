@@ -376,22 +376,170 @@
         }
 
         @media (max-width: 1024px) {
+            body, html {
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100vh !important;
+            }
+
             .page-wrapper {
                 flex-direction: column;
                 height: auto !important;
-                overflow: auto !important;
+                min-height: 100vh !important;
+                overflow-y: auto;
             }
 
             .left-banner {
+                flex: none;
                 padding: 40px 30px;
+                min-height: 280px;
             }
 
-            .right-section {
-                padding: 40px 30px;
+            .left-content {
+                margin-top: 0;
+                margin-bottom: 0;
+                max-width: 100%;
+            }
+
+            .brand-asterisk {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 24px;
             }
 
             .hero-title, .hero-title-bold {
+                font-size: 34px;
+                line-height: 1.2;
+            }
+
+            .hero-description {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .left-footer {
+                display: none;
+            }
+
+            .right-section {
+                flex: none;
+                padding: 40px 24px;
+                min-height: calc(100vh - 280px);
+                box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+                border-radius: 24px 24px 0 0;
+                margin-top: -24px;
+            }
+
+            .form-container {
+                margin: 20px auto;
+            }
+        }
+
+        /* Small Mobile Screens (< 480px) */
+        @media (max-width: 480px) {
+            .left-banner {
+                padding: 28px 20px;
+                min-height: 220px;
+            }
+
+            .brand-asterisk {
+                width: 38px;
+                height: 38px;
+                margin-bottom: 16px;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 26px;
+            }
+
+            .hero-description {
+                display: none;
+            }
+
+            .right-section {
+                padding: 32px 18px;
+            }
+
+            .welcome-title {
+                font-size: 26px;
+            }
+
+            .welcome-subtitle {
+                font-size: 13px;
+                margin-bottom: 24px;
+            }
+
+            .input-field {
+                padding: 12px 36px 12px 14px;
+                font-size: 14px;
+            }
+
+            .btn-login, .btn-google {
+                padding: 13px;
+                font-size: 14px;
+            }
+        }
+
+        /* TV & Ultra-wide / 4K Displays (>= 1600px) */
+        @media (min-width: 1600px) {
+            .left-banner {
+                padding: 80px 100px;
+            }
+
+            .left-content {
+                max-width: 680px;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 64px;
+            }
+
+            .hero-description {
+                font-size: 20px;
+                max-width: 580px;
+            }
+
+            .right-section {
+                padding: 80px 100px;
+            }
+
+            .form-container {
+                max-width: 520px;
+            }
+
+            .welcome-title {
                 font-size: 38px;
+            }
+
+            .welcome-subtitle {
+                font-size: 15px;
+            }
+
+            .input-field {
+                padding: 16px 44px 16px 20px;
+                font-size: 16px;
+            }
+
+            .btn-login, .btn-google {
+                padding: 16px;
+                font-size: 16px;
+            }
+        }
+
+        /* 4K Super TVs (>= 2200px) */
+        @media (min-width: 2200px) {
+            .page-wrapper {
+                max-width: 2560px;
+                margin: 0 auto;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 76px;
+            }
+
+            .welcome-title {
+                font-size: 46px;
             }
         }
     </style>

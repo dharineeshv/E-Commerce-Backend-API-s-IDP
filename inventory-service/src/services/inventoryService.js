@@ -167,11 +167,10 @@ async function reduceInventory(productId, amount) {
     throw error;
   }
 
-  const item = await getInventoryItemByProductId(productId);
+  let item = await getInventoryItemByProductId(productId);
   if (!item) {
-    const error = new Error('Inventory item not found');
-    error.statusCode = 404;
-    throw error;
+    const initialQty = Math.max(0, 100 - amount);
+    return await createInventoryItem({ productId, quantity: initialQty, location: 'default' });
   }
 
   if (item.quantity < amount) {

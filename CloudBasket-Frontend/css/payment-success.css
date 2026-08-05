@@ -1,40 +1,63 @@
 .payment-success-page {
     background-color: #f8fafc;
     min-height: calc(100vh - 70px);
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 60px 20px;
-    width: 100%;
-    box-sizing: border-box;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    padding: 50px 20px !important;
+    width: 100% !important;
+    box-sizing: border-box !important;
 }
 
 .success-container {
-    background: transparent;
-    max-width: 650px;
-    width: 100%;
-    margin: 0 auto;
-    text-align: center;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
+    background: transparent !important;
+    max-width: 650px !important;
+    width: 100% !important;
+    margin: 0 auto !important;
+    text-align: center !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.success-title,
+.success-message,
+.transaction-card,
+.receipt-block,
+.action-buttons,
+.support-text {
+    width: 100% !important;
+    max-width: 650px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    box-sizing: border-box !important;
 }
 
 .success-icon-wrap {
-    width: 80px;
-    height: 80px;
-    background-color: #22c55e;
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin: 0 auto 20px;
-    box-shadow: 0 10px 25px rgba(34, 197, 94, 0.3);
+    width: 72px !important;
+    height: 72px !important;
+    min-width: 72px !important;
+    min-height: 72px !important;
+    background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%) !important;
+    border-radius: 50% !important;
+    display: flex !important;
+    justify-content: center !important;
+    align-items: center !important;
+    margin: 0 auto 24px !important;
+    box-shadow: 0 10px 25px -5px rgba(34, 197, 94, 0.4), 0 0 0 8px rgba(34, 197, 94, 0.12) !important;
+    transition: transform 0.3s ease;
+}
+
+.success-icon-wrap:hover {
+    transform: scale(1.05);
 }
 
 .success-icon-wrap svg {
-    color: white;
+    width: 36px !important;
+    height: 36px !important;
+    color: #ffffff !important;
 }
 
 .success-title {
@@ -198,48 +221,82 @@
 /* Action Buttons */
 .action-buttons {
     display: flex;
-    gap: 15px;
+    gap: 16px;
     justify-content: center;
+    align-items: center;
+    width: 100%;
+    margin-top: 10px;
 }
 
 .btn-view-order {
-    background: #ff9800;
-    color: #111827;
+    background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
+    color: #ffffff !important;
     border: none;
-    padding: 14px 24px;
-    border-radius: 30px;
-    font-weight: 700;
+    padding: 14px 28px;
+    border-radius: 12px;
+    font-weight: 600;
     font-size: 15px;
+    letter-spacing: 0.2px;
     cursor: pointer;
     flex: 1;
-    display: flex;
+    white-space: nowrap;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
     gap: 10px;
-    transition: transform 0.2s;
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.35);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    height: 48px;
+    box-sizing: border-box;
 }
 
 .btn-view-order:hover {
+    background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);
     transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(37, 99, 235, 0.45);
+    color: #ffffff !important;
+}
+
+.btn-view-order:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37, 99, 235, 0.3);
 }
 
 .btn-continue {
-    background: white;
-    color: #0f4a8a;
-    border: 2px solid #0f4a8a;
-    padding: 14px 24px;
-    border-radius: 30px;
+    background: #ffffff;
+    color: #334155 !important;
+    border: 1.5px solid #cbd5e1;
+    padding: 14px 28px;
+    border-radius: 12px;
     font-weight: 600;
     font-size: 15px;
+    letter-spacing: 0.2px;
     cursor: pointer;
     flex: 1;
-    transition: all 0.2s;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+    transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
     text-decoration: none;
+    height: 48px;
+    box-sizing: border-box;
 }
 
 .btn-continue:hover {
     background: #f8fafc;
+    border-color: #94a3b8;
+    color: #0f172a !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+}
+
+.btn-continue:active {
+    transform: translateY(0);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
 }
 
 .support-text {
@@ -259,23 +316,88 @@
 }
 
 @media (max-width: 768px) {
+    html, body {
+        zoom: 1 !important;
+        width: 100% !important;
+        max-width: 100vw !important;
+        overflow-x: hidden !important;
+    }
+
+    .payment-success-page {
+        padding: 24px 16px !important;
+        width: 100% !important;
+        min-height: auto !important;
+        box-sizing: border-box !important;
+    }
+
+    .success-container {
+        width: 100% !important;
+        max-width: 100% !important;
+    }
+
+    .success-title {
+        font-size: 1.6rem !important;
+        margin-bottom: 12px !important;
+    }
+
+    .success-message {
+        font-size: 0.92rem !important;
+        margin-bottom: 24px !important;
+    }
+
     .transaction-card {
-        flex-direction: column;
+        flex-direction: column !important;
+        margin-bottom: 16px !important;
     }
+
+    .transaction-left,
     .transaction-right {
-        width: 100%;
-        text-align: center;
-        padding: 25px;
+        padding: 18px !important;
+        width: 100% !important;
+        box-sizing: border-box !important;
     }
-    .action-buttons {
-        flex-direction: column;
-    }
+
     .receipt-block {
-        flex-direction: column;
-        align-items: stretch;
-        gap: 15px;
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 14px !important;
+        padding: 16px !important;
     }
+
     .btn-download {
-        justify-content: center;
+        justify-content: center !important;
+        width: 100% !important;
+    }
+
+    .action-buttons {
+        flex-direction: column !important;
+        gap: 12px !important;
+        width: 100% !important;
+    }
+
+    .btn-view-order,
+    .btn-continue {
+        width: 100% !important;
+        height: 48px !important;
+        justify-content: center !important;
+    }
+}
+
+@media (min-width: 1600px) {
+    .success-container {
+        max-width: 800px !important;
+    }
+
+    .header-container {
+        max-width: 100% !important;
+        padding: 0 60px !important;
+    }
+
+    .success-title {
+        font-size: 2.2rem !important;
+    }
+
+    .success-message {
+        font-size: 1.15rem !important;
     }
 }

@@ -357,98 +357,101 @@ footer{
 }
 
 /* ==========================================
-TABLET
+/* ==========================================
+TABLET & MOBILE
 ========================================== */
 
 @media(max-width:1024px){
+    .verify-container{
+        flex-direction: column;
+        padding: 30px 20px;
+        gap: 30px;
+        zoom: 1;
+    }
 
-.verify-container{
+    .left-panel,
+    .right-panel{
+        width: 100%;
+        max-width: 550px;
+        margin: 0 auto;
+    }
 
-flex-direction:column;
-
-padding:30px;
-
+    .welcome-text h1{
+        font-size: 32px;
+    }
 }
-
-.left-panel,
-.right-panel{
-
-width:100%;
-
-}
-
-.welcome-text h1{
-
-font-size:40px;
-
-}
-
-}
-
-/* ==========================================
-MOBILE
-========================================== */
 
 @media(max-width:768px){
+    .verify-card{
+        padding: 28px 20px;
+        border-radius: 20px;
+    }
 
-.verify-card{
+    .illustration{
+        max-width: 320px;
+    }
 
-padding:30px;
+    .welcome-text h1{
+        font-size: 26px;
+    }
 
+    .welcome-text p{
+        font-size: 15px;
+        line-height: 24px;
+    }
 }
 
-.illustration{
+@media(max-width:480px){
+    .verify-container{
+        padding: 16px;
+    }
 
-max-width:420px;
+    .left-panel {
+        display: none;
+    }
 
-}
+    .verify-card{
+        padding: 24px 16px;
+        border-radius: 18px;
+    }
 
-.welcome-text h1{
+    .verify-card h2{
+        font-size: 24px;
+    }
 
-font-size:34px;
+    .logo{
+        width: 65px;
+    }
 
-}
-
-.welcome-text p{
-
-font-size:17px;
-
-line-height:30px;
-
-}
-
+    .input-group input,
+    .email-display,
+    .verify-btn {
+        height: 50px;
+        font-size: 14px;
+    }
 }
 
 /* ==========================================
-SMALL MOBILE
+TV & ULTRA-WIDE SCREENS
 ========================================== */
 
-@media(max-width:480px){
+@media(min-width:1600px){
+    .verify-container{
+        max-width: 1500px;
+        margin: 0 auto;
+        padding: 60px;
+        gap: 80px;
+        zoom: 1.1;
+    }
 
-.verify-container{
-
-padding:20px;
-
+    .verify-card{
+        max-width: 540px;
+        padding: 50px;
+    }
 }
 
-.verify-card{
-
-padding:24px;
-
-border-radius:22px;
-
-}
-
-.verify-card h2{
-
-font-size:28px;
-
-}
-
-.logo{
-
-width:70px;
-
-}
-
+@media(min-width:2200px){
+    .verify-container{
+        zoom: 1.35;
+    }
 }
