@@ -357,6 +357,7 @@ function loadLowStockTable(
         viewInventoryBtn.style.cursor = 'pointer';
         viewInventoryBtn.onclick = () => {
             window.location.href = '../../pages/inventory/inventory.html';
+        };
     }
 
     lowStockProducts.forEach(item => {
