@@ -12,25 +12,42 @@ function getAuthHeaders() {
 }
 
 export async function fetchProductReviews(productId) {
+  let remoteData = null;
   try {
     const response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
     if (response.ok) {
       const data = await response.json();
-      const payload = data.data || data;
-      if (payload) {
-        if (payload.reviews && Array.isArray(payload.reviews)) {
-          return payload;
-        }
-        if (Array.isArray(payload)) {
-          return computeSummary(productId, payload);
-        }
-      }
+      remoteData = data.data || data;
     }
   } catch (error) {
     console.warn("Failed to fetch remote reviews from API Gateway, using local reviews:", error);
   }
 
-  return getLocalReviewsFallback(productId);
+  const localData = getLocalReviewsFallback(productId);
+  const localReviews = (localData && localData.reviews) || [];
+
+  if (remoteData) {
+    const remoteReviews = Array.isArray(remoteData) ? remoteData : (remoteData.reviews || []);
+    
+    // Combine remote reviews and local reviews by reviewId
+    const combinedMap = new Map();
+    remoteReviews.forEach(r => {
+      const key = r.reviewId || r.id;
+      if (key) combinedMap.set(key, r);
+    });
+    localReviews.forEach(r => {
+      const key = r.reviewId || r.id;
+      if (key && !combinedMap.has(key)) {
+        combinedMap.set(key, r);
+      }
+    });
+
+    const allCombined = Array.from(combinedMap.values());
+    allCombined.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    return computeSummary(productId, allCombined);
+  }
+
+  return localData;
 }
 
 export async function postReview({ productId, rating, title, comment, customerName }) {

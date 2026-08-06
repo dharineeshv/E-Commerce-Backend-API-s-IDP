@@ -67,14 +67,14 @@ export async function getProductReviews(productId) {
   try {
     const command = new ScanCommand({
       TableName: TABLE_NAME,
-      FilterExpression: "productId = :pid",
-      ExpressionAttributeValues: {
-        ":pid": productId,
-      },
     });
     const response = await docClient.send(command);
     if (response.Items && response.Items.length > 0) {
-      reviews = response.Items;
+      const targetPid = String(productId).trim().toLowerCase();
+      reviews = response.Items.filter(item => {
+        const itemPid = String(item.productId || item.product_id || item.id || "").trim().toLowerCase();
+        return itemPid === targetPid;
+      });
     }
   } catch (error) {
     console.warn("DynamoDB ScanCommand warning/error, falling back to memory:", error.message);
