@@ -1,5 +1,6 @@
 import dotenv from 'dotenv';
 import express from 'express';
+import cors from 'cors';
 import AWSXRay from 'aws-xray-sdk';
 import http from 'http';
 import https from 'https';
@@ -15,6 +16,9 @@ AWSXRay.setContextMissingStrategy("LOG_ERROR");
 AWSXRay.captureHTTPsGlobal(http, true);
 AWSXRay.captureHTTPsGlobal(https, true);
 
+const app = express();
+app.disable("x-powered-by");
+
 const corsOptions = {
   origin: process.env.ALLOWED_ORIGINS 
     ? process.env.ALLOWED_ORIGINS.split(",") 
@@ -23,18 +27,18 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"]
 };
 app.use(cors(corsOptions));
+app.use(express.json());
 
 // X-Ray: open segment before routes
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
   app.use(AWSXRay.express.openSegment('product-service'));
 }
 
-app.get("/health", cognitoAuthMiddleware, (req, res) => {
+app.get("/health", (req, res) => {
   res.status(200).json({
     success: true,
     service: "product-service",
-    message: "JWT Verified Successfully",
-    user: req.user,
+    message: "Product service is running"
   });
 });
 
