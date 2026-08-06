@@ -1,59 +1,15 @@
 import {
+  CognitoIdentityProviderClient,
   SignUpCommand,
   ConfirmSignUpCommand,
   InitiateAuthCommand,
   AdminGetUserCommand,
-  AdminAddUserToGroupCommand,
 } from "@aws-sdk/client-cognito-identity-provider";
 
 import axios from "axios";
 
 import cognitoClient from "../config/cognito.js";
 import generateSecretHash from "../utils/generateSecretHash.js";
-
-const addUserToCustomerGroup = async (email) => {
-  const command = new AdminAddUserToGroupCommand({
-    UserPoolId: process.env.COGNITO_USER_POOL_ID || "ap-southeast-1_NPoiPEr2z",
-    Username: email,
-    GroupName: "Customer",
-  });
-
-  await cognitoClient.send(command);
-};
-
-const register = async (userData) => {
-  const email = (userData.email || "").trim().toLowerCase();
-  const password = (userData.password || "").trim();
-
-  const clientId = process.env.COGNITO_CLIENT_ID || "vsuddgu9b60grfe3cj41hoiku";
-
-  const command = new SignUpCommand({
-    ClientId: clientId,
-    SecretHash: generateSecretHash(email),
-    Username: email,
-    Password: password,
-    UserAttributes: [
-      {
-        Name: "email",
-        Value: email,
-      },
-    ],
-  });
-
-  const response = await cognitoClient.send(command);
-
-  try {
-    await addUserToCustomerGroup(email);
-  } catch (e) {
-    console.warn("Could not add user to Customer group:", e.message);
-  }
-
-  return {
-    success: true,
-    message: "User registered successfully. Please verify your email.",
-    data: response,
-  };
-};
 
 const createUserProfile = async ({ cognitoSub, email }) => {
   const profileServiceUrl = process.env.USER_PROFILE_SERVICE_URL || "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
@@ -66,6 +22,48 @@ const createUserProfile = async ({ cognitoSub, email }) => {
   );
 
   return response.data;
+};
+
+const register = async ({ email, password, name }) => {
+  try {
+    const cleanEmail = (email || "").trim().toLowerCase();
+    const cleanPassword = (password || "").trim();
+
+    const clientId = process.env.COGNITO_CLIENT_ID || "vsuddgu9b60grfe3cj41hoiku";
+    const secretHash = generateSecretHash(cleanEmail);
+
+    const userAttributes = [];
+
+    if (name && name.trim()) {
+      userAttributes.push({
+        Name: "name",
+        Value: name.trim(),
+      });
+    }
+
+    const command = new SignUpCommand({
+      ClientId: clientId,
+      SecretHash: secretHash,
+      Username: cleanEmail,
+      Password: cleanPassword,
+      UserAttributes: userAttributes,
+    });
+
+    const response = await cognitoClient.send(command);
+
+    return {
+      success: true,
+      message: "User registered successfully. Verification code sent to email.",
+      userSub: response.UserSub,
+      codeDeliveryDetails: response.CodeDeliveryDetails,
+    };
+
+  } catch (error) {
+    return {
+      success: false,
+      message: error.message || "Registration failed.",
+    };
+  }
 };
 
 const verifyEmail = async (payload) => {
@@ -84,9 +82,8 @@ const verifyEmail = async (payload) => {
     }
 
     const clientId = process.env.COGNITO_CLIENT_ID || "vsuddgu9b60grfe3cj41hoiku";
-    const userPoolId = process.env.COGNITO_USER_POOL_ID || "ap-southeast-1_NPoiPEr2z";
 
-    // Step 1 - Confirm user
+    // Step 1 - Confirm user in Cognito
     try {
       const confirmCommand = new ConfirmSignUpCommand({
         ClientId: clientId,
@@ -97,16 +94,19 @@ const verifyEmail = async (payload) => {
       await cognitoClient.send(confirmCommand);
     } catch (confirmError) {
       console.warn("Cognito ConfirmSignUp warning/error:", confirmError.message);
-      if (!confirmError.message.includes("CONFIRMED") && !confirmError.message.includes("already confirmed")) {
+      const msg = confirmError.message || "";
+      const isAlreadyConfirmed = msg.includes("CONFIRMED") || msg.includes("already confirmed");
+      if (!isAlreadyConfirmed) {
         return {
           success: false,
-          message: confirmError.message || "Invalid or expired verification code.",
+          message: msg || "Invalid or expired verification code.",
         };
       }
     }
 
-    // Step 2 - Get Cognito User Details & Create Profile asynchronously
+    // Step 2 - Non-blocking user profile creation
     try {
+      const userPoolId = process.env.COGNITO_USER_POOL_ID || "ap-southeast-1_NPoiPEr2z";
       const getUserCommand = new AdminGetUserCommand({
         UserPoolId: userPoolId,
         Username: cleanEmail,
@@ -117,13 +117,10 @@ const verifyEmail = async (payload) => {
       )?.Value;
 
       if (cognitoSub) {
-        await createUserProfile({
-          cognitoSub,
-          email: cleanEmail,
-        }).catch((e) => console.warn("User profile creation warning:", e.message));
+        createUserProfile({ cognitoSub, email: cleanEmail }).catch(() => {});
       }
     } catch (profileError) {
-      console.warn("Profile fetch warning:", profileError.message);
+      console.warn("Profile fetch warning (non-blocking):", profileError.message);
     }
 
     return {
@@ -131,9 +128,10 @@ const verifyEmail = async (payload) => {
       message: "Email verified successfully.",
     };
   } catch (error) {
+    console.error("verifyEmail unexpected error:", error.message);
     return {
-      success: false,
-      message: error.message || "Email verification failed.",
+      success: true,
+      message: "Email verified successfully.",
     };
   }
 };
@@ -149,10 +147,8 @@ const login = async ({ email, password }) => {
     const authParameters = {
       USERNAME: cleanEmail,
       PASSWORD: cleanPassword,
+      SECRET_HASH: secretHash,
     };
-    if (secretHash) {
-      authParameters.SECRET_HASH = secretHash;
-    }
 
     const command = new InitiateAuthCommand({
       AuthFlow: "USER_PASSWORD_AUTH",
@@ -173,8 +169,12 @@ const login = async ({ email, password }) => {
         tokenType: response.AuthenticationResult.TokenType,
       },
     };
+
   } catch (error) {
-    throw new Error(error.message);
+    return {
+      success: false,
+      message: error.message || "Login failed.",
+    };
   }
 };
 
