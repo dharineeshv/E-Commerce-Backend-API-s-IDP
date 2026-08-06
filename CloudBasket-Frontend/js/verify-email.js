@@ -3,11 +3,8 @@
 // ==========================================
 
 const verifyForm = document.getElementById("verifyForm");
-
 const emailDisplay = document.getElementById("registeredEmail");
-
 const verificationCode = document.getElementById("verificationCode");
-
 const verifyBtn = document.getElementById("verifyBtn");
 
 // ==========================================
@@ -15,105 +12,95 @@ const verifyBtn = document.getElementById("verifyBtn");
 // ==========================================
 
 const params = new URLSearchParams(window.location.search);
-
 const registeredEmail = params.get("email");
 
 if (!registeredEmail) {
-
-    showToast(
-        "error",
-        "Invalid Request",
-        "No registered email found."
-    );
-
+    if (typeof showToast === "function") {
+        showToast(
+            "error",
+            "Invalid Request",
+            "No registered email found."
+        );
+    }
     setTimeout(() => {
-
-        window.location.href = "register.html";
-
-    }, 2500);
-
+        window.location.href = "index.html";
+    }, 1500);
 }
 
-emailDisplay.textContent = registeredEmail;
+if (emailDisplay) {
+    emailDisplay.textContent = registeredEmail || "";
+}
 
 // ==========================================
-// Verify Email
+// Verify Email Form Handler
 // ==========================================
 
-verifyForm.addEventListener("submit", async (e) => {
+if (verifyForm) {
+    verifyForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
 
-    e.preventDefault();
+        const code = verificationCode.value.trim();
 
-    const code = verificationCode.value.trim();
+        if (code.length !== 6) {
+            if (typeof showToast === "function") {
+                showToast(
+                    "error",
+                    "Invalid Code",
+                    "Verification code must contain 6 digits."
+                );
+            }
+            return;
+        }
 
-    if (code.length !== 6) {
+        verifyBtn.disabled = true;
+        verifyBtn.innerHTML = "Verifying...";
 
-        showToast(
-            "error",
-            "Invalid Code",
-            "Verification code must contain 6 digits."
-        );
+        try {
+            const response = await verifyEmail({
+                email: registeredEmail,
+                confirmationCode: code,
+                code: code
+            });
 
-        return;
+            if (response && response.success !== false) {
+                if (typeof showToast === "function") {
+                    showToast(
+                        "success",
+                        "Email Verified",
+                        response.message || "Email verified successfully."
+                    );
+                }
+            } else {
+                if (typeof showToast === "function") {
+                    showToast(
+                        "error",
+                        "Verification Notice",
+                        response?.message || "Invalid or expired verification code."
+                    );
+                }
+            }
 
-    }
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1500);
 
-    verifyBtn.disabled = true;
+        } catch (error) {
+            console.warn("Email verification request error:", error);
+            if (typeof showToast === "function") {
+                showToast(
+                    "error",
+                    "Verification Notice",
+                    error.message || "Invalid verification code."
+                );
+            }
 
-    verifyBtn.innerHTML = "Verifying...";
+            setTimeout(() => {
+                window.location.href = "index.html";
+            }, 1500);
 
-    try {
-
-        const response = await verifyEmail({
-
-            email: registeredEmail,
-
-            confirmationCode: code
-
-        });
-
-        showToast(
-
-            "success",
-
-            "Email Verified",
-
-            response.message ||
-
-            "Email verified successfully."
-
-        );
-
-        setTimeout(() => {
-
-            window.location.href = "login.html";
-
-        }, 2500);
-
-    }
-
-    catch (error) {
-
-        showToast(
-
-            "error",
-
-            "Verification Failed",
-
-            error.message ||
-
-            "Invalid verification code."
-
-        );
-
-    }
-
-    finally {
-
-        verifyBtn.disabled = false;
-
-        verifyBtn.innerHTML = "Verify Email";
-
-    }
-
-});
+        } finally {
+            verifyBtn.disabled = false;
+            verifyBtn.innerHTML = "Verify Email";
+        }
+    });
+}
