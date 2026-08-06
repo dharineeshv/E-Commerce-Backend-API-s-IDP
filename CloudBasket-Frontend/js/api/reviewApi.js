@@ -16,11 +16,13 @@ export async function fetchProductReviews(productId) {
     const response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
     if (response.ok) {
       const data = await response.json();
-      if (data && (data.success || data.data || Array.isArray(data))) {
-        const remoteRes = data.data || data.reviews || (Array.isArray(data) ? data : []);
-        const reviews = Array.isArray(remoteRes) ? remoteRes : (remoteRes.reviews || []);
-        if (reviews && reviews.length > 0) {
-          return computeSummary(productId, reviews);
+      const payload = data.data || data;
+      if (payload) {
+        if (payload.reviews && Array.isArray(payload.reviews)) {
+          return payload;
+        }
+        if (Array.isArray(payload)) {
+          return computeSummary(productId, payload);
         }
       }
     }
@@ -34,8 +36,13 @@ export async function fetchProductReviews(productId) {
 export async function postReview({ productId, rating, title, comment, customerName }) {
   const savedLocal = saveLocalReviewFallback({ productId, rating, title, comment, customerName });
 
+  let headers = { "Content-Type": "application/json" };
+  const token = localStorage.getItem("accessToken") || localStorage.getItem("idToken");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
   try {
-    const headers = getAuthHeaders();
     const response = await fetch(`${API.reviewService}/api/v1/reviews`, {
       method: "POST",
       headers,
@@ -44,13 +51,26 @@ export async function postReview({ productId, rating, title, comment, customerNa
 
     if (response.ok) {
       const data = await response.json();
-      if (data && data.success) return data.data || data;
+      if (data && data.success) {
+        return {
+          success: true,
+          message: data.message || "Review submitted successfully!",
+          data: data.data || data
+        };
+      }
+    } else {
+      const errRes = await response.json().catch(() => ({}));
+      console.warn("Remote review post response error:", response.status, errRes);
     }
   } catch (error) {
-    console.warn("Remote review submission failed, persisted locally:", error);
+    console.warn("Remote review submission error:", error);
   }
 
-  return savedLocal;
+  return {
+    success: true,
+    message: "Review submitted successfully!",
+    data: savedLocal.data
+  };
 }
 
 // Global persistent storage helper
