@@ -18,14 +18,12 @@ import { v4 as uuidv4 } from 'uuid';
 import AWSXRay from 'aws-xray-sdk';
 
 const REGION = process.env.AWS_REGION || "ap-southeast-1";
-const TABLE_NAME = process.env.DYNAMODB_TABLE || process.env.PRODUCT_TABLE || "Dharineesh_products";
-
 const dynamoClient = AWSXRay.captureAWSv3Client(new DynamoDBClient({
   region: REGION,
 }));
 
 const docClient = DynamoDBDocumentClient.from(dynamoClient);
-const tableName = TABLE_NAME;
+const tableName = process.env.DYNAMODB_TABLE || process.env.PRODUCTS_TABLE || "Dharineesh_products";
 
 // ==========================================================
 // Upload Image To S3
@@ -168,10 +166,11 @@ if (productData.quantity === undefined || Number(productData.quantity) < 0) {
 
 export async function fetchProducts() {
   try {
-    const result = await docClient.send(new ScanCommand({ TableName: tableName }));
+    const targetTable = process.env.DYNAMODB_TABLE || process.env.PRODUCTS_TABLE || "Dharineesh_products";
+    const result = await docClient.send(new ScanCommand({ TableName: targetTable }));
     return result.Items || [];
   } catch (error) {
-    console.error("DynamoDB ScanCommand error in fetchProducts:", error);
+    console.warn("DynamoDB fetchProducts scan warning/error:", error.message);
     return [];
   }
 }
