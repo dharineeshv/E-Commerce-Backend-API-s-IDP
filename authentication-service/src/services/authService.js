@@ -77,41 +77,54 @@ const verifyEmail = async ({ email, confirmationCode }) => {
     const userPoolId = process.env.COGNITO_USER_POOL_ID || "ap-southeast-1_NPoiPEr2z";
 
     // Step 1 - Confirm user
-    const confirmCommand = new ConfirmSignUpCommand({
-      ClientId: clientId,
-      SecretHash: generateSecretHash(cleanEmail),
-      Username: cleanEmail,
-      ConfirmationCode: cleanCode,
-    });
+    try {
+      const confirmCommand = new ConfirmSignUpCommand({
+        ClientId: clientId,
+        SecretHash: generateSecretHash(cleanEmail),
+        Username: cleanEmail,
+        ConfirmationCode: cleanCode,
+      });
+      await cognitoClient.send(confirmCommand);
+    } catch (confirmError) {
+      console.warn("Cognito ConfirmSignUp warning/error:", confirmError.message);
+      if (!confirmError.message.includes("CONFIRMED") && !confirmError.message.includes("already confirmed")) {
+        return {
+          success: false,
+          message: confirmError.message || "Invalid or expired verification code.",
+        };
+      }
+    }
 
-    await cognitoClient.send(confirmCommand);
+    // Step 2 - Get Cognito User Details & Create Profile asynchronously
+    try {
+      const getUserCommand = new AdminGetUserCommand({
+        UserPoolId: userPoolId,
+        Username: cleanEmail,
+      });
+      const userResponse = await cognitoClient.send(getUserCommand);
+      const cognitoSub = userResponse.UserAttributes?.find(
+        (attribute) => attribute.Name === "sub"
+      )?.Value;
 
-    // Step 2 - Get Cognito User Details
-    const getUserCommand = new AdminGetUserCommand({
-      UserPoolId: userPoolId,
-      Username: cleanEmail,
-    });
-
-    const userResponse = await cognitoClient.send(getUserCommand);
-
-    // Step 3 - Extract Cognito Sub
-    const cognitoSub = userResponse.UserAttributes?.find(
-      (attribute) => attribute.Name === "sub"
-    )?.Value;
-
-    // Step 4 - Create User Profile
-    await createUserProfile({
-      cognitoSub,
-      email: cleanEmail,
-    });
+      if (cognitoSub) {
+        await createUserProfile({
+          cognitoSub,
+          email: cleanEmail,
+        }).catch((e) => console.warn("User profile creation warning:", e.message));
+      }
+    } catch (profileError) {
+      console.warn("Profile fetch warning:", profileError.message);
+    }
 
     return {
       success: true,
-      message: "Email verified successfully. User profile created.",
+      message: "Email verified successfully.",
     };
-
   } catch (error) {
-    throw new Error(error.message);
+    return {
+      success: false,
+      message: error.message || "Email verification failed.",
+    };
   }
 };
 
