@@ -68,9 +68,25 @@ jobs:
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
+  sonarqube-scan:
+    name: SonarQube Code Quality & Security Analysis
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: SonarQube Code Analysis
+        uses: SonarSource/sonarqube-scan-action@v2.0.2
+        continue-on-error: true
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
+
   deploy:
     name: Deploy to AWS S3 & CloudFront
-    needs: [test, security-scan]
+    needs: [test, security-scan, sonarqube-scan]
     if: github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/customer-service-frontend-implementation'
     runs-on: ubuntu-latest
     steps:
