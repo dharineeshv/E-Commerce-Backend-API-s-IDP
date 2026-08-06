@@ -23,6 +23,7 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"]
 };
 app.use(cors(corsOptions));
+app.use(express.json());
 
 // X-Ray: open segment before routes
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
@@ -30,6 +31,15 @@ if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
 }
 
 app.use(`${API_VERSION}/auth`, authRoutes);
+
+// Error Handling Middleware (Ensures JSON response on errors)
+app.use((err, req, res, next) => {
+  console.error("Auth Service Error:", err);
+  return res.status(400).json({
+    success: false,
+    message: err.message || "Authentication failed"
+  });
+});
 
 // X-Ray: close segment after routes
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
