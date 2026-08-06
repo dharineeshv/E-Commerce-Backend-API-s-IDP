@@ -66,25 +66,16 @@ async function loadFestivalSale() {
 // ===========================================
 
 async function loadProductCount() {
-
-    const response = await getAllProducts();
-
-    if (!response || !response.success) {
-
-        return null;
-
+    try {
+        const response = await getAllProducts();
+        if (!response) return [];
+        const productsList = response.products || response.data || (Array.isArray(response) ? response : []);
+        animateCounter("total-products", productsList.length);
+        return productsList;
+    } catch (err) {
+        console.error("Failed to load product count:", err);
+        return [];
     }
-
-    animateCounter(
-
-        "total-products",
-
-        response.products.length
-
-    );
-
-    return response.products;
-
 }
 
 function createProductMap(products) {
@@ -97,28 +88,48 @@ function createProductMap(products) {
 }
 
 async function loadInventoryCount(productMap, productsList = []) {
-    const inventoryRes = await getAllInventory();
+    try {
+        const inventoryRes = await getAllInventory();
 
-    let inventories = [];
-    if (inventoryRes && (inventoryRes.data || inventoryRes.inventory)) {
-        inventories = inventoryRes.data || inventoryRes.inventory;
-    } else if (Array.isArray(inventoryRes)) {
-        inventories = inventoryRes;
+        let inventories = [];
+        if (inventoryRes && (inventoryRes.data || inventoryRes.inventory)) {
+            inventories = inventoryRes.data || inventoryRes.inventory;
+        } else if (Array.isArray(inventoryRes)) {
+            inventories = inventoryRes;
+        }
+
+        // Calculate total available stock units in inventory across all products
+        let totalUnits = 0;
+        const processedPids = new Set();
+
+        (productsList || []).forEach(p => {
+            const pId = p.productId || p.id || p.sku;
+            if (pId) processedPids.add(pId);
+            const qty = Number(p.availableQuantity ?? p.stock ?? p.quantity ?? p.stockQuantity ?? (p.inStock === false ? 0 : 5));
+            totalUnits += Math.max(0, qty);
+        });
+
+        inventories.forEach(inv => {
+            const invId = inv.productId || inv.product_id || inv.product || inv.inventoryId || inv.id;
+            if (invId && !processedPids.has(invId)) {
+                const qty = Number(inv.availableQuantity ?? inv.quantity ?? inv.stock ?? 0);
+                totalUnits += Math.max(0, qty);
+            }
+        });
+
+        const productCount = Object.keys(productMap || {}).length;
+        const displayInventoryCount = totalUnits > 0 ? totalUnits : Math.max(inventories.length, productCount);
+
+        animateCounter("inventory-count", displayInventoryCount);
+
+        loadLowStockTable(
+            inventories,
+            productMap,
+            productsList
+        );
+    } catch (err) {
+        console.error("Failed to load inventory count:", err);
     }
-
-    const productCount = Object.keys(productMap || {}).length;
-    const inventoryCount = Math.max(inventories.length, productCount);
-
-    animateCounter(
-        "inventory-count",
-        inventoryCount
-    );
-
-    loadLowStockTable(
-        inventories,
-        productMap,
-        productsList
-    );
 }
 
 async function loadOrders() {
@@ -169,27 +180,43 @@ async function loadOrders() {
     }
 
     const rawOrdersList = response.data || response.orders || (Array.isArray(response) ? response : []);
-    const count = response.count || rawOrdersList.length;
-
-    // Dashboard Order Count
-    animateCounter("today-orders", count);
-
     const orders = Array.isArray(rawOrdersList) ? rawOrdersList : [];
 
-    const today = new Date();
-    const todayString = today.toISOString().split("T")[0];
+    const isToday = (dateVal) => {
+        if (!dateVal) return false;
+        const now = new Date();
+        const orderDate = new Date(dateVal);
+        if (isNaN(orderDate.getTime())) {
+            const dateStr = String(dateVal);
+            const yyyy = now.getFullYear();
+            const mm = String(now.getMonth() + 1).padStart(2, '0');
+            const dd = String(now.getDate()).padStart(2, '0');
+            return dateStr.includes(`${yyyy}-${mm}-${dd}`);
+        }
+        return (
+            orderDate.getFullYear() === now.getFullYear() &&
+            orderDate.getMonth() === now.getMonth() &&
+            orderDate.getDate() === now.getDate()
+        );
+    };
 
-    const todayRevenue = Math.round(orders
-        .filter((order) => {
-            const status = (order.orderStatus ?? order.status ?? "").toString().toUpperCase();
-            const createdAt = order.createdAt || order.createdDate || order.orderDate || "";
-            return (
-                status !== "CANCELLED" &&
-                createdAt.toString().startsWith(todayString)
-            );
-        })
-        .reduce((sum, order) => sum + Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? 0), 0));
+    // Filter orders created today (excluding cancelled)
+    const todayOrdersList = orders.filter(order => {
+        const status = (order.orderStatus ?? order.status ?? "").toString().toUpperCase();
+        if (status === "CANCELLED") return false;
+        const dateVal = order.createdAt || order.createdDate || order.orderDate || order.date;
+        return isToday(dateVal);
+    });
 
+    const todayOrdersCount = todayOrdersList.length;
+    const todayRevenue = Math.round(
+        todayOrdersList.reduce((sum, order) => {
+            return sum + Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? 0);
+        }, 0)
+    );
+
+    // Update Dashboard Card Counters
+    animateCounter("today-orders", todayOrdersCount);
     animateCounter("today-revenue", todayRevenue);
 
     const recentOrders = orders.slice(0, 3);
