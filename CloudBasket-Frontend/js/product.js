@@ -63,14 +63,24 @@ async function initProductPage() {
     // Wire Add to Cart & Buy Now
     const addBtn = document.getElementById('pd-add-to-cart-btn');
     if (addBtn) {
-        addBtn.addEventListener('click', () => {
+        addBtn.addEventListener('click', (e) => {
+            if (addBtn.disabled || addBtn.getAttribute('disabled') !== null) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
             addToCart(productId, product.name || product.title);
         });
     }
 
     const buyNowBtn = document.getElementById('pd-buy-now-btn');
     if (buyNowBtn) {
-        buyNowBtn.addEventListener('click', async () => {
+        buyNowBtn.addEventListener('click', async (e) => {
+            if (buyNowBtn.disabled || buyNowBtn.getAttribute('disabled') !== null) {
+                e.preventDefault();
+                e.stopPropagation();
+                return;
+            }
             buyNowBtn.disabled = true;
             const origHtml = buyNowBtn.innerHTML;
             buyNowBtn.innerHTML = `<span>Processing...</span>`;
@@ -207,6 +217,104 @@ function renderProductDetails(product) {
     // Meta
     document.getElementById('pd-sku').innerText = `SKU: ${sku}`;
     
+    // Stock Status Evaluation
+    const availableQty = (product.availableQuantity !== undefined && product.availableQuantity !== null) 
+        ? Number(product.availableQuantity) 
+        : ((product.stock !== undefined && product.stock !== null) 
+            ? Number(product.stock) 
+            : ((product.quantity !== undefined && product.quantity !== null) 
+                ? Number(product.quantity) 
+                : (product.inStock === false ? 0 : 10)));
+
+    const isExplicitlyOut = product.inStock === false || 
+        (product.status && (
+            product.status.toUpperCase() === 'OUT_OF_STOCK' || 
+            product.status.toUpperCase() === 'OUT OF STOCK' || 
+            product.status.toUpperCase() === 'INACTIVE'
+        ));
+
+    const isOutOfStock = availableQty <= 0 || isExplicitlyOut;
+
+    const stockEl = document.getElementById('pd-stock');
+    if (stockEl) {
+        if (isOutOfStock) {
+            stockEl.className = 'pd-stock out-of-stock';
+            stockEl.style.backgroundColor = '#fef2f2';
+            stockEl.style.color = '#dc2626';
+            stockEl.style.border = '1px solid #fecaca';
+            stockEl.style.padding = '4px 10px';
+            stockEl.style.borderRadius = '20px';
+            stockEl.style.fontWeight = '600';
+            stockEl.style.display = 'inline-flex';
+            stockEl.style.alignItems = 'center';
+            stockEl.style.gap = '6px';
+            stockEl.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Out of Stock
+            `;
+        } else {
+            stockEl.className = 'pd-stock in-stock';
+            stockEl.style.backgroundColor = '#f0fdf4';
+            stockEl.style.color = '#16a34a';
+            stockEl.style.border = '1px solid #bbf7d0';
+            stockEl.style.padding = '4px 10px';
+            stockEl.style.borderRadius = '20px';
+            stockEl.style.fontWeight = '600';
+            stockEl.style.display = 'inline-flex';
+            stockEl.style.alignItems = 'center';
+            stockEl.style.gap = '6px';
+            stockEl.innerHTML = `
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                In Stock
+            `;
+        }
+    }
+
+    const addCartBtn = document.getElementById('pd-add-to-cart-btn');
+    const buyNowBtn = document.getElementById('pd-buy-now-btn');
+
+    if (isOutOfStock) {
+        if (addCartBtn) {
+            addCartBtn.disabled = true;
+            addCartBtn.setAttribute('disabled', 'true');
+            addCartBtn.style.opacity = '0.55';
+            addCartBtn.style.cursor = 'not-allowed';
+            addCartBtn.style.background = '#94a3b8';
+            addCartBtn.style.borderColor = '#94a3b8';
+            addCartBtn.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Out of Stock
+            `;
+        }
+        if (buyNowBtn) {
+            buyNowBtn.disabled = true;
+            buyNowBtn.setAttribute('disabled', 'true');
+            buyNowBtn.style.opacity = '0.55';
+            buyNowBtn.style.cursor = 'not-allowed';
+            buyNowBtn.style.background = '#64748b';
+            buyNowBtn.style.borderColor = '#64748b';
+            buyNowBtn.innerHTML = `
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="12" cy="12" r="10"></circle>
+                    <line x1="15" y1="9" x2="9" y2="15"></line>
+                    <line x1="9" y1="9" x2="15" y2="15"></line>
+                </svg>
+                Out of Stock
+            `;
+        }
+    }
+
     // Title
     document.getElementById('pd-title').innerText = title;
 
