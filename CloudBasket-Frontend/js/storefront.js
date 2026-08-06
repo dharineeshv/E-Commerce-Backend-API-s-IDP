@@ -112,16 +112,24 @@ async function loadProducts() {
     
     try {
         const response = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        if (!response.ok) {
+            throw new Error(`HTTP ${response.status}: Failed to fetch products`);
+        }
         const data = await response.json();
         
-        if (data.success && data.products) {
+        if (data && data.success && Array.isArray(data.products)) {
             allProducts = data.products;
+        } else if (Array.isArray(data)) {
+            allProducts = data;
+        } else if (data && Array.isArray(data.data)) {
+            allProducts = data.data;
         } else {
-            allProducts = data; // Fallback in case response is a direct array
+            console.warn("Backend returned invalid or non-array product format, falling back to mock data.", data);
+            allProducts = getMockProducts();
         }
 
-        // If backend returns nothing, fallback to mock data
-        if (!allProducts || allProducts.length === 0) {
+        // If backend returns empty array, fallback to mock data
+        if (!Array.isArray(allProducts) || allProducts.length === 0) {
             console.warn("No products found from backend. Using mock data.");
             allProducts = getMockProducts();
         }
@@ -147,24 +155,26 @@ async function loadProducts() {
         }
 
         // Fetch review/rating data for products asynchronously
-        await Promise.all(allProducts.map(async (product) => {
-            const pId = product.productId || product.id;
-            if (pId) {
-                try {
-                    const revRes = await fetchProductReviews(pId);
-                    if (revRes && revRes.summary) {
-                        product.rating = revRes.summary.averageRating || product.rating || 4.5;
-                        product.reviewsCount = revRes.summary.totalReviews !== undefined ? revRes.summary.totalReviews : (product.reviews || 0);
+        if (Array.isArray(allProducts)) {
+            await Promise.all(allProducts.map(async (product) => {
+                const pId = product.productId || product.id;
+                if (pId) {
+                    try {
+                        const revRes = await fetchProductReviews(pId);
+                        if (revRes && revRes.summary) {
+                            product.rating = revRes.summary.averageRating || product.rating || 4.5;
+                            product.reviewsCount = revRes.summary.totalReviews !== undefined ? revRes.summary.totalReviews : (product.reviews || 0);
+                        }
+                    } catch (e) {
+                        console.error("Error fetching rating summary for product", pId, e);
                     }
-                } catch (e) {
-                    console.error("Error fetching rating summary for product", pId, e);
                 }
-            }
-            if (!product.rating) {
-                product.rating = 4.5;
-                product.reviewsCount = product.reviews || 8;
-            }
-        }));
+                if (!product.rating) {
+                    product.rating = 4.5;
+                    product.reviewsCount = product.reviews || 8;
+                }
+            }));
+        }
 
         filteredProducts = [...allProducts];
         renderProducts(filteredProducts);
