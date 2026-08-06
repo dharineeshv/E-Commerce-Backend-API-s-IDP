@@ -22,6 +22,8 @@ const corsOptions = {
   allowedHeaders: ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"]
 };
 app.use(cors(corsOptions));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 // X-Ray: open segment before routes
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
