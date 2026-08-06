@@ -20,79 +20,42 @@ env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
 
 jobs:
-  test:
-    name: Run Unit Test Suite
+  build-test-deploy:
+    name: Build, Test & Deploy CloudBasket Platform
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js Environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Microservice Dependencies
-        run: |
-          npm --prefix CloudBasket-Frontend install --no-audit --no-fund || true
-          npm --prefix product-service install --no-audit --no-fund || true
-          npm --prefix order-service install --no-audit --no-fund || true
-          npm --prefix inventory-service install --no-audit --no-fund || true
-          npm --prefix cart-service install --no-audit --no-fund || true
-          npm --prefix payment-service install --no-audit --no-fund || true
-          npm --prefix user-profile-service install --no-audit --no-fund || true
-          npm --prefix marketing-service install --no-audit --no-fund || true
-
-      - name: Execute All Service Unit Test Suites
-        run: |
-          node --test CloudBasket-Frontend/test/frontendUtils.test.js
-          node --test product-service/test/productService.test.js
-
-  security-scan:
-    name: Snyk Security Vulnerability Scan
-    runs-on: ubuntu-latest
-    continue-on-error: true
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
-
-      - name: Set up Node.js Environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Run Snyk Security Audit via CLI
-        continue-on-error: true
-        run: |
-          npx --yes snyk test || echo "Snyk security scan finished with warnings"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-  sonarqube-scan:
-    name: SonarQube Cloud Quality & Security Analysis
-    runs-on: ubuntu-latest
-    continue-on-error: true
     steps:
       - name: Checkout Repository
         uses: actions/checkout@v4
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarqube-scan-action@v5.0.0
-        continue-on-error: true
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+      - name: Set up Node.js Environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
 
-  deploy:
-    name: Deploy to AWS S3 & CloudFront
-    needs: [test, security-scan, sonarqube-scan]
-    if: always() && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/master' || github.ref == 'refs/heads/customer-service-frontend-implementation')
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout Repository
-        uses: actions/checkout@v4
+      - name: Execute All Unit Test Suites
+        run: |
+          node --test CloudBasket-Frontend/test/frontendUtils.test.js
+          node --test product-service/test/productService.test.js
+
+      - name: Snyk Security Scan (Non-blocking)
+        continue-on-error: true
+        run: |
+          npx --yes snyk test || echo "Snyk security scan complete"
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: SonarQube Cloud Analysis (Non-blocking)
+        continue-on-error: true
+        run: |
+          npx --yes sonarqube-scanner \
+            -Dsonar.organization=dharineeshv \
+            -Dsonar.projectKey=dharineeshv_E-Commerce-Backend-API-s-IDP \
+            -Dsonar.sources=. \
+            -Dsonar.host.url=https://sonarcloud.io || echo "SonarQube scan complete"
+        env:
+          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
 
       - name: Configure AWS Credentials
         uses: aws-actions/configure-aws-credentials@v4
@@ -102,28 +65,17 @@ jobs:
           aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ap-southeast-1
 
-      - name: Sync Frontend to Primary S3 Bucket (cloudbasket-frontend)
+      - name: Deploy Frontend to AWS S3 Buckets
         run: |
           aws s3 sync ./CloudBasket-Frontend s3://cloudbasket-frontend --delete
-
-      - name: Sync Frontend to Secondary S3 Bucket (dharineesh-frontend)
-        run: |
           aws s3 sync ./CloudBasket-Frontend s3://dharineesh-frontend --delete
 
-      - name: Invalidate Primary CloudFront Distribution (E3SHU2W3OPM84E)
+      - name: Invalidate CloudFront CDN Cache
         run: |
           aws cloudfront create-invalidation --distribution-id E3SHU2W3OPM84E --paths "/*"
-
-      - name: Invalidate Secondary CloudFront Distribution (E3NI79AATXTTJN)
-        run: |
           aws cloudfront create-invalidation --distribution-id E3NI79AATXTTJN --paths "/*"
 
-      - name: Set up Node.js Environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Install Zip Utility & Deploy Backend Microservices to AWS Lambda
+      - name: Package & Deploy Microservices to AWS Lambda
         run: |
           sudo apt-get update && sudo apt-get install -y zip
           for svc in authentication-service cart-service inventory-service marketing-service notification-service order-service payment-service product-service review-service user-profile-service wishlist-service; do
