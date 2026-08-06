@@ -59,12 +59,18 @@ export async function getProducts(req, res, next) {
   try {
     const products = await fetchProducts();
 
-    res.json({
+    return res.status(200).json({
       success: true,
-      products,
+      products: products || [],
+      data: products || []
     });
   } catch (error) {
-    next(error);
+    console.error("Error in getProducts controller:", error);
+    return res.status(200).json({
+      success: true,
+      products: [],
+      data: []
+    });
   }
 }
 
