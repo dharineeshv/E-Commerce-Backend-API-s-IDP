@@ -18,13 +18,8 @@ import { v4 as uuidv4 } from 'uuid';
 import AWSXRay from 'aws-xray-sdk';
 
 const REGION = process.env.AWS_REGION || "ap-southeast-1";
-let ddbRawClient = new DynamoDBClient({ region: REGION });
-try {
-  AWSXRay.setContextMissingStrategy("LOG_ERROR");
-  ddbRawClient = AWSXRay.captureAWSv3Client(ddbRawClient);
-} catch (e) {}
-
-const docClient = DynamoDBDocumentClient.from(ddbRawClient);
+const dynamoRawClient = new DynamoDBClient({ region: REGION });
+const docClient = DynamoDBDocumentClient.from(dynamoRawClient);
 const tableName = process.env.DYNAMODB_TABLE || process.env.PRODUCTS_TABLE || "Dharineesh_products";
 
 // ==========================================================

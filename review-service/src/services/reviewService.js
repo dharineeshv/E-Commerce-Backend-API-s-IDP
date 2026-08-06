@@ -13,7 +13,7 @@ import AWSXRay from "aws-xray-sdk";
 const REGION = process.env.AWS_REGION || "ap-southeast-1";
 const TABLE_NAME = process.env.REVIEW_TABLE || "Dharineesh_reviews";
 
-const ddbClient = AWSXRay.captureAWSv3Client(new DynamoDBClient({ region: REGION }));
+const ddbClient = new DynamoDBClient({ region: REGION });
 const docClient = DynamoDBDocumentClient.from(ddbClient);
 
 // In-memory fallback cache to ensure microservice resilience if table is initializing
