@@ -535,10 +535,26 @@ async function renderSimilarProducts(currentProduct, allProducts) {
         let originalPrice = product.mrp || (price / (1 - (discount/100))).toFixed(2);
 
         // Stock badge evaluation (only show if stock is low or out of stock)
-        const qty = product.quantity !== undefined ? Number(product.quantity) : (product.stockQuantity !== undefined ? Number(product.stockQuantity) : (product.stock !== undefined ? Number(product.stock) : null));
+        const qty = (product.availableQuantity !== undefined && product.availableQuantity !== null) 
+            ? Number(product.availableQuantity) 
+            : ((product.quantity !== undefined && product.quantity !== null) 
+                ? Number(product.quantity) 
+                : ((product.stockQuantity !== undefined && product.stockQuantity !== null) 
+                    ? Number(product.stockQuantity) 
+                    : ((product.stock !== undefined && product.stock !== null) 
+                        ? Number(product.stock) 
+                        : null)));
+
         const lowStockThreshold = Number(product.lowStockThreshold || 10);
         const isLowStock = product.isLowStock || (qty !== null && qty > 0 && qty <= lowStockThreshold) || (product.stockStatus === 'low_stock');
-        const isOutOfStock = (qty !== null && qty === 0) || (product.stockStatus === 'out_of_stock');
+        const isOutOfStock = (qty !== null && qty <= 0) || 
+            product.inStock === false || 
+            (product.stockStatus === 'out_of_stock') || 
+            (product.status && (
+                product.status.toUpperCase() === 'OUT_OF_STOCK' || 
+                product.status.toUpperCase() === 'OUT OF STOCK' || 
+                product.status.toUpperCase() === 'INACTIVE'
+            ));
 
         let stockBadgeHtml = '';
         if (isOutOfStock) {
@@ -550,6 +566,14 @@ async function renderSimilarProducts(currentProduct, allProducts) {
         const isInWishlist = userWishlistIds.has(id);
         const heartColor = isInWishlist ? '#ef4444' : '#64748b';
         const heartFill = isInWishlist ? '#ef4444' : 'none';
+
+        const cartBtnHtml = isOutOfStock
+            ? `<button class="add-to-cart-btn disabled" disabled data-product-id="${id}" data-product-name="${title.replace(/"/g, '&quot;')}" title="Out of Stock" style="background: #cbd5e1; color: #94a3b8; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: not-allowed; opacity: 0.5;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+               </button>`
+            : `<button class="add-to-cart-btn" data-product-id="${id}" data-product-name="${title.replace(/"/g, '&quot;')}" style="background: #0f3d7a; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.2s;">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path></svg>
+               </button>`;
 
         const card = document.createElement('div');
         card.className = 'product-card';
@@ -581,9 +605,7 @@ async function renderSimilarProducts(currentProduct, allProducts) {
                         <span style="font-size: 0.8rem; color: #94a3b8; text-decoration: line-through;">\u20B9${originalPrice}</span>
                         <span class="new-price" style="font-size: 1.1rem; font-weight: 700; color: #0f3d7a;">\u20B9${Number(price).toFixed(2)}</span>
                     </div>
-                    <button class="add-to-cart-btn" data-product-id="${id}" data-product-name="${title.replace(/"/g, '&quot;')}" style="background: #0f3d7a; color: white; border: none; border-radius: 50%; width: 36px; height: 36px; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s, background 0.2s;">
-                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 002 1.61h9.72a2 2 0 002-1.61L23 6H6"></path></svg>
-                    </button>
+                    ${cartBtnHtml}
                 </div>
             </div>
         `;
@@ -591,10 +613,19 @@ async function renderSimilarProducts(currentProduct, allProducts) {
         // Add To Cart Event Listener
         const addToCartBtn = card.querySelector('.add-to-cart-btn');
         if (addToCartBtn) {
-            addToCartBtn.addEventListener('click', (e) => {
-                e.stopPropagation();
-                addToCart(id, title);
-            });
+            if (isOutOfStock) {
+                addToCartBtn.disabled = true;
+                addToCartBtn.setAttribute('disabled', 'true');
+                addToCartBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    e.preventDefault();
+                });
+            } else {
+                addToCartBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    addToCart(id, title);
+                });
+            }
         }
         
         grid.appendChild(card);
