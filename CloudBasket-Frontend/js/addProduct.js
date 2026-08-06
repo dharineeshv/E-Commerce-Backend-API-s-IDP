@@ -1042,7 +1042,12 @@ Publishing...
         if (modalPara) modalPara.innerHTML = isEditMode ? `Your product <span class="modal-product-name" id="modalProductName">"${product.name}"</span> has been successfully updated.` : `Your new product <span class="modal-product-name" id="modalProductName">"${product.name}"</span> is now live.`;
         
         const modal = document.getElementById('successModal');
-        if (modal) modal.classList.add('active');
+        if (modal) {
+            modal.classList.add('active', 'show');
+            modal.style.display = 'flex';
+            modal.style.opacity = '1';
+            modal.style.visibility = 'visible';
+        }
 
         showToast(
 
@@ -1111,26 +1116,46 @@ function resetPublishButton() {
 // SUCCESS MODAL
 // ==========================================================
 
-addAnotherButton.addEventListener(
+function goToManageProducts() {
+    const path = window.location.pathname;
+    if (path.includes("/dashboard/products/")) {
+        window.location.href = "../../products/manage-products.html";
+    } else {
+        window.location.href = "manage-products.html";
+    }
+}
 
-    "click",
+if (addAnotherButton) {
+    addAnotherButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        resetEntireForm();
+    });
+}
 
-    resetEntireForm
+if (viewProductsButton) {
+    viewProductsButton.addEventListener("click", (e) => {
+        e.preventDefault();
+        goToManageProducts();
+    });
+}
 
-);
-
-viewProductsButton.addEventListener(
-
-    "click",
-
-    () => {
-
-        window.location.href =
-            "products.html";
-
+document.addEventListener("click", (event) => {
+    const viewBtn = event.target.closest('#modalViewProducts, .btn-view-products');
+    if (viewBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        goToManageProducts();
+        return;
     }
 
-);
+    const addAnotherBtn = event.target.closest('#modalAddAnother, .btn-add-another');
+    if (addAnotherBtn) {
+        event.preventDefault();
+        event.stopPropagation();
+        resetEntireForm();
+        return;
+    }
+}, true);
 
 // ==========================================================
 // Cancel Button
@@ -1193,14 +1218,15 @@ window.addEventListener(
 // ==========================================================
 
 function resetEntireForm() {
+    if (form) form.reset();
 
-    form.reset();
-
-    successModal.classList.remove(
-
-        "show"
-
-    );
+    const modal = document.getElementById('successModal') || successModal;
+    if (modal) {
+        modal.classList.remove("show", "active");
+        modal.style.display = "none";
+        modal.style.opacity = "0";
+        modal.style.visibility = "hidden";
+    }
 
     selectedImage = null;
 
