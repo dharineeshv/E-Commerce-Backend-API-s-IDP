@@ -88,16 +88,15 @@ async function loadProductCount() {
 }
 
 function createProductMap(products) {
-
     const productMap = {};
-
-    products.forEach(product => {
-        productMap[product.productId] = product;
+    (products || []).forEach(product => {
+        const id = product.productId || product.id || product.sku;
+        if (id) productMap[id] = product;
     });
-
+    return productMap;
 }
 
-async function loadInventoryCount(productMap) {
+async function loadInventoryCount(productMap, productsList = []) {
     const inventoryRes = await getAllInventory();
 
     let inventories = [];
@@ -117,7 +116,8 @@ async function loadInventoryCount(productMap) {
 
     loadLowStockTable(
         inventories,
-        productMap
+        productMap,
+        productsList
     );
 }
 
@@ -299,44 +299,80 @@ async function loadOrders() {
 
 }
 
-function loadLowStockTable(
-
-    inventoryList,
-
-    productMap
-
-){
-
-    const tableBody =
-
-        document.getElementById("low-stock-body");
+function loadLowStockTable(inventoryList, productMap, allProductsList = []) {
+    const tableBody = document.getElementById("low-stock-body");
     const viewInventoryBtn = document.getElementById("view-inventory-btn");
 
+    if (!tableBody) return;
     tableBody.innerHTML = "";
 
     const items = Array.isArray(inventoryList) ? inventoryList : [];
+    const products = Array.isArray(allProductsList) ? allProductsList : Object.values(productMap || {});
 
-    const lowStockProducts =
+    // Create lookup map for inventory items by productId or sku
+    const inventoryMap = {};
+    items.forEach(inv => {
+        const key = inv.productId || inv.product_id || inv.product || inv.sku || inv.inventoryId || inv.id;
+        if (key) inventoryMap[key] = inv;
+    });
 
-    items.filter(item =>
+    // Build comprehensive low stock list from products + inventory items
+    const lowStockAlerts = [];
+    const processedIds = new Set();
 
-        (item.availableQuantity ?? item.quantity) <= 10
+    // 1. Process all products
+    products.forEach(p => {
+        const pId = p.productId || p.id || p.sku;
+        if (!pId || processedIds.has(pId)) return;
+        processedIds.add(pId);
 
-    );
+        const inv = inventoryMap[pId] || (p.sku ? inventoryMap[p.sku] : null);
+        const qty = Number(
+            inv?.availableQuantity ?? 
+            inv?.quantity ?? 
+            p.availableQuantity ?? 
+            p.stock ?? 
+            p.quantity ?? 
+            p.stockQuantity ?? 
+            (p.inStock === false ? 0 : 5)
+        );
 
-    if (!inventoryList || items.length === 0 || lowStockProducts.length === 0) {
+        const isExplicitlyOut = p.inStock === false || (p.status && (p.status.toUpperCase() === 'OUT_OF_STOCK' || p.status.toUpperCase() === 'INACTIVE'));
+        const isLowStock = qty <= 10 || isExplicitlyOut || (p.stockStatus === 'low_stock');
 
-        tableBody.innerHTML =
+        if (isLowStock) {
+            lowStockAlerts.push({
+                id: pId,
+                name: p.name || p.title || inv?.productName || ("Product " + pId),
+                qty: Math.max(0, qty),
+                isOutOfStock: isExplicitlyOut || qty <= 0
+            });
+        }
+    });
 
-        `
+    // 2. Process standalone inventory items not in products list
+    items.forEach(inv => {
+        const invId = inv.productId || inv.product_id || inv.product || inv.inventoryId || inv.id;
+        if (!invId || processedIds.has(invId)) return;
+        processedIds.add(invId);
+
+        const qty = Number(inv.availableQuantity ?? inv.quantity ?? inv.stock ?? 0);
+        if (qty <= 10) {
+            lowStockAlerts.push({
+                id: invId,
+                name: inv.productName || inv.name || (productMap[invId]?.name) || ("Product " + invId),
+                qty: Math.max(0, qty),
+                isOutOfStock: qty <= 0
+            });
+        }
+    });
+
+    if (lowStockAlerts.length === 0) {
+        tableBody.innerHTML = `
             <tr>
-
-                <td colspan="4" class="empty-table">
-
+                <td colspan="4" class="empty-table" style="text-align: center; padding: 24px; color: #64748b; font-size: 0.9rem;">
                     No low stock alerts.
-
                 </td>
-
             </tr>
         `;
 
@@ -346,9 +382,7 @@ function loadLowStockTable(
             viewInventoryBtn.style.cursor = 'not-allowed';
             viewInventoryBtn.onclick = null;
         }
-
         return;
-
     }
 
     if (viewInventoryBtn) {
@@ -360,47 +394,23 @@ function loadLowStockTable(
         };
     }
 
-    lowStockProducts.forEach(item => {
-        tableBody.innerHTML +=
-
-        `
-            <tr>
-
-                <td>
-
-                    ${
-    productMap[item.productId]?.name ||
-    "Unknown Product"
-}
-                </td>
-
-                <td>
-
-                    ${item.productId}
-
-                </td>
-
-                <td>
-
-                   ${item.availableQuantity ?? item.quantity}
-
-                </td>
-
-                <td>
-
-                    <span class="status-badge low">
-
-                        Low Stock
-
-                    </span>
-
-                </td>
-
-            </tr>
-        `;
-
-    });
-
+    // Render low stock rows
+    tableBody.innerHTML = lowStockAlerts.map(item => `
+        <tr style="border-bottom: 1px solid #f1f5f9;">
+            <td style="padding: 12px; font-weight: 600; color: #1e293b; max-width: 180px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">
+                ${item.name}
+            </td>
+            <td style="padding: 12px; font-weight: 700; color: ${item.isOutOfStock ? '#dc2626' : '#d97706'};">
+                ${item.qty} units
+            </td>
+            <td style="padding: 12px;">
+                ${item.isOutOfStock 
+                    ? '<span class="status-badge out" style="background:#fef2f2; color:#dc2626; border:1px solid #fecaca; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;">Out of Stock</span>'
+                    : '<span class="status-badge low" style="background:#fff7ed; color:#d97706; border:1px solid #fed7aa; padding:3px 10px; border-radius:12px; font-size:0.75rem; font-weight:700;">Low Stock</span>'
+                }
+            </td>
+        </tr>
+    `).join('');
 }
 
 document.addEventListener(
@@ -422,14 +432,8 @@ document.addEventListener(
         loadFestivalSale();
 
         const products = await loadProductCount();
-
-const productMap = createProductMap(
-
-    products || []
-
-);
-
-        await loadInventoryCount(productMap);
+        const productMap = createProductMap(products || []);
+        await loadInventoryCount(productMap, products || []);
         await loadOrders();
 
     }
