@@ -12,6 +12,10 @@ on:
       - master
       - customer-service-frontend-implementation
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 env:
   ACTIONS_ALLOW_USE_UNSECURE_NODE_VERSION: "true"
 
