@@ -5,10 +5,11 @@ let verifier = null;
 const cognitoAuthMiddleware = async (req, res, next) => {
   try {
     if (!verifier) {
+      const clientIds = [process.env.COGNITO_CLIENT_ID].filter(Boolean);
       verifier = CognitoJwtVerifier.create({
-        userPoolId: process.env.COGNITO_USER_POOL_ID || "ap-southeast-1_NPoiPEr2z",
+        userPoolId: process.env.COGNITO_USER_POOL_ID,
         tokenUse: "access",
-        clientId: [process.env.COGNITO_CLIENT_ID || "vsuddgu9b60grfe3cj41hoiku", "4i9ucuisno2545vd77lngcps27"],
+        clientId: clientIds.length > 0 ? clientIds : null,
       });
     }
 
