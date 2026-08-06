@@ -4,6 +4,7 @@ import AWSXRay from 'aws-xray-sdk';
 import http from 'http';
 import https from 'https';
 import productRoutes from './routes/productRoutes.js';
+import reviewRoutes from './routes/reviewRoutes.js';
 import { errorHandler, notFound } from './middlewares/errorMiddleware.js';
 import cognitoAuthMiddleware from "./middlewares/cognitoAuthMiddleware.js";
 
@@ -34,6 +35,7 @@ app.get("/health", cognitoAuthMiddleware, (req, res) => {
 });
 
 app.use('/api/v1/products', productRoutes);
+app.use('/api/v1/reviews', reviewRoutes);
 
 app.use(notFound);
 app.use(errorHandler);
