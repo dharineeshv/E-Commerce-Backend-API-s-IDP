@@ -1,0 +1,56 @@
+service: cloudbasket-wishlist-service
+
+provider:
+  name: aws
+  runtime: nodejs20.x
+  region: ap-southeast-1
+  environment:
+    WISHLIST_TABLE: ${self:custom.wishlistTableName}
+    PRODUCT_SERVICE_URL: ${env:PRODUCT_SERVICE_URL}
+    COGNITO_USER_POOL_ID: ${env:COGNITO_USER_POOL_ID}
+    COGNITO_CLIENT_ID: ${env:COGNITO_CLIENT_ID}
+  iamRoleStatements:
+    - Effect: Allow
+      Action:
+        - dynamodb:Query
+        - dynamodb:Scan
+        - dynamodb:GetItem
+        - dynamodb:PutItem
+        - dynamodb:UpdateItem
+        - dynamodb:DeleteItem
+      Resource:
+        - "arn:aws:dynamodb:${opt:region, self:provider.region}:*:table/${self:custom.wishlistTableName}"
+
+custom:
+  wishlistTableName: Dharineesh_Wishlist
+
+functions:
+  api:
+    handler: lambda.handler
+    events:
+      - http:
+          path: /
+          method: ANY
+          cors: true
+      - http:
+          path: /{proxy+}
+          method: ANY
+          cors: true
+
+resources:
+  Resources:
+    WishlistTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:custom.wishlistTableName}
+        AttributeDefinitions:
+          - AttributeName: customerId
+            AttributeType: S
+          - AttributeName: productId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: customerId
+            KeyType: HASH
+          - AttributeName: productId
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST

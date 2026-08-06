@@ -1,0 +1,10 @@
+{
+  "name": "cloudbasket-google-account-linker",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Google Account Linking Lambda for Cognito",
+  "main": "index.mjs",
+  "dependencies": {
+    "@aws-sdk/client-cognito-identity-provider": "^3.1090.0"
+  }
+}

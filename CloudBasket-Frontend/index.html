@@ -1,0 +1,649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket | Sign In</title>
+    <link rel="icon" type="image/png" href="favicon.png">
+
+    <!-- Toast & System CSS -->
+    <link rel="stylesheet" href="css/variables.css">
+    <link rel="stylesheet" href="css/common.css">
+    <link rel="stylesheet" href="css/animations.css">
+    <link rel="stylesheet" href="css/toast.css">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        }
+
+        body, html {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 100vh !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            overflow: hidden !important;
+            zoom: 1 !important; /* Override common.css zoom: 0.75 */
+            background-color: #ffffff !important;
+        }
+
+        .page-wrapper {
+            display: flex;
+            width: 100vw !important;
+            height: 100vh !important;
+            min-height: 100vh !important;
+        }
+
+        /* Left Banner Section */
+        .left-banner {
+            flex: 1.1;
+            background: linear-gradient(135deg, #2546e8 0%, #1c38cc 50%, #152aa4 100%);
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 60px 80px;
+            color: #ffffff;
+            overflow: hidden;
+            height: 100%;
+        }
+
+        /* Background Wireframe Curve Pattern */
+        .bg-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .bg-lines svg {
+            width: 100%;
+            height: 100%;
+        }
+
+        .left-content {
+            position: relative;
+            z-index: 2;
+            margin-top: auto;
+            margin-bottom: auto;
+            max-width: 520px;
+        }
+
+        .brand-asterisk {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 48px;
+        }
+
+        .hero-title {
+            font-size: 52px;
+            font-weight: 700;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 6px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .hero-title-bold {
+            font-size: 52px;
+            font-weight: 800;
+            line-height: 1.15;
+            letter-spacing: -1px;
+            margin-bottom: 24px;
+        }
+
+        /* Floating Glow Orbs */
+        .glow-orb-1, .glow-orb-2 {
+            position: absolute;
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.45;
+            pointer-events: none;
+            z-index: 1;
+        }
+
+        .glow-orb-1 {
+            width: 320px;
+            height: 320px;
+            background: #60a5fa;
+            top: -60px;
+            right: -60px;
+            animation: floatOrb1 10s infinite alternate ease-in-out;
+        }
+
+        .glow-orb-2 {
+            width: 380px;
+            height: 380px;
+            background: #3b82f6;
+            bottom: -80px;
+            left: -80px;
+            animation: floatOrb2 12s infinite alternate ease-in-out;
+        }
+
+        @keyframes floatOrb1 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(-40px, 60px) scale(1.15); }
+        }
+
+        @keyframes floatOrb2 {
+            0% { transform: translate(0, 0) scale(1); }
+            100% { transform: translate(50px, -50px) scale(1.2); }
+        }
+
+        .bg-lines svg g {
+            transform-origin: center;
+            animation: rotateGraphic 45s infinite linear;
+        }
+
+        @keyframes rotateGraphic {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .brand-asterisk {
+            width: 64px;
+            height: 64px;
+            margin-bottom: 48px;
+            animation: pulseStar 6s infinite ease-in-out;
+        }
+
+        @keyframes pulseStar {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            50% { transform: scale(1.08) rotate(45deg); }
+        }
+
+        .waving-hand {
+            display: inline-block;
+            font-size: 46px;
+            transform-origin: 70% 70%;
+            animation: waveHand 2.5s infinite ease-in-out;
+        }
+
+        @keyframes waveHand {
+            0%, 100% { transform: rotate(0deg); }
+            20% { transform: rotate(14deg); }
+            40% { transform: rotate(-8deg); }
+            60% { transform: rotate(14deg); }
+            80% { transform: rotate(-4deg); }
+        }
+
+        .hero-description {
+            font-size: 16px;
+            line-height: 1.6;
+            color: rgba(255, 255, 255, 0.85);
+            font-weight: 400;
+            letter-spacing: -0.2px;
+            max-width: 440px;
+        }
+
+        .left-footer {
+            position: relative;
+            z-index: 2;
+            font-size: 15px;
+            color: rgba(255, 255, 255, 0.6);
+            font-weight: 500;
+        }
+
+        /* Right Form Section */
+        .right-section {
+            flex: 0.85;
+            height: 100%;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 60px 80px;
+            position: relative;
+            z-index: 3;
+            box-shadow: -15px 0 50px rgba(0, 0, 0, 0.12);
+        }
+
+        .right-header {
+            display: flex;
+            align-items: center;
+            justify-content: flex-start;
+        }
+
+        .brand-logo-text {
+            font-size: 28px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.8px;
+        }
+
+        .form-container {
+            max-width: 420px;
+            width: 100%;
+            margin: 0 auto;
+            animation: fadeInUp 0.7s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(24px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .welcome-title {
+            font-size: 32px;
+            font-weight: 800;
+            color: #0f172a;
+            letter-spacing: -0.5px;
+            margin-bottom: 8px;
+        }
+
+        .welcome-subtitle {
+            font-size: 13px;
+            color: #64748b;
+            line-height: 1.5;
+            margin-bottom: 36px;
+            font-weight: 500;
+        }
+
+        .welcome-subtitle a {
+            color: #475569;
+            font-weight: 700;
+            text-decoration: underline;
+            text-underline-offset: 2px;
+        }
+
+        .auth-form {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .input-wrapper {
+            position: relative;
+            width: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .input-field {
+            width: 100%;
+            padding: 14px 40px 14px 16px;
+            font-size: 14px;
+            border: none;
+            outline: none;
+            background-color: #f1f5f9;
+            border-bottom: 2px solid #334155;
+            color: #0f172a;
+            font-weight: 600;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.2s ease;
+        }
+
+        .input-field:focus {
+            background-color: #e2e8f0;
+            border-bottom-color: #2563eb;
+        }
+
+        .toggle-password {
+            position: absolute;
+            right: 14px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            color: #64748b;
+            font-size: 15px;
+            transition: color 0.2s ease;
+            z-index: 5;
+        }
+
+        .toggle-password:hover {
+            color: #1e293b;
+        }
+
+        .btn-login {
+            width: 100%;
+            padding: 14px;
+            background-color: #18181b;
+            color: #ffffff;
+            border: none;
+            border-radius: 10px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            margin-top: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-login:hover {
+            background-color: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+        }
+
+        .btn-google {
+            width: 100%;
+            padding: 12px;
+            background-color: #ffffff;
+            color: #334155;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .btn-google:hover {
+            background-color: #f8fafc;
+            border-color: #94a3b8;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px -5px rgba(0, 0, 0, 0.08);
+        }
+
+        .google-icon {
+            width: 20px;
+            height: 20px;
+        }
+
+        @media (max-width: 1024px) {
+            body, html {
+                overflow-x: hidden !important;
+                overflow-y: auto !important;
+                height: auto !important;
+                min-height: 100vh !important;
+            }
+
+            .page-wrapper {
+                flex-direction: column;
+                height: auto !important;
+                min-height: 100vh !important;
+                overflow-y: auto;
+            }
+
+            .left-banner {
+                flex: none;
+                padding: 40px 30px;
+                min-height: 280px;
+            }
+
+            .left-content {
+                margin-top: 0;
+                margin-bottom: 0;
+                max-width: 100%;
+            }
+
+            .brand-asterisk {
+                width: 48px;
+                height: 48px;
+                margin-bottom: 24px;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 34px;
+                line-height: 1.2;
+            }
+
+            .hero-description {
+                font-size: 14px;
+                margin-bottom: 20px;
+            }
+
+            .left-footer {
+                display: none;
+            }
+
+            .right-section {
+                flex: none;
+                padding: 40px 24px;
+                min-height: calc(100vh - 280px);
+                box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.08);
+                border-radius: 24px 24px 0 0;
+                margin-top: -24px;
+            }
+
+            .form-container {
+                margin: 20px auto;
+            }
+        }
+
+        /* Small Mobile Screens (< 480px) */
+        @media (max-width: 480px) {
+            .left-banner {
+                padding: 28px 20px;
+                min-height: 220px;
+            }
+
+            .brand-asterisk {
+                width: 38px;
+                height: 38px;
+                margin-bottom: 16px;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 26px;
+            }
+
+            .hero-description {
+                display: none;
+            }
+
+            .right-section {
+                padding: 32px 18px;
+            }
+
+            .welcome-title {
+                font-size: 26px;
+            }
+
+            .welcome-subtitle {
+                font-size: 13px;
+                margin-bottom: 24px;
+            }
+
+            .input-field {
+                padding: 12px 36px 12px 14px;
+                font-size: 14px;
+            }
+
+            .btn-login, .btn-google {
+                padding: 13px;
+                font-size: 14px;
+            }
+        }
+
+        /* TV & Ultra-wide / 4K Displays (>= 1600px) */
+        @media (min-width: 1600px) {
+            .left-banner {
+                padding: 80px 100px;
+            }
+
+            .left-content {
+                max-width: 680px;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 64px;
+            }
+
+            .hero-description {
+                font-size: 20px;
+                max-width: 580px;
+            }
+
+            .right-section {
+                padding: 80px 100px;
+            }
+
+            .form-container {
+                max-width: 520px;
+            }
+
+            .welcome-title {
+                font-size: 38px;
+            }
+
+            .welcome-subtitle {
+                font-size: 15px;
+            }
+
+            .input-field {
+                padding: 16px 44px 16px 20px;
+                font-size: 16px;
+            }
+
+            .btn-login, .btn-google {
+                padding: 16px;
+                font-size: 16px;
+            }
+        }
+
+        /* 4K Super TVs (>= 2200px) */
+        @media (min-width: 2200px) {
+            .page-wrapper {
+                max-width: 2560px;
+                margin: 0 auto;
+            }
+
+            .hero-title, .hero-title-bold {
+                font-size: 76px;
+            }
+
+            .welcome-title {
+                font-size: 46px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div class="page-wrapper">
+        <!-- Left Banner -->
+        <div class="left-banner">
+            <div class="glow-orb-1"></div>
+            <div class="glow-orb-2"></div>
+            <!-- Background Curved Lines Graphic -->
+            <div class="bg-lines">
+                <svg viewBox="0 0 800 800" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <g opacity="0.18" stroke="#ffffff" stroke-width="1.5">
+                        <rect x="-100" y="-50" width="550" height="750" rx="36" transform="rotate(18 200 300)" />
+                        <rect x="-80" y="-30" width="550" height="750" rx="36" transform="rotate(24 200 300)" />
+                        <rect x="-60" y="-10" width="550" height="750" rx="36" transform="rotate(30 200 300)" />
+                        <rect x="-40" y="10" width="550" height="750" rx="36" transform="rotate(36 200 300)" />
+                    </g>
+                </svg>
+            </div>
+
+            <!-- Content -->
+            <div class="left-content">
+                <!-- Asterisk Logo -->
+                <svg class="brand-asterisk" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M50 0V100M0 50H100M14.64 14.64L85.36 85.36M14.64 85.36L85.36 14.64" stroke="white" stroke-width="14" stroke-linecap="round"/>
+                </svg>
+
+                <h1 class="hero-title">
+                    Hello <span class="waving-hand">👋</span>
+                </h1>
+                <h1 class="hero-title-bold">
+                    Welcome Back To<br>CloudBasket!
+                </h1>
+                <p class="hero-description">
+                    Discover thousands of top-quality products, enjoy lightning-fast delivery, exclusive daily deals, and a seamless shopping experience!
+                </p>
+            </div>
+
+            <!-- Left Footer -->
+            <div class="left-footer">
+                &copy; 2026 CloudBasket. All rights reserved.
+            </div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="right-section">
+            <div class="right-header">
+                <div class="brand-logo-text">CloudBasket</div>
+            </div>
+
+            <div class="form-container">
+                <h2 class="welcome-title">Welcome Back!</h2>
+                <p class="welcome-subtitle">
+                    Don't have an account? <a href="register.html">Create a new account now, it's FREE!</a> Takes less than a minute.
+                </p>
+
+                <form id="loginForm" class="auth-form" autocomplete="off">
+                    <!-- Email Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="email" id="email" class="input-field" placeholder="Email address" autocomplete="off" required />
+                        </div>
+                    </div>
+
+                    <!-- Password Field -->
+                    <div class="input-group">
+                        <div class="input-wrapper">
+                            <input type="password" id="password" class="input-field" placeholder="Password" autocomplete="new-password" required />
+                            <i class="fa-solid fa-eye toggle-password" id="togglePassword" title="Toggle password visibility"></i>
+                        </div>
+                    </div>
+
+                    <!-- Submit Button -->
+                    <button type="submit" class="btn-login" id="loginBtn">Login Now</button>
+
+                    <!-- Google Login Button -->
+                    <button type="button" class="btn-google" id="googleLoginBtn">
+                        <svg class="google-icon" viewBox="0 0 24 24">
+                            <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+                            <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+                            <path fill="#FBBC05" d="M5.84 14.1c-.22-.66-.35-1.36-.35-2.1s.13-1.44.35-2.1V7.06H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.94l2.85-2.22.81-.62z"/>
+                            <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.06l3.66 2.84c.87-2.6 3.3-4.52 6.16-4.52z"/>
+                        </svg>
+                        Login with Google
+                    </button>
+                </form>
+            </div>
+
+            <!-- Bottom spacing helper -->
+            <div></div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="js/api.js"></script>
+    <script src="js/auth.js"></script>
+    <script src="js/toast.js"></script>
+    <script src="js/login.js"></script>
+</body>
+</html>

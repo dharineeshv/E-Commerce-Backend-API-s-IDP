@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket Architecture</title>
+    <script type="module">
+        import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+        mermaid.initialize({ startOnLoad: true, theme: 'default' });
+    </script>
+    <style>
+        body { font-family: sans-serif; display: flex; flex-direction: column; align-items: center; background: #f8fafc; margin: 0; padding: 20px; }
+        .container { background: white; padding: 40px; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); width: 100%; max-width: 900px; text-align: center; }
+        h1 { color: #334155; }
+        p { color: #64748b; margin-bottom: 30px; }
+        @media print {
+            body { background: white; padding: 0; }
+            .container { box-shadow: none; padding: 0; max-width: 100%; }
+            .no-print { display: none; }
+        }
+        .btn { background: #2563eb; color: white; border: none; padding: 10px 20px; border-radius: 5px; font-size: 16px; cursor: pointer; margin-bottom: 20px; }
+        .btn:hover { background: #1d4ed8; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <button class="btn no-print" onclick="window.print()">Download as PDF</button>
+        <h1>CloudBasket Serverless Architecture</h1>
+        <p>A high-level view of the API Gateway, Microservices, and DynamoDB integration.</p>
+        
+        <pre class="mermaid">
+        graph TD
+            Client[CloudBasket E-Commerce Frontend] -->|API Requests| APIGW[Amazon API Gateway]
+            Admin[Admin Dashboard] -->|Manage Inventory/Sales| APIGW
+            
+            APIGW -->|Route Requests| Services{AWS Lambda Microservices}
+            
+            Services --> OrderService[Order Service]
+            Services --> ProductService[Product Service]
+            Services --> InventoryService[Inventory Service]
+            Services --> MarketingService[Marketing Service]
+            Services --> CartService[Cart Service]
+            
+            OrderService --> OrderDB[(Order Table DynamoDB)]
+            ProductService --> ProductDB[(Product Table DynamoDB)]
+            InventoryService --> InventoryDB[(Inventory Table DynamoDB)]
+            MarketingService --> MarketingDB[(Marketing Table DynamoDB)]
+            CartService --> CartDB[(Cart Table DynamoDB)]
+            
+            OrderService -->|Order Confirmation Event| SNS[Amazon SNS Topic]
+            SNS --> Email[Customer Email Notifications]
+            
+            ProductService -->|Image Uploads| S3[Product Images S3 Bucket]
+        </pre>
+    </div>
+</body>
+</html>

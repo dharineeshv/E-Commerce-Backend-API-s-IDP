@@ -1,0 +1,693 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket | Manage Products</title>
+    
+    <!-- Style Sheets -->
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="../../css/logout.css">
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/manageProducts.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+</head>
+<body>
+
+<div class="dashboard">
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <h2 style="color: #003366; font-weight: 800; font-size: 1.25rem; margin:0; line-height: 1.1;">CloudBasket</h2>
+                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; color: #64748b; text-transform: uppercase; margin-top: 2px;">Enterprise Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <div class="profile-section">
+                <div class="profile-avatar" id="header-profile-avatar">D</div>
+                <div class="profile-info">
+                    <h4 id="admin-name">Dharineesh</h4>
+                    <span>Admin</span>
+                </div>
+                <button class="profile-dropdown" id="profile-dropdown">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <div class="profile-card" id="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-avatar" id="profile-avatar">D</div>
+                    <h3 id="profile-full-name">Loading...</h3>
+                    <span>Admin</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16v16H4z"/><polyline points="4 6 12 13 20 6"/></svg>
+                        <p id="profile-email">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72l.45 3a2 2 0 0 1-.57 1.74l-1.27 1.27a16 16 0 0 0 6.36 6.36l1.27-1.27a2 2 0 0 1 1.74-.57l3 .45A2 2 0 0 1 22 16.92z"/></svg>
+                        <p id="profile-phone">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/></svg>
+                        <p id="profile-username">Loading...</p>
+                    </div>
+                </div>
+                <div class="profile-card-footer">
+                    <button id="logout-button">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" id="sidebar">
+        <nav class="sidebar-navigation">
+            <span class="navigation-title">MAIN MENU</span>
+
+            <a href="../../pages/dashboard/dashboard.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+
+            <!-- Products (Expandable) -->
+            <div class="sidebar-item-group open">
+                <a href="#" class="sidebar-item group-toggle" id="productsMenuToggle" onclick="
+                    event.preventDefault();
+                    const group = this.closest('.sidebar-item-group');
+                    const submenu = group.querySelector('.sidebar-submenu');
+                    if (group.classList.contains('open')) {
+                        group.classList.remove('open');
+                        submenu.style.display = 'none';
+                    } else {
+                        group.classList.add('open');
+                        submenu.style.display = 'block';
+                    }
+                ">
+                    <span class="sidebar-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8"></path><path d="M3 8v8"></path><path d="M1 6l11 6 11-6"></path><path d="M12 22V12"></path></svg>
+                    </span>
+                    <span class="sidebar-text">Products</span>
+                    <span class="chevron-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                </a>
+                <div class="sidebar-submenu" style="display: block;">
+                    <a href="../../pages/products/manage-products.html" class="submenu-item active">Manage Products</a>
+                    <a href="../../pages/products/add-product.html" class="submenu-item">Add Product</a>
+                </div>
+            </div>
+
+
+            <!-- Inventory -->
+            <a href="../../pages/inventory/inventory.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="4"></rect>
+                        <path d="M5 8v11h14V8"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Inventory</span>
+            </a>
+
+            <!-- Orders -->
+            <a href="../../pages/orders/orders.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="20" cy="20" r="1"></circle>
+                        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 6H6"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Orders</span>
+            </a>
+
+            <!-- Payments -->
+            <a href="../../pages/payments/payments.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16"></path>
+                        <path d="M18 11h4v4h-4z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Payments</span>
+            </a>
+
+            <!-- Customers -->
+            <a href="../../pages/customers/customers.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Customers</span>
+            </a>
+
+            <!-- Marketing -->
+            <a href="../../pages/marketing/marketing.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 11v2"></path>
+                        <path d="M7 9l10-4v14L7 15H3V9z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Marketing</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-item logout" id="logout-button">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main">
+        <div class="page-header-row">
+            <div class="page-title-col">
+                <h1>Manage Products</h1>
+                <p>View, search, update and manage all products available in your CloudBasket store.</p>
+            </div>
+            <div class="page-action-col">
+                <a href="add-product.html" class="btn-primary">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg>
+                    Add New Product
+                </a>
+            </div>
+        </div>
+
+        <!-- Summary Cards -->
+        <div class="summary-cards-grid">
+            <div class="summary-card">
+                <div class="summary-icon blue">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8"></path><path d="M3 8v8"></path><path d="M1 6l11 6 11-6"></path><path d="M12 22V12"></path></svg>
+                </div>
+                <div class="summary-info">
+                    <span>TOTAL PRODUCTS</span>
+                    <h3 id="summary-total-products">0</h3>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon green">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>
+                </div>
+                <div class="summary-info">
+                    <span>ACTIVE PRODUCTS</span>
+                    <h3 id="summary-active-products">0</h3>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon purple">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"></line></svg>
+                </div>
+                <div class="summary-info">
+                    <span>INACTIVE PRODUCTS</span>
+                    <h3 id="summary-inactive-products">0</h3>
+                </div>
+            </div>
+            <div class="summary-card">
+                <div class="summary-icon orange">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"></path><line x1="12" y1="9" x2="12" y2="13"></line><line x1="12" y1="17" x2="12.01" y2="17"></line></svg>
+                </div>
+                <div class="summary-info">
+                    <span>LOW STOCK PRODUCTS</span>
+                    <h3 id="summary-low-stock-products">0</h3>
+                </div>
+            </div>
+        </div>
+
+        <!-- Search & Filter Section -->
+        <div class="filter-toolbar">
+            <div class="search-box">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"></circle><line x1="21" y1="21" x2="16.65" y2="16.65"></line></svg>
+                <input type="text" id="searchInput" placeholder="Search by Product Name or SKU...">
+            </div>
+            <div class="filter-dropdowns">
+
+                <div class="select-wrapper">
+                    <select id="statusFilter">
+                        <option value="">Status</option>
+                        <option value="active">Active</option>
+                        <option value="inactive">Inactive</option>
+                    </select>
+                </div>
+                <div class="select-wrapper">
+                    <select id="sortByFilter">
+                        <option value="">Sort By</option>
+                        <option value="newest">Newest</option>
+                        <option value="price_asc">Price: Low to High</option>
+                        <option value="price_desc">Price: High to Low</option>
+                    </select>
+                </div>
+                <button class="btn-outline" id="clearFiltersBtn">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
+                    Clear Filters
+                </button>
+            </div>
+        </div>
+
+        <!-- Product Table -->
+        <div class="table-container">
+            <table class="product-table">
+                <thead>
+                    <tr>
+                        <th>PRODUCT</th>
+
+                        <th>PRICE</th>
+                        <th>STOCK</th>
+                        <th>STATUS</th>
+                        <th>LAST UPDATED</th>
+                        <th class="actions-col">ACTIONS</th>
+                    </tr>
+                </thead>
+                <tbody id="productTableBody">
+                    <!-- Example Row 1 -->
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <img src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=80&q=80" alt="Product Image">
+                                <div class="product-name-sku">
+                                    <h4>Quantum Pro X1 Keyboard</h4>
+                                    <span>SKU: CB-QPK-001</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <strong>â‚¹129.00</strong>
+                        </td>
+                        <td>
+                            <span class="stock-badge in-stock"><span class="dot"></span> 482</span>
+                        </td>
+                        <td>
+                            <span class="status-badge active">Active</span>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span>Oct 24, 2023</span>
+                                <span class="time">10:30 AM</span>
+                            </div>
+                        </td>
+                        <td class="actions-col">
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" title="View Product" onclick="openViewModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                                <a href="edit-product.html" class="action-btn edit-btn" title="Edit Product">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
+                                <button class="action-btn delete-btn" title="Delete Product" onclick="openDeleteModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Example Row 2 -->
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <img src="https://images.unsplash.com/photo-1505843490538-5133c6c7d0e1?auto=format&fit=crop&w=80&q=80" alt="Product Image">
+                                <div class="product-name-sku">
+                                    <h4>Aero-Chair V4</h4>
+                                    <span>SKU: CB-ACH-144</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <strong>â‚¹599.00</strong>
+                        </td>
+                        <td>
+                            <span class="stock-badge low-stock"><span class="dot"></span> 12</span>
+                        </td>
+                        <td>
+                            <span class="status-badge low-stock">Low Stock</span>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span>Oct 22, 2023</span>
+                                <span class="time">02:45 PM</span>
+                            </div>
+                        </td>
+                        <td class="actions-col">
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" title="View Product" onclick="openViewModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                                <a href="edit-product.html" class="action-btn edit-btn" title="Edit Product">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
+                                <button class="action-btn delete-btn" title="Delete Product" onclick="openDeleteModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Example Row 3 -->
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=80&q=80" alt="Product Image">
+                                <div class="product-name-sku">
+                                    <h4>Titan Watch Series S</h4>
+                                    <span>SKU: CB-TWS-90</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <strong>â‚¹349.00</strong>
+                        </td>
+                        <td>
+                            <span class="stock-badge out-stock"><span class="dot"></span> 0</span>
+                        </td>
+                        <td>
+                            <span class="status-badge inactive">Out of Stock</span>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span>Oct 19, 2023</span>
+                                <span class="time">11:20 AM</span>
+                            </div>
+                        </td>
+                        <td class="actions-col">
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" title="View Product" onclick="openViewModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                                <a href="edit-product.html" class="action-btn edit-btn" title="Edit Product">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
+                                <button class="action-btn delete-btn" title="Delete Product" onclick="openDeleteModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    
+                    <!-- Example Row 4 -->
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <img src="https://images.unsplash.com/photo-1618366712010-f4ae9c647dcb?auto=format&fit=crop&w=80&q=80" alt="Product Image">
+                                <div class="product-name-sku">
+                                    <h4>Zenith Audio Pro 2</h4>
+                                    <span>SKU: CB-ZAP-55</span>
+                                </div>
+                            </div>
+                        </td>
+
+                        <td>
+                            <strong>â‚¹299.00</strong>
+                        </td>
+                        <td>
+                            <span class="stock-badge in-stock"><span class="dot"></span> 128</span>
+                        </td>
+                        <td>
+                            <span class="status-badge active">Active</span>
+                        </td>
+                        <td>
+                            <div class="date-cell">
+                                <span>Oct 15, 2023</span>
+                                <span class="time">09:10 AM</span>
+                            </div>
+                        </td>
+                        <td class="actions-col">
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" title="View Product" onclick="openViewModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                                </button>
+                                <a href="edit-product.html" class="action-btn edit-btn" title="Edit Product">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                                </a>
+                                <button class="action-btn delete-btn" title="Delete Product" onclick="openDeleteModal()">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        <div class="pagination-wrapper">
+            <div class="rows-per-page">
+                <span>Show</span>
+                <select>
+                    <option value="10">10</option>
+                    <option value="25">25</option>
+                    <option value="50">50</option>
+                </select>
+                <span>of 240 products</span>
+            </div>
+            <div class="pagination-controls">
+                <button class="page-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"></polyline></svg></button>
+                <button class="page-btn active">1</button>
+                <button class="page-btn">2</button>
+                <button class="page-btn">3</button>
+                <span class="page-dots">...</span>
+                <button class="page-btn">24</button>
+                <button class="page-btn"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"></polyline></svg></button>
+            </div>
+        </div>
+
+    </main>
+</div>
+
+<!-- =========================================================
+     MODALS
+     ========================================================= -->
+
+<!-- View Product Modal -->
+<div class="modal-overlay" id="viewProductModal">
+    <div class="modal-container large-modal">
+        <div class="modal-header">
+            <h2>Product Details</h2>
+            <button class="close-modal-btn" onclick="closeViewModal()">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+            </button>
+        </div>
+        <div class="modal-body">
+            <div class="view-product-grid">
+                <div class="view-product-image">
+                    <img id="viewProductImage" src="https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=400&q=80" alt="Product Large Image">
+                </div>
+                <div class="view-product-details">
+                    <div class="detail-header">
+                        <span class="status-badge" id="viewProductStatus">Active</span>
+                        <h3 class="product-title" id="viewProductTitle">Quantum Pro X1 Keyboard</h3>
+                        <p class="product-sku" id="viewProductSku">SKU: CB-QPK-001</p>
+                    </div>
+                    
+                    <div class="detail-section">
+                        <h4>General Information</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Brand</span>
+                                <span class="value" id="viewProductBrand">CloudBasket Tech</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Category</span>
+                                <span class="value" id="viewProductCategory">Electronics / Peripherals</span>
+                            </div>
+                        </div>
+                        <div class="detail-item full-width">
+                            <span class="label">Description</span>
+                            <p class="value" id="viewProductDesc">Premium mechanical keyboard featuring custom tactile switches, per-key RGB backlighting, and a durable aerospace-grade aluminum frame. Ideal for both productivity and gaming.</p>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Pricing & Inventory</h4>
+                        <div class="detail-grid">
+                            <div class="detail-item">
+                                <span class="label">Selling Price</span>
+                                <span class="value price" id="viewProductPrice">â‚¹129.00</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Original Price (MRP)</span>
+                                <span class="value strike" id="viewProductMrp">â‚¹159.00</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Discount</span>
+                                <span class="value text-green" id="viewProductDiscount">18% OFF</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Stock Quantity</span>
+                                <span class="value font-bold" id="viewProductStock">482 Units</span>
+                            </div>
+                            <div class="detail-item">
+                                <span class="label">Low Stock Threshold</span>
+                                <span class="value" id="viewProductThreshold">50 Units</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="detail-section">
+                        <h4>Specifications</h4>
+                        <ul class="specs-list-view" id="viewProductSpecs">
+                            <li><strong>Color:</strong> Space Gray</li>
+                            <li><strong>Switches:</strong> Tactile Blue</li>
+                            <li><strong>Connectivity:</strong> Bluetooth / USB-C</li>
+                        </ul>
+                    </div>
+                    
+                    <div class="detail-footer-info">
+                        <span id="viewProductCreated">Created: Oct 10, 2023</span>
+                        <span id="viewProductUpdated">Last Updated: Oct 24, 2023 10:30 AM</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal-footer">
+            <button class="btn-cancel" onclick="closeViewModal()">Close</button>
+            <a href="edit-product.html" class="btn-primary" id="viewProductEditBtn">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                Edit Product
+            </a>
+        </div>
+    </div>
+</div>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" id="deleteProductModal">
+    <div class="modal-container small-modal delete-modal">
+        <div class="delete-icon-wrapper">
+            <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="15" y1="9" x2="9" y2="15"></line><line x1="9" y1="9" x2="15" y2="15"></line></svg>
+        </div>
+        <h3>Delete Product?</h3>
+        <p>Are you sure you want to permanently delete this product?<br><strong>This action cannot be undone.</strong></p>
+        <div class="modal-actions-center">
+            <button class="btn-cancel" onclick="closeDeleteModal()">Cancel</button>
+            <button class="btn-danger" id="confirmDeleteBtn">Delete Product</button>
+        </div>
+    </div>
+</div>
+
+<!-- ==========================================================
+                    LOGOUT MODAL
+=========================================================== -->
+
+<div
+    class="modal-overlay"
+    id="logout-modal">
+
+    <div class="logout-modal">
+
+        <div class="logout-icon">
+
+            <!-- Logout SVG -->
+
+            <svg
+                width="45"
+                height="45"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2">
+
+                <path
+                    d="M9 21H5a2 2 0 0 1-2-2V5
+                    a2 2 0 0 1 2-2h4"/>
+
+                <polyline
+                    points="16 17 21 12 16 7">
+
+                </polyline>
+
+                <line
+                    x1="21"
+                    y1="12"
+                    x2="9"
+                    y2="12">
+
+                </line>
+
+            </svg>
+
+        </div>
+
+        <h2>
+
+            Confirm Logout
+
+        </h2>
+
+        <p>
+
+            Are you sure you want to logout
+            from CloudBasket?
+
+        </p>
+
+        <div class="logout-buttons">
+
+            <button
+                id="cancel-logout">
+
+                Cancel
+
+            </button>
+
+            <button
+                id="confirm-logout">
+
+                Logout
+
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- JavaScript -->
+    <script type="module" src="../../js/manageProducts.js"></script>
+</body>
+</html>

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket - Shop</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <!-- Main CSS -->
+    <link rel="stylesheet" href="css/storefront.css?v=11">
+    <link rel="stylesheet" href="css/chatbot.css?v=8">
+</head>
+<body>
+    <!-- Marketing Banner -->
+    <div id="marketing-banner" class="marketing-banner">
+        <span class="sale-badge" id="banner-badge">FESTIVAL SALE</span>
+        <p id="banner-text">Loading special offers...</p>
+        <button class="btn-banner" onclick="document.getElementById('marketing-banner').classList.remove('visible')">Dismiss</button>
+    </div>
+
+    <!-- Header -->
+    <header class="store-header">
+        <div class="header-container">
+            <div class="logo">CloudBasket</div>
+            
+            <div class="search-bar">
+                <svg class="search-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <circle cx="11" cy="11" r="8"></circle>
+                    <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <input type="text" id="search-input" placeholder="Search for products, brands and more">
+            </div>
+
+            <nav class="header-nav">
+                <a href="login.html" class="nav-link active">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
+                    <span>Categories</span>
+                </a>
+                <a href="cart.html" class="nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><circle cx="9" cy="21" r="1"></circle><circle cx="20" cy="21" r="1"></circle><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"></path></svg>
+                    <span>Cart</span>
+                </a>
+                <a href="orders.html" class="nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line></svg>
+                    <span>Orders</span>
+                </a>
+                <a href="wishlist.html" class="nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
+                    <span>Wishlist</span>
+                </a>
+                <a href="#" class="nav-link">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                    <span>Profile</span>
+                </a>
+                <!-- Company Logo Placeholder -->
+                <div class="company-logo-header">
+                    <img src="assets/logo.png" alt="Company Logo" style="height: 42px; object-fit: contain; margin-left: 15px;">
+                </div>
+            </nav>
+        </div>
+    </header>
+
+    <main class="store-main">
+        <!-- Hero Slider -->
+        <section class="hero-slider-container">
+            <div class="slider-wrapper" id="store-slider">
+                <!-- Slide 1 -->
+                <div class="store-slide active" style="background-image: url('https://images.unsplash.com/photo-1593642632823-8f785ba67e45?auto=format&fit=crop&w=1200&q=80');">
+                    <div class="slide-overlay"></div>
+                    <div class="store-slide-content">
+                        <span class="badge badge-orange">EXCLUSIVE DEAL</span>
+                        <h2>Enterprise Admin<br>Upgrade Your<br>Workflow</h2>
+                        <p>Save up to 50% on enterprise-grade hardware and<br>productivity suites.</p>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Electronics')">Shop Enterprise</button>
+                    </div>
+                </div>
+                
+                <!-- Slide 2 -->
+                <div class="store-slide" style="background-image: url('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=1200&q=80');">
+                    <div class="slide-overlay"></div>
+                    <div class="store-slide-content">
+                        <span class="badge badge-orange">NEW ARRIVAL</span>
+                        <h2>Premium Audio<br>Experience</h2>
+                        <p>Discover our new range of noise-cancelling headphones.</p>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Audio')">Shop Audio</button>
+                    </div>
+                </div>
+                
+                <!-- Slide 3 -->
+                <div class="store-slide" style="background-image: url('assets/premium_mobiles_banner.jpg');">
+                    <div class="slide-overlay"></div>
+                    <div class="store-slide-content">
+                        <span class="badge badge-orange">PREMIUM MOBILES</span>
+                        <h2>Buy Different<br>Premium Mobiles</h2>
+                        <p>Discover our new range of flagship smartphones today.</p>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Mobiles')">Shop Mobiles</button>
+                    </div>
+                </div>
+                
+                <!-- Slide 4 -->
+                <div class="store-slide" style="background-image: url('assets/earbuds_banner.jpg');">
+                    <div class="slide-overlay"></div>
+                    <div class="store-slide-content">
+                        <span class="badge badge-orange">TOP AUDIO</span>
+                        <h2>True Wireless<br>Earbuds</h2>
+                        <p>Experience crystal clear sound with our latest ear buds.</p>
+                        <button class="btn btn-orange" onclick="window.filterStorefrontBy('Earbuds')">Shop Earbuds</button>
+                    </div>
+                </div>
+            </div>
+            <div class="slider-dots" id="slider-dots"></div>
+        </section>
+
+        <!-- Filters -->
+        <section class="filters-bar">
+            <span class="filter-label">FILTERS:</span>
+            
+            <div class="category-icon-pills-container" id="category-pills-container" style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap;">
+                <button type="button" class="category-pill active" data-category="">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="3" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="3" width="7" height="7" rx="2"></rect><rect x="14" y="14" width="7" height="7" rx="2"></rect><rect x="3" y="14" width="7" height="7" rx="2"></rect></svg>
+                    All Categories
+                </button>
+                <button type="button" class="category-pill" data-category="Mobiles">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="5" y="2" width="14" height="20" rx="2" ry="2"></rect><line x1="12" y1="18" x2="12.01" y2="18"></line></svg>
+                    Mobiles
+                </button>
+                <button type="button" class="category-pill" data-category="Laptops">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="2" y1="20" x2="22" y2="20"></line></svg>
+                    Laptops
+                </button>
+                <button type="button" class="category-pill" data-category="Audio">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                    Audio
+                </button>
+                <button type="button" class="category-pill" data-category="Earbuds">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><path d="M3 18v-6a9 9 0 0 1 18 0v6"></path><path d="M21 19a2 2 0 0 1-2 2h-1a2 2 0 0 1-2-2v-3a2 2 0 0 1 2-2h3zM3 19a2 2 0 0 0 2 2h1a2 2 0 0 0 2-2v-3a2 2 0 0 0-2-2H3z"></path></svg>
+                    Earbuds
+                </button>
+                <button type="button" class="category-pill" data-category="Watches">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="margin-right: 4px; vertical-align: text-bottom;"><circle cx="12" cy="12" r="7"></circle><polyline points="12 9 12 12 13.5 13.5"></polyline><path d="M16.51 17.35l-.85 3.83a2 2 0 0 1-1.96 1.57h-3.4a2 2 0 0 1-1.96-1.57l-.85-3.83"></path><path d="M7.49 6.65l.85-3.83A2 2 0 0 1 10.3 1.25h3.4a2 2 0 0 1 1.96 1.57l.85 3.83"></path></svg>
+                    Watches
+                </button>
+            </div>
+            
+            <select id="category-filter" style="display: none;">
+                <option value="">All Categories</option>
+                <option value="Mobiles">Mobiles</option>
+                <option value="Laptops">Laptops</option>
+                <option value="Audio">Audio</option>
+                <option value="Earbuds">Earbuds</option>
+                <option value="Watches">Watches</option>
+            </select>
+            
+            <div class="filter-pill-select-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="select-pill-icon"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                <select id="brand-filter" class="filter-pill-select">
+                    <option value="">All Brands</option>
+                    <option value="Apple">Apple</option>
+                    <option value="Samsung">Samsung</option>
+                    <option value="Sony">Sony</option>
+                    <option value="Dell">Dell</option>
+                    <option value="Google">Google</option>
+                    <option value="Asus">Asus</option>
+                    <option value="OnePlus">OnePlus</option>
+                    <option value="Vivo">Vivo</option>
+                    <option value="Oppo">Oppo</option>
+                    <option value="Redmi">Redmi</option>
+                    <option value="Realme">Realme</option>
+                    <option value="Noise">Noise</option>
+                    <option value="boAt">boAt</option>
+                    <option value="Fire-Boltt">Fire-Boltt</option>
+                </select>
+            </div>
+            
+            <div class="filter-pill-select-wrap">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="select-pill-icon"><line x1="12" y1="1" x2="12" y2="23"></line><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"></path></svg>
+                <select id="price-filter" class="filter-pill-select">
+                    <option value="">Price Range</option>
+                    <option value="price-low">Sort By: Price (Low to High)</option>
+                    <option value="price-high">Sort By: Price (High to Low)</option>
+                    <option value="0-100">Under ₹100</option>
+                    <option value="100-1000">₹100 - ₹1,000</option>
+                    <option value="1000-5000">₹1,000 - ₹5,000</option>
+                    <option value="5000-10000">₹5,000 - ₹10,000</option>
+                    <option value="10000+">Over ₹10,000</option>
+                </select>
+            </div>
+            
+            <button class="clear-filters" id="clear-filters">Clear All</button>
+        </section>
+
+        <!-- Product Listing Header -->
+        <div class="listing-header">
+            <div class="listing-meta">
+                <div class="product-count">
+                    <h2 id="product-count-display">Loading products...</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Product Grid -->
+        <section class="product-grid" id="product-grid">
+            <!-- Product Cards will be injected dynamically -->
+        </section>
+    </main>
+
+    <!-- Footer -->
+    <footer class="store-footer" style="background: #0f172a; color: white; padding: 60px 0 20px; font-family: 'Inter', sans-serif;">
+        <div style="max-width: 100%; margin: 0 auto; padding: 0 30px; display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px;">
+            <div>
+                <h2 style="font-size: 24px; font-weight: 700; margin-bottom: 15px; color: white;">CloudBasket</h2>
+                <p style="color: #94a3b8; font-size: 14px; line-height: 1.6;">Providing premium experiences through reliable, high-quality products. Your cloud-connected marketplace for the modern enterprise and beyond.</p>
+            </div>
+            
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: white;">Platform Details</h3>
+                <div style="display: flex; flex-direction: column; gap: 12px;">
+                    <a href="https://instagram.com/v.dharineesh_18" target="_blank" style="display: flex; align-items: center; gap: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; transition: color 0.2s;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="20" rx="5" ry="5"></rect><path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"></path><line x1="17.5" y1="6.5" x2="17.51" y2="6.5"></line></svg>
+                        v.dharineesh_18
+                    </a>
+                    <a href="mailto:dharineeshv18@gmail.com" style="display: flex; align-items: center; gap: 10px; color: #94a3b8; text-decoration: none; font-size: 14px; transition: color 0.2s;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                        dharineeshv18@gmail.com
+                    </a>
+                </div>
+            </div>
+            
+            <div>
+                <h3 style="font-size: 16px; font-weight: 600; margin-bottom: 20px; color: white;">Stay Connected</h3>
+                <p style="color: #94a3b8; font-size: 14px; margin-bottom: 15px;">Reach out to us through the following channels:</p>
+                <div style="display: flex; gap: 15px;">
+                    <a href="mailto:dharineeshv18@gmail.com" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1e293b; color: white; transition: all 0.2s; border: 1px solid #334155; text-decoration: none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path><polyline points="22,6 12,13 2,6"></polyline></svg>
+                    </a>
+                    <a href="tel:9715020320" style="display: flex; align-items: center; justify-content: center; width: 40px; height: 40px; border-radius: 50%; background: #1e293b; color: white; transition: all 0.2s; border: 1px solid #334155; text-decoration: none;">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path></svg>
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div style="max-width: 100%; margin: 40px auto 0; padding: 20px 30px; border-top: 1px solid #1e293b; text-align: left; color: #94a3b8; font-size: 14px;">
+            &copy; 2026 CloudBasket. All rights reserved.
+        </div>
+    </footer>
+
+
+    
+
+    <script src="js/storefront.js?v=11" type="module"></script>
+    <script src="js/components/chatbot.js?v=3"></script>
+</body>
+</html>

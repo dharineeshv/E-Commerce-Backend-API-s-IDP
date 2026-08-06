@@ -1,4 +1,5 @@
 import "../config/env.js";
+import axios from "axios";
 import {
   PutCommand,
   GetCommand,
@@ -7,12 +8,15 @@ import {
   UpdateCommand,
   ScanCommand,
 } from "@aws-sdk/lib-dynamodb";
+
 import dynamodb from "../config/dynamodb.js";
 import { v4 as uuidv4 } from "uuid";
 import { publishEvent } from "./snsService.js";
 
 const ORDER_TABLE = process.env.ORDER_TABLE || "Orders";
 const CART_TABLE = process.env.CART_TABLE || "Cart";
+
+
 
 const getCustomerEmail = (shippingAddress) => {
   return (
@@ -59,6 +63,7 @@ const buildOrderCancelledPayload = (order, cancelledAt) => {
   };
 };
 
+
 // Fetch all cart items for a customer — Cart table has only customerId as HASH key (no sort key)
 // Each customer row stores a single cart item, so we scan and filter by customerId
 const getCartItems = async (customerId) => {
@@ -75,16 +80,23 @@ const getCartItems = async (customerId) => {
 
 // Clear cart — delete the customer's cart row using only customerId (the only key)
 const clearCartItems = async (customerId) => {
-  await dynamodb.send(
-    new DeleteCommand({
-      TableName: CART_TABLE,
-      Key: { customerId },
-    })
-  );
+  const cartItems = await getCartItems(customerId);
+
+  for (const item of cartItems) {
+    await dynamodb.send(
+      new DeleteCommand({
+        TableName: CART_TABLE,
+        Key: {
+          customerId: item.customerId,
+          cartItemId: item.cartItemId,
+        },
+      })
+    );
+  }
 };
 
 // Place a new order from cart items
-const placeOrder = async (customerId, shippingAddress) => {
+const placeOrder = async (customerId, shippingAddress, calculatedTotal) => {
   const cartItems = await getCartItems(customerId);
 
   if (!cartItems || cartItems.length === 0) {
@@ -92,7 +104,7 @@ const placeOrder = async (customerId, shippingAddress) => {
   }
 
   const orderId = uuidv4();
-  const orderTotal = cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
+  const orderTotal = calculatedTotal ? parseFloat(calculatedTotal) : cartItems.reduce((sum, item) => sum + item.totalPrice, 0);
 
   const orderItems = cartItems.map((item) => ({
     productId: item.productId,
@@ -122,20 +134,34 @@ const placeOrder = async (customerId, shippingAddress) => {
 
   try {
     const publishResponse = await publishEvent(
-      "ORDER_PLACED",
-      buildOrderPlacedPayload(order, shippingAddress)
-    );
+  "ORDER_PLACED",
+  buildOrderPlacedPayload(order, shippingAddress)
+);
 
-    console.log("ORDER_PLACED event published successfully", {
-      orderId: order.orderId,
-      messageId: publishResponse?.MessageId,
-    });
+
+
+  
   } catch (error) {
     console.error("Failed to publish ORDER_PLACED event", {
       orderId: order.orderId,
       message: error.message,
       stack: error.stack,
     });
+  }
+
+  // Reduce inventory stock for purchased products
+  const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
+  for (const item of orderItems) {
+    if (item.productId && item.quantity) {
+      try {
+        await axios.put(`${INVENTORY_SERVICE_URL}/api/v1/inventory/reduce/${item.productId}`, {
+          amount: Number(item.quantity)
+        });
+
+      } catch (invError) {
+        console.error(`Failed to reduce inventory for product ${item.productId}:`, invError?.response?.data || invError.message);
+      }
+    }
   }
 
   // Clear cart after successful order placement
@@ -253,14 +279,11 @@ const cancelOrder = async (customerId, orderId) => {
 
   try {
     const publishResponse = await publishEvent(
-      "ORDER_CANCELLED",
-      buildOrderCancelledPayload(updated.Attributes || order, cancelledAt)
-    );
+  "ORDER_CANCELLED",
+  buildOrderCancelledPayload(updated.Attributes || order, cancelledAt)
+);
 
-    console.log("ORDER_CANCELLED event published successfully", {
-      orderId,
-      messageId: publishResponse?.MessageId,
-    });
+
   } catch (error) {
     console.error("Failed to publish ORDER_CANCELLED event", {
       orderId,
@@ -269,11 +292,49 @@ const cancelOrder = async (customerId, orderId) => {
     });
   }
 
+  // Restore inventory stock for cancelled order items
+  const INVENTORY_SERVICE_URL = process.env.INVENTORY_SERVICE_URL || "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
+  if (order.items && Array.isArray(order.items)) {
+    for (const item of order.items) {
+      if (item.productId && item.quantity) {
+        try {
+          await axios.put(`${INVENTORY_SERVICE_URL}/api/v1/inventory/restore/${item.productId}`, {
+            amount: Number(item.quantity)
+          });
+
+        } catch (invError) {
+          console.error(`Failed to restore inventory for product ${item.productId}:`, invError?.response?.data || invError.message);
+        }
+      }
+    }
+  }
+
   return {
     success: true,
     message: "Order cancelled successfully",
     data: updated.Attributes,
   };
+};
+
+// Raw DynamoDB status write — no allowedStatuses guard, reused by both the admin API and event handlers
+const setOrderStatus = async (orderId, status) => {
+  const updated = await dynamodb.send(
+    new UpdateCommand({
+      TableName: ORDER_TABLE,
+      Key: { orderId },
+      UpdateExpression: "SET #status = :status, #updatedAt = :updatedAt",
+      ExpressionAttributeNames: {
+        "#status": "status",
+        "#updatedAt": "updatedAt",
+      },
+      ExpressionAttributeValues: {
+        ":status": status,
+        ":updatedAt": new Date().toISOString(),
+      },
+      ReturnValues: "ALL_NEW",
+    })
+  );
+  return updated.Attributes;
 };
 
 // Update order status (admin only — PENDING, SHIPPED, DELIVERED, CANCELLED)
@@ -286,38 +347,18 @@ const updateOrderStatus = async (orderId, status) => {
     );
   }
 
-  const getParams = {
-    TableName: ORDER_TABLE,
-    Key: { orderId },
-  };
-
-  const response = await dynamodb.send(new GetCommand(getParams));
+  const response = await dynamodb.send(new GetCommand({ TableName: ORDER_TABLE, Key: { orderId } }));
 
   if (!response.Item) {
     throw new Error("Order not found");
   }
 
-  const updateParams = {
-    TableName: ORDER_TABLE,
-    Key: { orderId },
-    UpdateExpression: "SET #status = :status, #updatedAt = :updatedAt",
-    ExpressionAttributeNames: {
-      "#status": "status",
-      "#updatedAt": "updatedAt",
-    },
-    ExpressionAttributeValues: {
-      ":status": status,
-      ":updatedAt": new Date().toISOString(),
-    },
-    ReturnValues: "ALL_NEW",
-  };
-
-  const updated = await dynamodb.send(new UpdateCommand(updateParams));
+  const attributes = await setOrderStatus(orderId, status);
 
   return {
     success: true,
     message: `Order status updated to ${status}`,
-    data: updated.Attributes,
+    data: attributes,
   };
 };
 
@@ -328,4 +369,5 @@ export {
   getAllOrders,
   cancelOrder,
   updateOrderStatus,
+  setOrderStatus,
 };

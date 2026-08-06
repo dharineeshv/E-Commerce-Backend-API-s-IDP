@@ -1,0 +1,1389 @@
+/* ==========================================
+   CloudBasket Admin Responsive Design System
+========================================== */
+
+/* Backdrop Overlay for Mobile Sidebar Drawer */
+.sidebar-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(15, 23, 42, 0.5);
+    backdrop-filter: blur(4px);
+    z-index: 999;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+body.sidebar-open .sidebar-backdrop {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Hamburger Button */
+.hamburger-btn {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    border-radius: 10px;
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    color: #003366;
+    cursor: pointer;
+    margin-right: 12px;
+    transition: all 0.2s ease;
+}
+
+.hamburger-btn:hover {
+    background: #e2e8f0;
+}
+
+/* ==========================================
+   Tablet & Mobile Breakpoints (<= 900px)
+========================================== */
+@media (max-width: 900px) {
+    /* Show Hamburger Button */
+    .hamburger-btn {
+        display: flex !important;
+    }
+
+    /* Header Adjustments */
+    .dashboard-header {
+        padding: 0 16px !important;
+        height: 65px !important;
+    }
+
+    .logo-section h2 {
+        font-size: 1.15rem !important;
+    }
+
+    .logo-section span {
+        display: none !important;
+    }
+
+    .profile-info {
+        display: none !important;
+    }
+
+    .profile-avatar {
+        width: 36px !important;
+        height: 36px !important;
+        font-size: 14px !important;
+    }
+
+    /* Off-Canvas Mobile Sidebar Drawer */
+    .dashboard-sidebar {
+        top: 0 !important;
+        left: 0 !important;
+        bottom: 0 !important;
+        height: 100vh !important;
+        width: 270px !important;
+        transform: translateX(-100%) !important;
+        transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+        box-shadow: 6px 0 30px rgba(0, 0, 0, 0.18) !important;
+        z-index: 1000 !important;
+    }
+
+    body.sidebar-open .dashboard-sidebar {
+        transform: translateX(0) !important;
+    }
+
+    /* Main Content Container Layout */
+    .dashboard-main {
+        margin-left: 0 !important;
+        width: 100% !important;
+        padding: 16px !important;
+        margin-top: 65px !important;
+    }
+
+    /* Hero Banner Responsive */
+    .hero-banner {
+        flex-direction: column !important;
+        padding: 20px 16px !important;
+        gap: 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .hero-content {
+        max-width: 100% !important;
+    }
+
+    .hero-content h1 {
+        font-size: 1.5rem !important;
+        line-height: 1.25 !important;
+        margin-bottom: 8px !important;
+    }
+
+    .hero-description {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+        margin-bottom: 12px !important;
+    }
+
+    .hero-quote {
+        font-size: 0.85rem !important;
+        padding: 10px 12px !important;
+        margin-bottom: 16px !important;
+    }
+
+    .hero-footer {
+        flex-direction: row !important;
+        gap: 24px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .hero-footer h3 {
+        font-size: 0.92rem !important;
+    }
+
+    /* Dashboard Metric Cards Grid */
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .dashboard-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+        gap: 10px !important;
+    }
+
+    .card-icon {
+        width: 42px !important;
+        height: 42px !important;
+        border-radius: 10px !important;
+    }
+
+    .card-icon svg {
+        width: 20px !important;
+        height: 20px !important;
+    }
+
+    .card-details span {
+        font-size: 0.72rem !important;
+    }
+
+    .card-details h2 {
+        font-size: 1.3rem !important;
+    }
+
+    /* Content Grid Panels */
+    .dashboard-content-grid {
+        grid-template-columns: 1fr !important;
+        gap: 16px !important;
+    }
+
+    .dashboard-panel {
+        padding: 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .panel-header {
+        margin-bottom: 14px !important;
+    }
+
+    .panel-header h2 {
+        font-size: 1.1rem !important;
+    }
+
+    .panel-button {
+        padding: 6px 14px !important;
+        font-size: 0.8rem !important;
+    }
+
+    /* Tables Touch Scroll Container */
+    .table-container {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 12px !important;
+        border: 1px solid #f1f5f9 !important;
+    }
+
+    .dashboard-table {
+        min-width: 580px !important;
+    }
+
+    .dashboard-table th, 
+    .dashboard-table td {
+        padding: 12px 14px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    /* Festival Sale Section Responsive */
+    .festival-sale {
+        flex-direction: column !important;
+        padding: 20px 16px !important;
+        text-align: center !important;
+        gap: 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .festival-info h2 {
+        font-size: 1.35rem !important;
+    }
+
+    .festival-details {
+        justify-content: center !important;
+    }
+
+    .festival-banner-img {
+        max-width: 100% !important;
+        height: auto !important;
+    }
+
+    /* ==========================================
+       Manage Products Page Responsiveness
+    ========================================== */
+    .page-header-row {
+        flex-direction: column !important;
+        align-items: flex-start !important;
+        gap: 14px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .page-title-col h1 {
+        font-size: 1.45rem !important;
+    }
+
+    .page-title-col p {
+        font-size: 0.85rem !important;
+    }
+
+    .page-action-col {
+        width: 100% !important;
+    }
+
+    .page-action-col .btn-primary {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .summary-cards-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .summary-card {
+        padding: 14px !important;
+        gap: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .summary-icon {
+        width: 44px !important;
+        height: 44px !important;
+        border-radius: 10px !important;
+    }
+
+    .summary-info span {
+        font-size: 0.68rem !important;
+    }
+
+    .summary-info h3 {
+        font-size: 1.3rem !important;
+    }
+
+    .filter-toolbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 14px !important;
+        gap: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .search-box input {
+        padding: 10px 10px 10px 38px !important;
+        font-size: 0.88rem !important;
+    }
+
+    .filter-dropdowns {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .select-wrapper {
+        width: 100% !important;
+    }
+
+    .select-wrapper select {
+        width: 100% !important;
+        padding: 10px 28px 10px 12px !important;
+        font-size: 0.82rem !important;
+    }
+
+    .btn-outline {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 10px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .product-table {
+        min-width: 680px !important;
+    }
+
+    .product-table th,
+    .product-table td {
+        padding: 12px 10px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    .product-cell img {
+        width: 40px !important;
+        height: 40px !important;
+    }
+
+    .product-name-sku h4 {
+        font-size: 0.85rem !important;
+    }
+
+    .product-name-sku span {
+        font-size: 0.75rem !important;
+    }
+
+    .actions-col {
+        width: 120px !important;
+    }
+
+    .action-buttons {
+        gap: 6px !important;
+    }
+
+    .action-btn {
+        width: 34px !important;
+        height: 34px !important;
+    }
+
+    .pagination-wrapper {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .rows-per-page {
+        font-size: 0.82rem !important;
+    }
+
+    .pagination-controls {
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+    }
+
+    .modal-container.large-modal {
+        width: 95% !important;
+        max-height: 92vh !important;
+        border-radius: 16px !important;
+    }
+
+    .view-product-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    .view-product-image {
+        max-width: 260px !important;
+        margin: 0 auto !important;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr 1fr !important;
+        gap: 12px !important;
+    }
+
+    .detail-footer-info {
+        flex-direction: column !important;
+        gap: 6px !important;
+        text-align: center !important;
+    }
+
+    /* ==========================================
+       Add Product Page Responsiveness
+    ========================================== */
+    .add-product-container {
+        padding: 16px !important;
+    }
+
+    .page-header {
+        margin-bottom: 20px !important;
+    }
+
+    .page-header h1 {
+        font-size: 1.5rem !important;
+    }
+
+    .page-header p {
+        font-size: 0.88rem !important;
+    }
+
+    .add-product-grid {
+        grid-template-columns: 1fr !important;
+        gap: 20px !important;
+    }
+
+    .preview-sticky {
+        position: relative !important;
+        top: 0 !important;
+        width: 100% !important;
+        margin-top: 10px !important;
+    }
+
+    .cb-card {
+        padding: 20px 16px !important;
+        border-radius: 16px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .cb-card-header {
+        padding-bottom: 14px !important;
+        margin-bottom: 18px !important;
+    }
+
+    .cb-card-header h2 {
+        font-size: 1.05rem !important;
+    }
+
+    .form-row {
+        grid-template-columns: 1fr !important;
+        gap: 14px !important;
+        margin-bottom: 14px !important;
+    }
+
+    .form-group {
+        margin-bottom: 14px !important;
+    }
+
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+        font-size: 0.9rem !important;
+        padding: 11px 14px !important;
+        border-radius: 10px !important;
+    }
+
+    .upload-dropzone {
+        padding: 28px 16px !important;
+        border-radius: 14px !important;
+    }
+
+    .upload-icon-container {
+        width: 52px !important;
+        height: 52px !important;
+        margin-bottom: 12px !important;
+    }
+
+    .upload-icon-container svg {
+        width: 24px !important;
+        height: 24px !important;
+    }
+
+    .image-previews-grid {
+        gap: 12px !important;
+        margin-top: 16px !important;
+    }
+
+    .image-preview-item,
+    .image-upload-placeholder {
+        width: 84px !important;
+        height: 84px !important;
+        border-radius: 10px !important;
+    }
+
+    .spec-row {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        gap: 8px !important;
+        border: 1px solid #f1f5f9 !important;
+        padding: 12px !important;
+        border-radius: 12px !important;
+        background: #fafafa !important;
+    }
+
+    .delete-spec-btn {
+        align-self: flex-end !important;
+        margin-top: 0 !important;
+    }
+
+    .status-options-container {
+        flex-direction: column !important;
+        gap: 14px !important;
+    }
+
+    .form-actions {
+        flex-direction: column-reverse !important;
+        gap: 12px !important;
+        padding-top: 18px !important;
+        margin-top: 20px !important;
+    }
+
+    .btn-cancel,
+    .btn-publish {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 12px !important;
+        font-size: 0.9rem !important;
+    }
+
+    .modal-card {
+        padding: 26px 18px !important;
+        border-radius: 20px !important;
+        width: 90% !important;
+    }
+
+    .modal-actions {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .modal-actions button {
+        width: 100% !important;
+    }
+
+    /* ==========================================
+       Inventory Page Responsiveness
+    ========================================== */
+    .inventory-container {
+        padding: 0 !important;
+    }
+
+    .inventory-header {
+        margin-bottom: 20px !important;
+    }
+
+    .header-titles h1 {
+        font-size: 1.45rem !important;
+    }
+
+    .header-titles p {
+        font-size: 0.85rem !important;
+    }
+
+    .inventory-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .stat-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .stat-title {
+        font-size: 0.72rem !important;
+    }
+
+    .stat-value {
+        font-size: 1.3rem !important;
+    }
+
+    .inventory-toolbar {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 14px !important;
+        gap: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .search-wrapper {
+        max-width: 100% !important;
+        width: 100% !important;
+    }
+
+    .search-wrapper input {
+        font-size: 0.88rem !important;
+        padding: 10px 10px 10px 38px !important;
+    }
+
+    .filter-group {
+        width: 100% !important;
+        display: flex !important;
+        gap: 8px !important;
+    }
+
+    .custom-dropdown {
+        flex: 1 !important;
+    }
+
+    .dropdown-btn {
+        width: 100% !important;
+        font-size: 0.82rem !important;
+        padding: 10px 12px !important;
+    }
+
+    .btn-export-excel {
+        padding: 10px 14px !important;
+        font-size: 0.82rem !important;
+    }
+
+    .inventory-table-container {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 12px !important;
+    }
+
+    .inventory-table {
+        min-width: 750px !important;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 12px 10px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    .inventory-modal {
+        width: 92% !important;
+        max-width: 480px !important;
+        padding: 20px 16px !important;
+        border-radius: 20px !important;
+    }
+
+    /* ==========================================
+       Orders Page Responsiveness
+    ========================================== */
+    .orders-container {
+        padding: 0 !important;
+    }
+
+    .orders-header {
+        margin-bottom: 20px !important;
+    }
+
+    .orders-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .orders-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 14px !important;
+        gap: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .filters-row {
+        display: grid !important;
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .filter-chip {
+        width: 100% !important;
+    }
+
+    .filter-chip select,
+    .filter-chip input {
+        width: 100% !important;
+        padding: 10px 28px 10px 12px !important;
+        font-size: 0.82rem !important;
+    }
+
+    .btn-clear,
+    .orders-controls .btn-export-excel {
+        width: 100% !important;
+        justify-content: center !important;
+        padding: 10px !important;
+        font-size: 0.85rem !important;
+    }
+
+    .orders-table-wrapper {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 12px !important;
+    }
+
+    .orders-table {
+        min-width: 680px !important;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 12px 10px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    .order-modal {
+        width: 92% !important;
+        max-height: 92vh !important;
+        padding: 20px 16px !important;
+        border-radius: 20px !important;
+    }
+
+    .order-modal-body {
+        flex-direction: column !important;
+        gap: 18px !important;
+    }
+
+    .order-cards-row {
+        flex-direction: column !important;
+        gap: 14px !important;
+    }
+
+    /* ==========================================
+       Payments Page Responsiveness
+    ========================================== */
+    .payments-container {
+        padding: 0 !important;
+    }
+
+    .payments-header {
+        margin-bottom: 20px !important;
+    }
+
+    .payments-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .payments-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 14px !important;
+        gap: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .payments-controls .filter-group {
+        width: 100% !important;
+    }
+
+    .payments-controls input,
+    .payments-controls select {
+        width: 100% !important;
+        font-size: 0.88rem !important;
+        padding: 10px 12px !important;
+    }
+
+    .payments-controls .search-wrapper input {
+        padding: 10px 10px 10px 38px !important;
+    }
+
+    .payments-controls .filter-actions {
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+        width: 100% !important;
+    }
+
+    .payments-controls .filter-actions button {
+        flex: 1 !important;
+        justify-content: center !important;
+        font-size: 0.85rem !important;
+        padding: 10px !important;
+    }
+
+    .payments-table-wrapper {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 12px !important;
+    }
+
+    .payments-table {
+        min-width: 750px !important;
+    }
+
+    .payments-table th,
+    .payments-table td {
+        padding: 12px 10px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    .slide-panel {
+        width: 95% !important;
+        border-radius: 16px 0 0 16px !important;
+        padding: 20px 16px !important;
+    }
+
+    .receipt-modal {
+        width: 92% !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        padding: 20px 16px !important;
+        border-radius: 20px !important;
+    }
+
+    /* ==========================================
+       Customers Page Responsiveness
+    ========================================== */
+    .customers-main {
+        padding: 16px !important;
+    }
+
+    .customers-header {
+        margin-bottom: 20px !important;
+    }
+
+    .customers-stats-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .cust-stat-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .cust-stat-label {
+        font-size: 0.72rem !important;
+    }
+
+    .cust-stat-val {
+        font-size: 1.3rem !important;
+    }
+
+    .customers-controls {
+        flex-direction: column !important;
+        align-items: stretch !important;
+        padding: 14px !important;
+        gap: 12px !important;
+        border-radius: 12px !important;
+    }
+
+    .search-box-wrap {
+        width: 100% !important;
+        min-width: 100% !important;
+    }
+
+    .search-box-wrap input {
+        width: 100% !important;
+        font-size: 0.88rem !important;
+        padding: 10px 10px 10px 38px !important;
+    }
+
+    .action-buttons-wrap {
+        width: 100% !important;
+        display: flex !important;
+        flex-wrap: wrap !important;
+        gap: 8px !important;
+    }
+
+    .action-buttons-wrap .ctrl-select,
+    .action-buttons-wrap .ctrl-btn {
+        flex: 1 !important;
+        justify-content: center !important;
+        font-size: 0.85rem !important;
+        padding: 10px !important;
+        width: auto !important;
+    }
+
+    .customers-table-card {
+        width: 100% !important;
+        overflow-x: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+        border-radius: 12px !important;
+    }
+
+    .cust-table {
+        min-width: 750px !important;
+    }
+
+    .cust-table th,
+    .cust-table td {
+        padding: 12px 10px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    .pagination-bar {
+        flex-direction: column !important;
+        gap: 12px !important;
+        align-items: center !important;
+        text-align: center !important;
+    }
+
+    .cust-modal-card {
+        width: 92% !important;
+        max-height: 90vh !important;
+        overflow-y: auto !important;
+        padding: 20px 16px !important;
+        border-radius: 20px !important;
+    }
+
+    /* ==========================================
+       Marketing Page Responsiveness
+    ========================================== */
+    .marketing-main {
+        padding: 16px !important;
+    }
+
+    .create-header {
+        margin-bottom: 20px !important;
+    }
+
+    .create-header h1 {
+        font-size: 1.45rem !important;
+    }
+
+    .create-header p {
+        font-size: 0.85rem !important;
+    }
+
+    .marketing-slider {
+        height: auto !important;
+        min-height: 280px !important;
+        border-radius: 16px !important;
+    }
+
+    .slide-content {
+        padding: 20px 16px !important;
+    }
+
+    .slide-content h2 {
+        font-size: 1.35rem !important;
+    }
+
+    .slide-content p {
+        font-size: 0.85rem !important;
+    }
+
+    .marketing-stats {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 12px !important;
+        margin-top: 20px !important;
+        margin-bottom: 20px !important;
+    }
+
+    .marketing-stat-card {
+        padding: 14px !important;
+        border-radius: 14px !important;
+    }
+
+    .marketing-stat-info h4 {
+        font-size: 0.68rem !important;
+    }
+
+    .marketing-stat-info p {
+        font-size: 1.3rem !important;
+    }
+
+    #festivals-table,
+    #coupons-table {
+        min-width: 750px !important;
+    }
+
+    #festivals-table th,
+    #festivals-table td,
+    #coupons-table th,
+    #coupons-table td {
+        padding: 12px 10px !important;
+        font-size: 0.82rem !important;
+        white-space: nowrap !important;
+    }
+
+    .marketing-actions {
+        grid-template-columns: 1fr !important;
+        flex-direction: column !important;
+        gap: 16px !important;
+    }
+
+    .marketing-action-card {
+        padding: 20px 16px !important;
+        border-radius: 16px !important;
+    }
+
+    .marketing-action-card .btn {
+        width: 100% !important;
+        text-align: center !important;
+        justify-content: center !important;
+    }
+}
+
+/* ==========================================
+   Small Mobile Devices (<= 480px)
+========================================== */
+@media (max-width: 480px) {
+    .dashboard-main {
+        padding: 12px !important;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(2, 1fr) !important;
+        gap: 10px !important;
+    }
+
+    .card-icon {
+        width: 36px !important;
+        height: 36px !important;
+    }
+
+    .card-icon svg {
+        width: 18px !important;
+        height: 18px !important;
+    }
+
+    .card-details span {
+        font-size: 0.68rem !important;
+    }
+
+    .card-details h2 {
+        font-size: 1.15rem !important;
+    }
+
+    .hero-footer {
+        flex-direction: column !important;
+        gap: 10px !important;
+    }
+
+    .panel-header {
+        flex-direction: row !important;
+        align-items: center !important;
+        justify-content: space-between !important;
+    }
+
+    .filter-dropdowns {
+        grid-template-columns: 1fr !important;
+    }
+
+    .detail-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    .detail-item.full-width {
+        grid-column: span 1 !important;
+    }
+
+    .filters-row {
+        grid-template-columns: 1fr !important;
+    }
+}
+
+/* ==========================================
+   TV & Ultra-Wide / 4K Displays (>= 1600px)
+========================================== */
+@media (min-width: 1600px) {
+    .dashboard-main {
+        padding: 32px 40px !important;
+        max-width: 2000px !important;
+    }
+
+    .dashboard-cards {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .dashboard-card {
+        padding: 24px !important;
+        border-radius: 18px !important;
+    }
+
+    .card-details h2 {
+        font-size: 2.2rem !important;
+    }
+
+    .card-details span {
+        font-size: 0.95rem !important;
+    }
+
+    .card-icon {
+        width: 56px !important;
+        height: 56px !important;
+    }
+
+    .card-icon svg {
+        width: 28px !important;
+        height: 28px !important;
+    }
+
+    .hero-banner {
+        padding: 36px 48px !important;
+    }
+
+    .hero-content h1 {
+        font-size: 2.4rem !important;
+    }
+
+    .hero-description {
+        font-size: 1.15rem !important;
+    }
+
+    .dashboard-content-grid {
+        gap: 28px !important;
+    }
+
+    .dashboard-panel {
+        padding: 28px !important;
+        border-radius: 20px !important;
+    }
+
+    .panel-header h2 {
+        font-size: 1.4rem !important;
+    }
+
+    .dashboard-table th, 
+    .dashboard-table td,
+    .product-table th,
+    .product-table td {
+        padding: 16px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Add Product & Manage Products 4K Scaling */
+    .add-product-container,
+    .inventory-container {
+        padding: 36px 48px !important;
+        max-width: 2000px !important;
+    }
+
+    .add-product-grid {
+        grid-template-columns: 7fr 3fr !important;
+        gap: 36px !important;
+    }
+
+    .cb-card {
+        padding: 36px !important;
+        border-radius: 24px !important;
+    }
+
+    .page-header h1,
+    .page-title-col h1,
+    .header-titles h1 {
+        font-size: 2.4rem !important;
+    }
+
+    .summary-cards-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .summary-card,
+    .stat-card {
+        padding: 24px !important;
+        border-radius: 18px !important;
+    }
+
+    .summary-info h3,
+    .stat-value {
+        font-size: 2rem !important;
+    }
+
+    .inventory-stats-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .inventory-table th,
+    .inventory-table td {
+        padding: 16px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .inventory-toolbar {
+        padding: 20px 24px !important;
+        border-radius: 16px !important;
+    }
+
+    /* Orders Page 4K Scaling */
+    .orders-container {
+        padding: 36px 48px !important;
+        max-width: 2000px !important;
+    }
+
+    .orders-stats-grid {
+        grid-template-columns: repeat(6, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .orders-table th,
+    .orders-table td {
+        padding: 16px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .order-modal {
+        width: 1200px !important;
+        max-width: 90% !important;
+    }
+
+    .order-modal-body {
+        gap: 36px !important;
+        padding: 36px !important;
+    }
+
+    /* Payments Page 4K Scaling */
+    .payments-main {
+        padding: 36px 48px !important;
+        max-width: 2000px !important;
+    }
+
+    .payments-stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .payments-controls {
+        padding: 20px 24px !important;
+        border-radius: 16px !important;
+    }
+
+    .payments-table th,
+    .payments-table td {
+        padding: 16px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .receipt-modal {
+        max-width: 750px !important;
+    }
+
+    /* Customers Page 4K Scaling */
+    .customers-main {
+        padding: 36px 48px !important;
+        max-width: 2000px !important;
+    }
+
+    .customers-stats-grid {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .cust-stat-card {
+        padding: 24px !important;
+        border-radius: 18px !important;
+    }
+
+    .cust-stat-value {
+        font-size: 2.2rem !important;
+    }
+
+    .cust-table th,
+    .cust-table td {
+        padding: 16px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    .cust-modal-card {
+        max-width: 750px !important;
+        padding: 36px !important;
+    }
+
+    /* Marketing 4K Scaling */
+    .marketing-main {
+        padding: 36px 48px !important;
+        max-width: 2000px !important;
+    }
+
+    .marketing-slider {
+        height: 480px !important;
+        border-radius: 20px !important;
+    }
+
+    .slide-content {
+        bottom: 60px !important;
+        left: 60px !important;
+        max-width: 700px !important;
+    }
+
+    .slide-content h2 {
+        font-size: 3.2rem !important;
+    }
+
+    .slide-content p {
+        font-size: 1.4rem !important;
+    }
+
+    .marketing-stats {
+        grid-template-columns: repeat(4, 1fr) !important;
+        gap: 24px !important;
+    }
+
+    .marketing-stat-card {
+        padding: 24px !important;
+        border-radius: 18px !important;
+    }
+
+    .marketing-stat-info p {
+        font-size: 2.2rem !important;
+    }
+
+    #festivals-table th,
+    #festivals-table td,
+    #coupons-table th,
+    #coupons-table td {
+        padding: 16px 20px !important;
+        font-size: 0.95rem !important;
+    }
+
+    /* Storefront (login.html) 4K Scaling */
+    .store-main {
+        max-width: 2000px !important;
+        margin: 0 auto !important;
+        padding: 40px 60px !important;
+    }
+
+    .hero-slider-container {
+        height: 480px !important;
+        border-radius: 24px !important;
+    }
+
+    .store-slide-content h2 {
+        font-size: 3.5rem !important;
+    }
+
+    .store-slide-content p {
+        font-size: 1.3rem !important;
+    }
+
+    .products-grid {
+        grid-template-columns: repeat(5, 1fr) !important;
+        gap: 28px !important;
+    }
+
+    /* Product Details Page 4K Scaling */
+    .product-main {
+        max-width: 1800px !important;
+        margin: 40px auto !important;
+        padding: 0 40px !important;
+    }
+
+    .product-details-grid {
+        grid-template-columns: 1fr 1.2fr !important;
+        gap: 60px !important;
+    }
+
+    .product-main-image-wrapper {
+        min-height: 600px !important;
+    }
+
+    .product-title {
+        font-size: 2.5rem !important;
+    }
+}
+
+/* 4K Super TV Displays (>= 2200px) */
+@media (min-width: 2200px) {
+    .dashboard-main,
+    .add-product-container,
+    .inventory-container,
+    .orders-container,
+    .payments-main,
+    .customers-main,
+    .marketing-main,
+    .store-main,
+    .product-main {
+        max-width: 2560px !important;
+        padding: 48px 60px !important;
+        zoom: 1.15;
+    }
+}

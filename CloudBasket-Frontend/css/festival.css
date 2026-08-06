@@ -1,0 +1,131 @@
+/* ==========================================================
+                    FESTIVAL
+========================================================== */
+
+.festival-sale{
+
+    background:#ffffff;
+
+    border-radius:24px;
+
+    padding:35px;
+
+    box-shadow:0 10px 25px rgba(0,0,0,.06);
+
+}
+
+.festival-content{
+
+    display:flex;
+
+    justify-content:space-between;
+
+    align-items:center;
+
+}
+
+.festival-info{
+
+    width:60%;
+
+}
+
+.festival-badge{
+
+    background:#FEF3C7;
+
+    color:#D97706;
+
+    padding:8px 18px;
+
+    border-radius:25px;
+
+    font-size:13px;
+
+    font-weight:600;
+
+}
+
+.festival-info h2{
+
+    margin-top:18px;
+
+    font-size:34px;
+
+    color:#111827;
+
+}
+
+.festival-info p{
+
+    margin-top:12px;
+
+    color:#6B7280;
+
+    line-height:28px;
+
+}
+
+.festival-details{
+
+    display:flex;
+
+    gap:70px;
+
+    margin:30px 0;
+
+}
+
+.festival-details span{
+
+    color:#9CA3AF;
+
+    font-size:13px;
+
+}
+
+.festival-details h4{
+
+    margin-top:6px;
+
+    font-size:18px;
+
+}
+
+.festival-button{
+
+    background:#2563EB;
+
+    color:white;
+
+    border:none;
+
+    padding:14px 28px;
+
+    border-radius:12px;
+
+    cursor:pointer;
+
+    font-size:15px;
+
+}
+
+.festival-image{
+
+    width:35%;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.festival-image img{
+
+    width:100%;
+
+    max-width:350px;
+
+    border-radius:20px;
+
+}

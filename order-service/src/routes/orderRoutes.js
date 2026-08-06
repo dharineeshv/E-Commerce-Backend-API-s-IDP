@@ -1,5 +1,7 @@
 import express from "express";
 import * as orderController from "../controllers/orderController.js";
+import cognitoAuthMiddleware from "../middlewares/cognitoAuthMiddleware.js";
+import authorizeRoles from "../middlewares/authorizeRoles.js";
 
 const router = express.Router();
 
@@ -12,26 +14,57 @@ router.get("/health", (req, res) => {
   });
 });
 
+//admin routes ]
+router.get(
+  "/admin/all",
+  cognitoAuthMiddleware,
+  authorizeRoles("Admin"),
+  orderController.getAllOrders
+);
+
+router.put(
+  "/admin/:orderId/status",
+  cognitoAuthMiddleware,
+  authorizeRoles("Admin"),
+  orderController.updateOrderStatus
+);
+
+router.patch(
+  "/admin/:orderId/status",
+  cognitoAuthMiddleware,
+  authorizeRoles("Admin"),
+  orderController.updateOrderStatus
+);
+
 // ── Customer Routes ──────────────────────────────────────────
 
-// Place order from cart
-router.post("/:customerId", orderController.placeOrder);
+router.post(
+  "/",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  orderController.placeOrder
+);
 
-// Get all orders for a customer
-router.get("/:customerId", orderController.getMyOrders);
+router.get(
+  "/",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  orderController.getMyOrders
+);
 
-// Get a specific order for a customer
-router.get("/:customerId/:orderId", orderController.getOrderById);
+router.get(
+  "/:orderId",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  orderController.getOrderById
+);
 
-// Cancel an order (only PENDING orders)
-router.patch("/:customerId/:orderId/cancel", orderController.cancelOrder);
+router.patch(
+  "/:orderId/cancel",
+  cognitoAuthMiddleware,
+  authorizeRoles("Customer"),
+  orderController.cancelOrder
+);
 
-// ── Admin Routes ─────────────────────────────────────────────
-
-// Get all orders (admin)
-router.get("/admin/all", orderController.getAllOrders);
-
-// Update order status (admin: PENDING, SHIPPED, DELIVERED, CANCELLED)
-router.patch("/admin/:orderId/status", orderController.updateOrderStatus);
 
 export default router;

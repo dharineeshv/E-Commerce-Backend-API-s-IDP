@@ -10,13 +10,18 @@ import {
 } from "@aws-sdk/lib-dynamodb";
 
 const INVENTORY_TABLE = process.env.INVENTORY_TABLE;
-const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL;
-const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(/\/api\/products\/?$/i, "");
+const PRODUCT_SERVICE_URL = process.env.PRODUCT_SERVICE_URL || "http://localhost:3003/api/v1/products";
+const PRODUCT_SERVICE_BASE_URL = PRODUCT_SERVICE_URL.replace(
+  /\/api\/v1\/products\/?$/i,
+  ""
+);
 
 async function verifyProductExists(productId) {
   try {
     // Fixed: was /products/${productId}, correct path is /api/products/${productId}
-    const response = await axios.get(`${PRODUCT_SERVICE_BASE_URL}/api/products/${productId}`);
+    const response = await axios.get(
+  `${PRODUCT_SERVICE_BASE_URL}/api/v1/products/${productId}`
+);
     return response.status === 200 && response.data;
   } catch (error) {
     if (error.response && error.response.status === 404) {
@@ -73,8 +78,7 @@ async function getInventoryItemByProductId(productId) {
     TableName: INVENTORY_TABLE,
     FilterExpression: '#productId = :productId',
     ExpressionAttributeNames: { '#productId': 'productId' },
-    ExpressionAttributeValues: { ':productId': productId },
-    Limit: 1,
+    ExpressionAttributeValues: { ':productId': productId }
   }));
   return result.Items && result.Items.length > 0 ? result.Items[0] : null;
 }
@@ -163,11 +167,10 @@ async function reduceInventory(productId, amount) {
     throw error;
   }
 
-  const item = await getInventoryItemByProductId(productId);
+  let item = await getInventoryItemByProductId(productId);
   if (!item) {
-    const error = new Error('Inventory item not found');
-    error.statusCode = 404;
-    throw error;
+    const initialQty = Math.max(0, 100 - amount);
+    return await createInventoryItem({ productId, quantity: initialQty, location: 'default' });
   }
 
   if (item.quantity < amount) {

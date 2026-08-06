@@ -1,0 +1,543 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket Admin - Premium Inventory</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/logout.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="../../css/inventory.css">
+    <link rel="stylesheet" href="../../css/responsive.css">
+
+    <style>
+        /* Base overrides to apply Inter font to this specific page for a modern feel */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f8fafc;
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <h2 style="color: #003366; font-weight: 800; font-size: 1.25rem; margin:0; line-height: 1.1;">CloudBasket</h2>
+                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; color: #64748b; text-transform: uppercase; margin-top: 2px;">Enterprise Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Section -->
+        <div class="header-right">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-avatar" id="header-profile-avatar">D</div>
+                <div class="profile-info">
+                    <h4 id="admin-name">Dharineesh</h4>
+                    <span>Admin</span>
+                </div>
+                <button class="profile-dropdown" id="profile-dropdown">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card" id="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-avatar" id="profile-avatar">D</div>
+                    <h3 id="profile-full-name">Loading...</h3>
+                    <span>Admin</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-row">
+                        <!-- Email SVG -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16v16H4z"/>
+                            <polyline points="4 6 12 13 20 6"/>
+                        </svg>
+                        <p id="profile-email">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <!-- Phone SVG -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72l.45 3a2 2 0 0 1-.57 1.74l-1.27 1.27a16 16 0 0 0 6.36 6.36l1.27-1.27a2 2 0 0 1 1.74-.57l3 .45A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <p id="profile-phone">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <!-- User SVG -->
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21a8 8 0 0 0-16 0"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <p id="profile-username">Loading...</p>
+                    </div>
+                </div>
+                <div class="profile-card-footer">
+                    <button id="logout-button">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar (Exactly as requested) -->
+    <aside class="dashboard-sidebar" id="sidebar">
+        <nav class="sidebar-navigation">
+            <span class="navigation-title">MAIN MENU</span>
+
+            <a href="../../pages/dashboard/dashboard.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+
+            <!-- Products (Expandable) -->
+            <div class="sidebar-item-group">
+                <a href="../../pages/inventory/inventory.html" class="sidebar-item group-toggle" id="productsMenuToggle" onclick="
+                    event.preventDefault();
+                    const group = this.closest('.sidebar-item-group');
+                    const submenu = group.querySelector('.sidebar-submenu');
+                    if (group.classList.contains('open')) {
+                        group.classList.remove('open');
+                        submenu.style.display = 'none';
+                    } else {
+                        group.classList.add('open');
+                        submenu.style.display = 'block';
+                    }
+                ">
+                    <span class="sidebar-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8"></path><path d="M3 8v8"></path><path d="M1 6l11 6 11-6"></path><path d="M12 22V12"></path></svg>
+                    </span>
+                    <span class="sidebar-text">Products</span>
+                    <span class="chevron-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                </a>
+                <div class="sidebar-submenu" style="display: none;">
+                    <a href="../../pages/products/manage-products.html" class="submenu-item">Manage Products</a>
+                    <a href="../../pages/products/add-product.html" class="submenu-item">Add Product</a>
+                </div>
+            </div>
+
+            <!-- Inventory (ACTIVE) -->
+            <a href="../../pages/inventory/inventory.html" class="sidebar-item active">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="4"></rect>
+                        <path d="M5 8v11h14V8"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Inventory</span>
+            </a>
+
+            <!-- Orders -->
+            <a href="../../pages/orders/orders.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="20" cy="20" r="1"></circle>
+                        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 6H6"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Orders</span>
+            </a>
+
+            <!-- Payments -->
+            <a href="../../pages/payments/payments.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16"></path>
+                        <path d="M18 11h4v4h-4z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Payments</span>
+            </a>
+
+            <!-- Customers -->
+            <a href="../../pages/customers/customers.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Customers</span>
+            </a>
+
+            <!-- Marketing -->
+            <a href="../../pages/marketing/marketing.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 11v2"></path>
+                        <path d="M7 9l10-4v14L7 15H3V9z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Marketing</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-item logout" id="logout-button">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content Redesign -->
+    <main class="dashboard-main inventory-main">
+        <div class="inventory-container">
+            
+            <!-- Premium Header -->
+            <div class="inventory-header">
+                <div class="header-titles">
+                    <h1>Inventory Management</h1>
+                    <p>Monitor inventory levels, track stock movements, and manage warehouse availability across all fulfillment centers.</p>
+                </div>
+            </div>
+
+            <!-- Modern Stats Grid -->
+            <div class="inventory-stats-grid">
+                <!-- Total Products -->
+                <div class="stat-card blue">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 16V8"></path>
+                                <path d="M3 8v8"></path>
+                                <path d="M1 6l11 6 11-6"></path>
+                                <path d="M12 22V12"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">Total Products</div>
+                    <div class="stat-value" id="stat-total-products">0</div>
+                    <!-- Background Icon -->
+                    <div class="stat-bg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 16V8"></path>
+                            <path d="M3 8v8"></path>
+                            <path d="M1 6l11 6 11-6"></path>
+                            <path d="M12 22V12"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Total Units -->
+                <div class="stat-card purple">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                                <line x1="8" y1="21" x2="16" y2="21"></line>
+                                <line x1="12" y1="17" x2="12" y2="21"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">Total Units</div>
+                    <div class="stat-value" id="stat-total-units">0</div>
+                    <!-- Background Icon -->
+                    <div class="stat-bg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                            <line x1="8" y1="21" x2="16" y2="21"></line>
+                            <line x1="12" y1="17" x2="12" y2="21"></line>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Low Stock -->
+                <div class="stat-card orange">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                                <line x1="12" y1="9" x2="12" y2="13"></line>
+                                <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">Low Stock</div>
+                    <div class="stat-value" id="stat-low-stock">0</div>
+                    <!-- Background Icon -->
+                    <div class="stat-bg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M10.29 3.86L1.82 18a2 2 0 001.71 3h16.94a2 2 0 001.71-3L13.71 3.86a2 2 0 00-3.42 0z"></path>
+                            <line x1="12" y1="9" x2="12" y2="13"></line>
+                            <line x1="12" y1="17" x2="12.01" y2="17"></line>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Out of Stock -->
+                <div class="stat-card red">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="15" y1="9" x2="9" y2="15"></line>
+                                <line x1="9" y1="9" x2="15" y2="15"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">Out of Stock</div>
+                    <div class="stat-value" id="stat-out-of-stock">0</div>
+                    <!-- Background Icon -->
+                    <div class="stat-bg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="15" y1="9" x2="9" y2="15"></line>
+                            <line x1="9" y1="9" x2="15" y2="15"></line>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Total Value -->
+                <div class="stat-card green">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                                <circle cx="12" cy="12" r="2"></circle>
+                                <path d="M6 12h.01M18 12h.01"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">Total Value</div>
+                    <div class="stat-value" id="stat-total-value">₹0.00</div>
+                    <!-- Background Icon -->
+                    <div class="stat-bg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                            <circle cx="12" cy="12" r="2"></circle>
+                            <path d="M6 12h.01M18 12h.01"></path>
+                        </svg>
+                    </div>
+                </div>
+
+                <!-- Recently Updated -->
+                <div class="stat-card indigo">
+                    <div class="stat-card-header">
+                        <div class="stat-icon">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                                <path d="M21 3v5h-5"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">Recently Updated</div>
+                    <div class="stat-value" id="stat-recently-updated">0 <span style="font-size: 1rem; color: #64748b; font-weight: 500;">Today</span></div>
+                    <!-- Background Icon -->
+                    <div class="stat-bg-icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 12a9 9 0 11-9-9c2.52 0 4.93 1 6.74 2.74L21 8"></path>
+                            <path d="M21 3v5h-5"></path>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Premium Full-Width Layout -->
+            <div class="inventory-layout-full">
+                
+                <!-- Left: Table Area -->
+                <div>
+                    <!-- Unified Toolbar -->
+                    <div class="inventory-toolbar">
+                        <div class="search-wrapper">
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="11" cy="11" r="8"></circle>
+                                <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                            </svg>
+                            <input type="text" placeholder="Search by SKU, Product Name...">
+                        </div>
+                        
+                        <div class="filter-group">
+                            <div class="custom-dropdown" id="stockStatusDropdown">
+                                <button class="dropdown-btn" id="stockStatusBtn">
+                                    <span class="dropdown-text">Stock Status</span>
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                        <polyline points="6 9 12 15 18 9"></polyline>
+                                    </svg>
+                                </button>
+                                <div class="dropdown-list" id="stockStatusList">
+                                    <div class="dropdown-option" data-value="">
+                                        <span class="status-dot"></span> All Statuses
+                                    </div>
+                                    <div class="dropdown-option" data-value="in_stock">
+                                        <span class="status-dot in-stock"></span> In Stock
+                                    </div>
+                                    <div class="dropdown-option" data-value="low_stock">
+                                        <span class="status-dot low-stock"></span> Low Stock
+                                    </div>
+                                    <div class="dropdown-option" data-value="out_of_stock">
+                                        <span class="status-dot out-of-stock"></span> Out of Stock
+                                    </div>
+                                </div>
+                            </div>
+                            <button class="icon-btn-filter" aria-label="More Filters">
+                                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <line x1="4" y1="21" x2="4" y2="14"></line>
+                                    <line x1="4" y1="10" x2="4" y2="3"></line>
+                                    <line x1="12" y1="21" x2="12" y2="12"></line>
+                                    <line x1="12" y1="8" x2="12" y2="3"></line>
+                                    <line x1="20" y1="21" x2="20" y2="16"></line>
+                                    <line x1="20" y1="12" x2="20" y2="3"></line>
+                                    <line x1="1" y1="14" x2="7" y2="14"></line>
+                                    <line x1="9" y1="8" x2="15" y2="8"></line>
+                                    <line x1="17" y1="16" x2="23" y2="16"></line>
+                                </svg>
+                            </button>
+                            <button class="btn-export-excel" id="exportInventoryExcelBtn" style="padding: 8px 16px; background: #003366; border: none; border-radius: 8px; font-weight: 600; color: #ffffff; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.85rem; transition: background 0.2s;">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                                Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Premium Table -->
+                    <div class="inventory-table-container">
+                        <table class="inventory-table">
+                            <thead>
+                                <tr>
+                                    <th>Product</th>
+                                    <th>SKU</th>
+                                    <th>Warehouse Detail</th>
+                                    <th>Price</th>
+                                    <th>Stock Capacity & Details</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody id="inventory-table-body">
+                                <tr>
+                                    <td colspan="6" style="padding: 0;">
+                                        <div class="skeleton-row" style="height: 60px; margin: 10px; border-radius: 8px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: loading 1.5s infinite;"></div>
+                                        <div class="skeleton-row" style="height: 60px; margin: 10px; border-radius: 8px; background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%); background-size: 200% 100%; animation: loading 1.5s infinite;"></div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+        </div>
+    </main>
+
+    <div class="modal-overlay" id="logout-modal">
+        <div class="logout-modal">
+            <h2>Confirm Logout</h2>
+            <p>Are you sure you want to logout from CloudBasket?</p>
+            <div class="logout-buttons">
+                <button id="cancel-logout">Cancel</button>
+                <button id="confirm-logout">Logout</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="../../js/authGuard.js"></script>
+
+    <!-- Toast Notification -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <!-- Inventory View Modal -->
+    <div class="modal-overlay" id="inventory-view-modal">
+        <div class="inventory-modal">
+            <div class="modal-header">
+                <h2 id="view-modal-title">Inventory Details</h2>
+                <button class="btn-close-modal" id="close-view-modal">&times;</button>
+            </div>
+            <div class="modal-body" id="view-modal-body">
+                <!-- Dynamically populated -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Inventory Action Modal -->
+    <div class="modal-overlay" id="inventory-action-modal">
+        <div class="inventory-modal">
+            <div class="modal-header">
+                <h2 id="action-modal-title">Stock Action</h2>
+                <button class="btn-close-modal" id="close-action-modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <form id="stock-action-form">
+                    <input type="hidden" id="action-inventory-id">
+                    <input type="hidden" id="action-type">
+                    <div class="form-group">
+                        <label>Product</label>
+                        <input type="text" id="action-product-name" disabled class="input-readonly">
+                    </div>
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Current Available</label>
+                            <input type="number" id="action-current-qty" disabled class="input-readonly">
+                        </div>
+                        <div class="form-group">
+                            <label id="action-qty-label">Quantity</label>
+                            <input type="number" id="action-input-qty" min="1" required class="input-field">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label>Remarks / Reason</label>
+                        <input type="text" id="action-remarks" placeholder="Optional notes..." class="input-field">
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn-secondary" id="cancel-action">Cancel</button>
+                        <button type="submit" class="btn-primary" id="confirm-action-btn">Confirm</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modules -->
+    <script type="module" src="../../js/inventory.js?v=6"></script>
+</body>
+</html>

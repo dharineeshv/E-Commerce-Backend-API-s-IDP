@@ -7,12 +7,17 @@ import {
   UpdateCommand,
 } from "@aws-sdk/lib-dynamodb";
 import dynamodb from "../config/dynamodb.js";
+import { publishEvent } from "./snsService.js";
 
 const PAYMENT_TABLE = process.env.DYNAMODB_TABLE || 'Payments';
 const ORDER_TABLE = process.env.ORDER_TABLE || 'Dharineesh_orders';
 
-const allowedPaymentMethods = ['UPI', 'COD'];
+const allowedPaymentMethods = ['UPI', 'COD', 'Razorpay'];
 const allowedStatuses = ['PENDING', 'SUCCESS', 'FAILED', 'REFUNDED'];
+
+const buildPaymentPayload = ({ paymentId, orderId, customerId, amount, paymentMethod, status, paymentDate }) => ({
+  paymentId, orderId, customerId, amount, paymentMethod, status, paymentDate,
+});
 
 const verifyOrder = async (orderId, customerId) => {
   const response = await dynamodb.send(
@@ -42,8 +47,12 @@ const verifyOrder = async (orderId, customerId) => {
 const processPayment = async (paymentData) => {
   const { orderId, customerId, amount, paymentMethod } = paymentData;
 
-  if (!orderId || !customerId || !amount || !paymentMethod) {
-    throw new Error('orderId, customerId, amount, and paymentMethod are required');
+  if (!orderId || !amount || !paymentMethod) {
+    throw new Error("orderId, amount, and paymentMethod are required");
+  }
+
+  if (!customerId) {
+    throw new Error("Customer not authenticated");
   }
 
   if (!allowedPaymentMethods.includes(paymentMethod)) {
@@ -60,7 +69,7 @@ const processPayment = async (paymentData) => {
   }
 
   const paymentId = uuidv4();
-  const status = paymentMethod === 'UPI' ? 'SUCCESS' : 'PENDING';
+  const status = (paymentMethod === 'UPI' || paymentMethod === 'Razorpay') ? 'SUCCESS' : 'PENDING';
   const payment = {
     paymentId,
     orderId,
@@ -78,6 +87,16 @@ const processPayment = async (paymentData) => {
     })
   );
 
+  const eventType = (paymentMethod === 'UPI' || paymentMethod === 'Razorpay') ? 'PAYMENT_SUCCESS' : 'PAYMENT_PENDING';
+  try {
+    await publishEvent(eventType, buildPaymentPayload(payment));
+  } catch (error) {
+    console.error(`[paymentService] Failed to publish ${eventType}`, {
+      paymentId: payment.paymentId,
+      message: error.message,
+    });
+  }
+
   return payment;
 };
 
@@ -86,28 +105,51 @@ const getAllPayments = async () => {
   return response.Items || [];
 };
 
-const getPaymentById = async (paymentId) => {
+const getPaymentById = async (paymentId, customerId = null) => {
   const response = await dynamodb.send(
     new GetCommand({
       TableName: PAYMENT_TABLE,
       Key: { paymentId },
     })
   );
-  return response.Item;
+
+  const payment = response.Item;
+
+  if (!payment) {
+    return null;
+  }
+
+  if (customerId && payment.customerId !== customerId) {
+    throw new Error("Unauthorized: This payment does not belong to you");
+  }
+
+  return payment;
 };
 
-const getPaymentByOrderId = async (orderId) => {
+const getPaymentByOrderId = async (orderId, customerId) => {
   const response = await dynamodb.send(
     new ScanCommand({
       TableName: PAYMENT_TABLE,
-      FilterExpression: 'orderId = :orderId',
+      FilterExpression: "orderId = :orderId",
       ExpressionAttributeValues: {
-        ':orderId': orderId,
+        ":orderId": orderId,
       },
     })
   );
-  return response.Items?.[0] || null;
+
+  const payment = response.Items?.[0] || null;
+
+  if (!payment) {
+    return null;
+  }
+
+  if (payment.customerId !== customerId) {
+    throw new Error("Unauthorized: This payment does not belong to you");
+  }
+
+  return payment;
 };
+
 
 const updatePaymentStatus = async (paymentId, status) => {
   if (!allowedStatuses.includes(status)) {
@@ -132,8 +174,8 @@ const updatePaymentStatus = async (paymentId, status) => {
   return result.Attributes;
 };
 
-const refundPayment = async (paymentId) => {
-  const existing = await getPaymentById(paymentId);
+const refundPayment = async (paymentId, customerId) => {
+  const existing = await getPaymentById(paymentId, customerId);
   if (!existing) {
     throw new Error('Payment not found');
   }
@@ -156,6 +198,15 @@ const refundPayment = async (paymentId) => {
       ReturnValues: 'ALL_NEW',
     })
   );
+
+  try {
+    await publishEvent('PAYMENT_REFUNDED', buildPaymentPayload(result.Attributes));
+  } catch (error) {
+    console.error('[paymentService] Failed to publish PAYMENT_REFUNDED', {
+      paymentId,
+      message: error.message,
+    });
+  }
 
   return result.Attributes;
 };

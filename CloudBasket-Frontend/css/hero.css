@@ -1,0 +1,173 @@
+/* ==========================================================
+                        HERO
+========================================================== */
+
+.hero-banner{
+
+    position: relative;
+
+    min-height: 320px;
+
+    border-radius: 24px;
+
+    overflow: hidden;
+
+    background-size: cover;
+
+    background-position: center;
+
+    background-repeat: no-repeat;
+
+    transition: all .5s ease;
+
+    margin-bottom:16px;
+
+}
+
+.hero-banner::before{
+
+    content:"";
+
+    position:absolute;
+
+    inset:0;
+
+    background:rgba(0,0,0,.35);
+
+    backdrop-filter:blur(3px);
+
+}
+
+/* Left */
+
+.hero-content{
+
+    position:relative;
+
+    z-index:2;
+
+    color:white;
+
+    padding:45px;
+
+}
+
+.hero-badge{
+
+    display:inline-block;
+
+    background:#E8F1FF;
+
+    color:#2563EB;
+
+    padding:8px 18px;
+
+    border-radius:25px;
+
+    font-size:14px;
+
+    font-weight:600;
+
+    margin-bottom:20px;
+
+}
+
+.hero-content h1{
+
+    color:white;
+
+}
+
+.hero-content p{
+
+    color:#F3F4F6;
+
+}
+
+.hero-content blockquote{
+
+    color:#F9FAFB;
+
+}
+
+.hero-content h1{
+
+    font-size:40px;
+
+    color: white;
+
+    margin-bottom:20px;
+
+}
+
+.hero-description{
+
+    color:#6B7280;
+
+    font-size:18px;
+
+    line-height:30px;
+
+    margin-bottom:25px;
+
+}
+
+.hero-content blockquote{
+
+    color:#2563EB;
+
+    font-size:18px;
+
+    font-style:italic;
+
+    border-left:4px solid #2563EB;
+
+    padding-left:18px;
+
+    margin-bottom:35px;
+
+}
+
+.hero-footer{
+
+    display:flex;
+
+    gap:60px;
+
+}
+
+.footer-title{
+
+    color:#9CA3AF;
+
+    font-size:13px;
+
+}
+
+.hero-footer h3{
+
+    margin-top:8px;
+
+    color: white;
+
+}
+
+/* Right */
+
+.hero-image{
+
+    width:38%;
+
+    display:flex;
+
+    justify-content:center;
+
+}
+
+.hero-image img{
+
+    width:100%;
+
+    max-width:360px;
+
+}

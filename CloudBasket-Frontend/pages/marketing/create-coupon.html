@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket Admin - Marketing</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/logout.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="../../css/marketing.css">
+
+    <style>
+        body { font-family: 'Inter', sans-serif; background: #f8fafc; margin: 0; }
+        .main-content { padding: 30px; }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+
+    <header class="dashboard-header">
+        <div class="header-left">
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <h2 style="color: #003366; font-weight: 800; font-size: 1.25rem; margin:0; line-height: 1.1;">CloudBasket</h2>
+                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; color: #64748b; text-transform: uppercase; margin-top: 2px;">Enterprise Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-avatar" id="header-profile-avatar">D</div>
+                <div class="profile-info">
+                    <h4 id="admin-name">Dharineesh</h4>
+                    <span>Admin</span>
+                </div>
+                <button class="profile-dropdown" id="profile-dropdown">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Profile Card -->
+            <div class="profile-card" id="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-avatar" id="profile-avatar">D</div>
+                    <h3 id="profile-full-name">Loading...</h3>
+                    <span>Admin</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16v16H4z"/>
+                            <polyline points="4 6 12 13 20 6"/>
+                        </svg>
+                        <p id="profile-email">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72l.45 3a2 2 0 0 1-.57 1.74l-1.27 1.27a16 16 0 0 0 6.36 6.36l1.27-1.27a2 2 0 0 1 1.74-.57l3 .45A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <p id="profile-phone">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21a8 8 0 0 0-16 0"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <p id="profile-username">Loading...</p>
+                    </div>
+                </div>
+                <div class="profile-card-footer">
+                    <button id="logout-button">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    
+        
+        <aside class="dashboard-sidebar" id="sidebar">
+        <nav class="sidebar-navigation">
+            <span class="navigation-title">MAIN MENU</span>
+
+            <a href="../../pages/dashboard/dashboard.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+
+            <!-- Products -->
+            <div class="sidebar-item-group">
+                <a href="../../pages/inventory/inventory.html" class="sidebar-item group-toggle" id="productsMenuToggle" onclick="
+                    event.preventDefault();
+                    const group = this.closest('.sidebar-item-group');
+                    const submenu = group.querySelector('.sidebar-submenu');
+                    if (group.classList.contains('open')) {
+                        group.classList.remove('open');
+                        submenu.style.display = 'none';
+                    } else {
+                        group.classList.add('open');
+                        submenu.style.display = 'block';
+                    }
+                ">
+                    <span class="sidebar-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8"></path><path d="M3 8v8"></path><path d="M1 6l11 6 11-6"></path><path d="M12 22V12"></path></svg>
+                    </span>
+                    <span class="sidebar-text">Products</span>
+                    <span class="chevron-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                </a>
+                <div class="sidebar-submenu" style="display: none;">
+                    <a href="../../pages/products/manage-products.html" class="submenu-item">Manage Products</a>
+                    <a href="../../pages/products/add-product.html" class="submenu-item">Add Product</a>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <a href="../../pages/inventory/inventory.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="4"></rect>
+                        <path d="M5 8v11h14V8"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Inventory</span>
+            </a>
+
+            <!-- Orders (ACTIVE) -->
+            <a href="../../pages/orders/orders.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="20" cy="20" r="1"></circle>
+                        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 6H6"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Orders</span>
+            </a>
+
+            <!-- Payments -->
+            <a href="../../pages/payments/payments.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16"></path>
+                        <path d="M18 11h4v4h-4z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Payments</span>
+            </a>
+
+            <!-- Customers -->
+            <a href="../../pages/customers/customers.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Customers</span>
+            </a>
+
+            <!-- Marketing -->
+            <a href="../../pages/marketing/marketing.html" class="sidebar-item active">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 11v2"></path>
+                        <path d="M7 9l10-4v14L7 15H3V9z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Marketing</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-item logout" id="logout-button">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+        <main class="dashboard-main create-campaign-main">
+            
+        
+
+        <div class="create-header">
+            <h1>Create Promotional Coupon</h1>
+            <p>Configure discount logic and usage limits for your enterprise campaign.</p>
+        </div>
+
+        <div class="create-layout">
+            <!-- Left Column -->
+            <div class="form-columns">
+                <!-- General Information -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg>
+                        General Information
+                    </div>
+                    
+                    <div class="form-group" style="margin-bottom: 20px;">
+                        <label>Coupon Code</label>
+                        <div class="input-with-button">
+                            <input type="text" id="coupon-code" placeholder="e.g. SUMMER2024">
+                            <button class="btn-secondary" id="generate-code-btn">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"></polyline><polyline points="23 20 23 14 17 14"></polyline><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4l-4.64 4.36A9 9 0 0 1 3.51 15"></path></svg>
+                                Generate
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Discount Type</label>
+                            <select id="discount-type">
+                                <option>Percentage (%)</option>
+                                <option>Fixed Amount</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label>Discount Value</label>
+                            <div style="position:relative;">
+                                <input type="number" id="discount-value" value="0" style="width:100%; box-sizing:border-box;">
+                                <span style="position:absolute; right:12px; top:12px; color:#94a3b8;">
+                                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="5" x2="5" y2="19"></line><circle cx="6.5" cy="6.5" r="2.5"></circle><circle cx="17.5" cy="17.5" r="2.5"></circle></svg>
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Usage Restrictions -->
+                <div class="form-section">
+                    <div class="form-section-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"></circle><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"></path></svg>
+                        Usage Restrictions
+                    </div>
+                    
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Minimum Order Value</label>
+                            <input type="number" id="min-order-value" placeholder="0.00">
+                        </div>
+                        <div class="form-group">
+                            <label>Maximum Discount Limit</label>
+                            <input type="number" id="maximum-discount" placeholder="No limit">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group">
+                            <label>Usage Limit per Customer</label>
+                            <input type="number" placeholder="1">
+                        </div>
+                        <div class="form-group">
+                            <label>Total Usage Limit</label>
+                            <input type="number" id="usage-limit" placeholder="Unlimited">
+                        </div>
+                    </div>
+
+                    <div class="form-row">
+                        <div class="form-group" style="flex:1;">
+                            <label>Expiry Date</label>
+                            <div style="display:flex; gap:10px; align-items:center;">
+                                <input type="date" id="expiry-date" style="width:100%; box-sizing:border-box;">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Right Column -->
+            <div class="form-sidebar">
+                <div class="summary-card">
+                    <h3>Coupon Summary</h3>
+                    <div class="summary-highlight" id="summary-off">
+                        <strong>0% off</strong> all eligible items.
+                    </div>
+                    
+                    <div class="summary-list">
+                        <div class="summary-item">
+                            <span class="label">Code</span>
+                            <span class="value" id="summary-code">---</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Type</span>
+                            <span class="value" id="summary-type">Percentage</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Value</span>
+                            <span class="value" id="summary-value">0%</span>
+                        </div>
+                        <div class="summary-item">
+                            <span class="label">Expires</span>
+                            <span class="value">No expiry</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="pro-tip">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>
+                    <div>
+                        <h4>Pro Tip</h4>
+                        <p>Coupons with a "Maximum Discount Limit" are 15% more effective at protecting margins during high-volume sales events like Black Friday.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="action-footer">
+            <button class="btn-outline">Cancel</button>
+            <button class="btn-primary" id="create-coupon-btn" style="background:#f59e0b;">Create Coupon</button>
+        </div>
+
+        <footer style="margin-top: 40px; text-align: left; color: #64748b; font-size: 0.9rem;">
+            &copy; 2026 CloudBasket. All rights reserved.
+        </footer>
+    
+        </main>
+        
+    </div>
+<!-- Logout Modal Overlay -->
+<div class="modal-overlay" id="logout-modal">
+    <div class="logout-modal">
+        <div class="logout-icon">
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </div>
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to logout from CloudBasket?</p>
+        <div class="logout-buttons">
+            <button id="cancel-logout">Cancel</button>
+            <button id="confirm-logout">Logout</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="../../js/createCoupon.js"></script>
+</body>
+</html>

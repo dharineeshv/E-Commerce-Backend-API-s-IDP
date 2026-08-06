@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="icon" type="image/png" href="/favicon.png">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CloudBasket Admin - Payments Management</title>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+
+    <!-- CSS -->
+    <link rel="stylesheet" href="../../css/variables.css">
+    <link rel="stylesheet" href="../../css/common.css">
+    <link rel="stylesheet" href="../../css/dashboard.css">
+    <link rel="stylesheet" href="../../css/header.css">
+    <link rel="stylesheet" href="../../css/sidebar.css">
+    <link rel="stylesheet" href="../../css/logout.css">
+    <link rel="stylesheet" href="../../css/profile.css">
+    <link rel="stylesheet" href="../../css/payments.css?v=4">
+    <link rel="stylesheet" href="../../css/responsive.css">
+
+
+    <style>
+        /* Base overrides to apply Inter font */
+        body {
+            font-family: 'Inter', sans-serif;
+            background: #f0f4f8; /* slightly cooler background per mockup */
+        }
+    </style>
+</head>
+<body>
+<div class="dashboard">
+
+    <!-- Header -->
+    <header class="dashboard-header">
+        <div class="header-left">
+            <button class="hamburger-btn" id="menu-toggle" aria-label="Toggle Navigation Menu">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5">
+                    <line x1="3" y1="12" x2="21" y2="12"></line>
+                    <line x1="3" y1="6" x2="21" y2="6"></line>
+                    <line x1="3" y1="18" x2="21" y2="18"></line>
+                </svg>
+            </button>
+            <div class="logo-section" style="display: flex; align-items: center; gap: 12px;">
+                <div style="width: 40px; height: 40px; border-radius: 10px; background: #003366; display: flex; align-items: center; justify-content: center; color: white;">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path><line x1="3" y1="6" x2="21" y2="6"></line><path d="M16 10a4 4 0 0 1-8 0"></path></svg>
+                </div>
+                <div style="display: flex; flex-direction: column;">
+                    <h2 style="color: #003366; font-weight: 800; font-size: 1.25rem; margin:0; line-height: 1.1;">CloudBasket</h2>
+                    <span style="font-size: 0.7rem; font-weight: 700; letter-spacing: 1px; color: #64748b; text-transform: uppercase; margin-top: 2px;">Enterprise Admin</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="header-right">
+            <!-- Profile Section -->
+            <div class="profile-section">
+                <div class="profile-avatar" id="header-profile-avatar">D</div>
+                <div class="profile-info">
+                    <h4 id="admin-name">Dharineesh</h4>
+                    <span>Admin</span>
+                </div>
+                <button class="profile-dropdown" id="profile-dropdown">
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                </button>
+            </div>
+            
+            <!-- Profile Card -->
+            <div class="profile-card" id="profile-card">
+                <div class="profile-card-header">
+                    <div class="profile-card-avatar" id="profile-avatar">D</div>
+                    <h3 id="profile-full-name">Loading...</h3>
+                    <span>Admin</span>
+                </div>
+                <div class="profile-card-body">
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M4 4h16v16H4z"/>
+                            <polyline points="4 6 12 13 20 6"/>
+                        </svg>
+                        <p id="profile-email">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M22 16.92v3a2 2 0 0 1-2.18 2A19.8 19.8 0 0 1 2.08 4.18 2 2 0 0 1 4.06 2h3a2 2 0 0 1 2 1.72l.45 3a2 2 0 0 1-.57 1.74l-1.27 1.27a16 16 0 0 0 6.36 6.36l1.27-1.27a2 2 0 0 1 1.74-.57l3 .45A2 2 0 0 1 22 16.92z"/>
+                        </svg>
+                        <p id="profile-phone">Loading...</p>
+                    </div>
+                    <div class="profile-row">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M20 21a8 8 0 0 0-16 0"/>
+                            <circle cx="12" cy="7" r="4"/>
+                        </svg>
+                        <p id="profile-username">Loading...</p>
+                    </div>
+                </div>
+                <div class="profile-card-footer">
+                    <button id="logout-button">Logout</button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Sidebar -->
+    <aside class="dashboard-sidebar" id="sidebar">
+        <nav class="sidebar-navigation">
+            <span class="navigation-title">MAIN MENU</span>
+
+            <a href="../../pages/dashboard/dashboard.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="3" width="7" height="7"></rect>
+                        <rect x="14" y="14" width="7" height="7"></rect>
+                        <rect x="3" y="14" width="7" height="7"></rect>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Dashboard</span>
+            </a>
+
+            <!-- Products -->
+            <div class="sidebar-item-group">
+                <a href="../../pages/inventory/inventory.html" class="sidebar-item group-toggle" id="productsMenuToggle" onclick="
+                    event.preventDefault();
+                    const group = this.closest('.sidebar-item-group');
+                    const submenu = group.querySelector('.sidebar-submenu');
+                    if (group.classList.contains('open')) {
+                        group.classList.remove('open');
+                        submenu.style.display = 'none';
+                    } else {
+                        group.classList.add('open');
+                        submenu.style.display = 'block';
+                    }
+                ">
+                    <span class="sidebar-icon">
+                        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8"></path><path d="M3 8v8"></path><path d="M1 6l11 6 11-6"></path><path d="M12 22V12"></path></svg>
+                    </span>
+                    <span class="sidebar-text">Products</span>
+                    <span class="chevron-icon">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"></polyline></svg>
+                    </span>
+                </a>
+                <div class="sidebar-submenu" style="display: none;">
+                    <a href="../../pages/products/manage-products.html" class="submenu-item">Manage Products</a>
+                    <a href="../../pages/products/add-product.html" class="submenu-item">Add Product</a>
+                </div>
+            </div>
+
+            <!-- Inventory -->
+            <a href="../../pages/inventory/inventory.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <rect x="3" y="4" width="18" height="4"></rect>
+                        <path d="M5 8v11h14V8"></path>
+                        <path d="M10 12h4"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Inventory</span>
+            </a>
+
+            <!-- Orders -->
+            <a href="../../pages/orders/orders.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <circle cx="9" cy="20" r="1"></circle>
+                        <circle cx="20" cy="20" r="1"></circle>
+                        <path d="M1 1h4l2.7 13.4a2 2 0 0 0 2 1.6h8.8a2 2 0 0 0 2-1.6L23 6H6"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Orders</span>
+            </a>
+
+            <!-- Payments (ACTIVE) -->
+            <a href="../../pages/payments/payments.html" class="sidebar-item active">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M20 7H4a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h16"></path>
+                        <path d="M18 11h4v4h-4z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Payments</span>
+            </a>
+
+            <!-- Customers -->
+            <a href="../../pages/customers/customers.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path>
+                        <circle cx="9" cy="7" r="4"></circle>
+                        <path d="M23 21v-2a4 4 0 0 0-3-3.87"></path>
+                        <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Customers</span>
+            </a>
+
+            <!-- Marketing -->
+            <a href="../../pages/marketing/marketing.html" class="sidebar-item">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M3 11v2"></path>
+                        <path d="M7 9l10-4v14L7 15H3V9z"></path>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Marketing</span>
+            </a>
+        </nav>
+
+        <div class="sidebar-footer">
+            <a href="#" class="sidebar-item logout" id="logout-button">
+                <span class="sidebar-icon">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
+                        <polyline points="16 17 21 12 16 7"></polyline>
+                        <line x1="21" y1="12" x2="9" y2="12"></line>
+                    </svg>
+                </span>
+                <span class="sidebar-text">Logout</span>
+            </a>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="dashboard-main payments-main">
+        <div class="payments-container">
+            
+            <div class="payments-header">
+                <div class="header-titles">
+                    <h1 style="color: #1e3a8a; font-size: 1.1rem; margin-bottom: 5px;">Payments Management</h1>
+                    <p style="color: #475569; font-size: 0.9rem;">Monitor customer payments, refunds, transaction history and payment performance.</p>
+                </div>
+            </div>
+
+            <!-- Stats Grid -->
+            <div class="payments-stats-grid">
+                <!-- Total Transactions -->
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon bg-light-blue text-blue">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="6" width="20" height="12" rx="2"></rect>
+                                <circle cx="12" cy="12" r="2"></circle>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">TOTAL TRANSACTIONS</div>
+                    <div class="stat-footer">
+                        <span class="stat-value" id="stat-total-transactions">0</span>
+                    </div>
+                </div>
+
+                <!-- Pending -->
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon bg-light-yellow text-yellow">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <polyline points="12 6 12 12 16 14"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">PENDING</div>
+                    <div class="stat-footer">
+                        <span class="stat-value" id="stat-pending">0</span>
+                    </div>
+                </div>
+
+                <!-- Failed -->
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon bg-light-red text-red">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <circle cx="12" cy="12" r="10"></circle>
+                                <line x1="12" y1="8" x2="12" y2="12"></line>
+                                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">FAILED</div>
+                    <div class="stat-footer">
+                        <span class="stat-value" id="stat-failed">0</span>
+                    </div>
+                </div>
+
+                <!-- Refunded -->
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon bg-light-gray text-gray">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path>
+                                <polyline points="9 22 9 12 15 12 15 22"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">REFUNDED</div>
+                    <div class="stat-footer">
+                        <span class="stat-value" id="stat-refunded">0</span>
+                    </div>
+                </div>
+
+                <!-- Today's Revenue -->
+                <div class="stat-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon bg-light-blue text-blue">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <polyline points="22 12 18 12 15 21 9 3 6 12 2 12"></polyline>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title">TODAY'S REVENUE</div>
+                    <div class="stat-footer">
+                        <span class="stat-value" id="stat-today-revenue">&#8377;0.00</span>
+                    </div>
+                </div>
+
+                <!-- Total Revenue -->
+                <div class="stat-card dark-card">
+                    <div class="stat-card-header">
+                        <div class="stat-icon bg-dark-icon text-white">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="2" y="7" width="20" height="14" rx="2" ry="2"></rect>
+                                <path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="stat-title" style="color: #cbd5e1;">TOTAL REVENUE</div>
+                    <div class="stat-footer">
+                        <span class="stat-value" style="color: white;" id="stat-total-revenue">&#8377;0.00</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Controls (Search & Filters) -->
+            <div class="payments-controls">
+                <div class="filter-group">
+                    <label>Search Payments</label>
+                    <div class="search-wrapper">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                        <input type="text" id="search-payment" placeholder="Search by ID, Order, Customer...">
+                    </div>
+                </div>
+
+                <div class="filter-group">
+                    <label>Payment Status</label>
+                    <select id="filter-status">
+                        <option value="">All Statuses</option>
+                        <option value="Success">Success</option>
+                        <option value="Pending">Pending</option>
+                        <option value="Refunded">Refunded</option>
+                    </select>
+                </div>
+
+                <div class="filter-group">
+                    <label>Method</label>
+                    <select id="filter-method">
+                        <option value="">All Methods</option>
+                        <option value="UPI">UPI</option>
+                        <option value="COD">COD</option>
+                    </select>
+                </div>
+
+                <div class="filter-actions">
+                    <button class="btn-primary" id="apply-filters-btn">Apply Filters</button>
+                    <button class="btn-clear" id="clear-filters-btn">Clear</button>
+                    <button class="btn-export-excel" id="export-payments-excel-btn" style="padding: 10px 16px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; font-weight: 600; color: #003366; cursor: pointer; display: inline-flex; align-items: center; gap: 6px; font-size: 0.88rem; transition: background 0.2s;">
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><polyline points="7 10 12 15 17 10"></polyline><line x1="12" y1="15" x2="12" y2="3"></line></svg>
+                        Export
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table Wrapper -->
+            <div class="payments-table-wrapper">
+                <table class="payments-table">
+                    <thead>
+                        <tr>
+                            <th>ACTION</th>
+                            <th>PAYMENT ID</th>
+                            <th>ORDER ID</th>
+                            <th>CUSTOMER</th>
+                            <th>AMOUNT</th>
+                            <th>METHOD</th>
+                            <th>STATUS</th>
+                            <th>DATE</th>
+                        </tr>
+                    </thead>
+                    <tbody id="payments-table-body">
+                        <!-- Row 1 -->
+                        <tr>
+                            <td>
+                                <button class="action-btn view-details-btn" data-id="PAY-8821">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </td>
+                            <td class="font-bold">PAY-8821</td>
+                            <td class="text-gray">#ORD-552</td>
+                            <td>
+                                <div class="customer-cell">
+                                    <div class="avatar bg-light-blue text-blue">JS</div>
+                                    <div class="customer-name">John Smith</div>
+                                </div>
+                            </td>
+                            <td class="font-bold">â‚¹1,250.00</td>
+                            <td class="text-gray">UPI</td>
+                            <td><span class="status-pill success">â— Success</span></td>
+                            <td class="text-gray text-sm">Oct 24, 2023, 14:22</td>
+                        </tr>
+
+                        <!-- Row 2 -->
+                        <tr>
+                            <td>
+                                <button class="action-btn view-details-btn" data-id="PAY-8822">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </td>
+                            <td class="font-bold">PAY-8822</td>
+                            <td class="text-gray">#ORD-553</td>
+                            <td>
+                                <div class="customer-cell">
+                                    <div class="avatar bg-light-yellow text-yellow">SD</div>
+                                    <div class="customer-name">Sarah Doe</div>
+                                </div>
+                            </td>
+                            <td class="font-bold">â‚¹840.50</td>
+                            <td class="text-gray">COD</td>
+                            <td><span class="status-pill pending">â— Pending</span></td>
+                            <td class="text-gray text-sm">Oct 24, 2023, 15:45</td>
+                        </tr>
+
+                        <!-- Row 3 -->
+                        <tr>
+                            <td>
+                                <button class="action-btn view-details-btn" data-id="PAY-8823">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#003366" stroke-width="2">
+                                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                        <circle cx="12" cy="12" r="3"></circle>
+                                    </svg>
+                                </button>
+                            </td>
+                            <td class="font-bold">PAY-8823</td>
+                            <td class="text-gray">#ORD-554</td>
+                            <td>
+                                <div class="customer-cell">
+                                    <div class="avatar bg-light-red text-red">MW</div>
+                                    <div class="customer-name">Michael W.</div>
+                                </div>
+                            </td>
+                            <td class="font-bold">â‚¹2,400.00</td>
+                            <td class="text-gray">UPI</td>
+                            <td><span class="status-pill failed">â— Failed</span></td>
+                            <td class="text-gray text-sm">Oct 24, 2023, 11:20</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            <div class="pagination-container">
+                <div class="pagination-info" id="pagination-info">
+                    Showing 0 to 0 of 0 payments
+                </div>
+                <div class="pagination-controls" id="pagination-controls">
+                    <!-- Filled dynamically -->
+                </div>
+            </div>
+
+        </div>
+    </main>
+</div>
+
+<!-- ==========================================================
+                        MODALS & PANELS
+=========================================================== -->
+
+<!-- Slide-out Sidebar Overlay -->
+<div class="slide-overlay" id="payment-details-overlay"></div>
+
+<!-- Slide-out Sidebar for Payment Details -->
+<div class="slide-panel" id="payment-details-panel">
+    <div class="panel-header">
+        <div>
+            <div class="panel-title-label">PAYMENT DETAILS</div>
+            <h2 class="panel-title-id">PAY-8821</h2>
+        </div>
+        <div class="panel-header-right">
+            <span class="status-pill success-light">SUCCESS</span>
+            <button class="close-panel-btn" id="close-panel-btn">&times;</button>
+        </div>
+    </div>
+
+    <div class="panel-body">
+        <div class="action-buttons-row">
+            <button class="btn-refund">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"></path></svg>
+                Issue Refund
+            </button>
+            <button class="btn-receipt" id="open-receipt-btn">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                Receipt
+            </button>
+        </div>
+
+        <div class="section-title">CUSTOMER DETAILS</div>
+        <div class="customer-details-card">
+            <div class="customer-header-row">
+                <div class="avatar large bg-light-blue text-blue" style="border-radius: 50%;">JS</div>
+                <div>
+                    <h3 style="margin: 0; font-size: 1.1rem; color: #1e293b;">John Smith</h3>
+                </div>
+            </div>
+            <div class="customer-info-row">
+                <span class="info-label">Email</span>
+                <span class="info-value">john.smith@example.com</span>
+            </div>
+        </div>
+
+        <div class="section-title">PAYMENT INFO</div>
+        <div class="payment-info-grid">
+            <div class="info-box">
+                <span class="box-label">PAYMENT ID</span>
+                <span class="box-value">PAY-8821</span>
+            </div>
+            <div class="info-box">
+                <span class="box-label">CURRENCY</span>
+                <span class="box-value">INR (â‚¹)</span>
+            </div>
+        </div>
+
+        <div class="section-title">ORDER SUMMARY</div>
+        <div class="order-summary-card">
+            <div class="order-item">
+                <div class="item-img bg-light-gray"></div>
+                <div class="item-details">
+                    <h4>MacBook Pro 14" M2 Max</h4>
+                    <p>Qty: 1</p>
+                </div>
+                <div class="item-price">â‚¹1,100.00</div>
+            </div>
+            <div class="order-item">
+                <div class="item-img bg-light-gray"></div>
+                <div class="item-details">
+                    <h4>Thunderbolt Dock Station</h4>
+                    <p>Qty: 1</p>
+                </div>
+                <div class="item-price">â‚¹150.00</div>
+            </div>
+            <div class="order-total-row">
+                <span>Total Amount Paid</span>
+                <span class="total-price">â‚¹1,250.00</span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Receipt Modal -->
+<div class="modal-overlay" id="receipt-modal-overlay"></div>
+<div class="receipt-modal" id="receipt-modal">
+    <div class="receipt-content">
+        <div class="receipt-header">
+            <div>
+                <h1 style="color: #003366; font-size: 1.8rem; margin: 0;">CloudBasket</h1>
+                <p style="color: #64748b; margin: 5px 0 0; font-size: 0.9rem;">Enterprise Solutions</p>
+            </div>
+            <div style="text-align: right;">
+                <h2 style="color: #94a3b8; font-size: 1.2rem; font-weight: 500; letter-spacing: 1px; margin: 0; text-transform: uppercase;">CUST ID #</h2>
+                <h3 style="color: #1e293b; margin: 5px 0 0;">#PAY-8821</h3>
+            </div>
+        </div>
+        <hr style="border: none; border-top: 3px solid #003366; margin: 20px 0;">
+
+        <div class="receipt-info-row">
+            <div class="info-col">
+                <div class="col-title">BILLED FROM</div>
+                <div class="col-value-bold">CloudBasket</div>
+                <div class="col-value-light">Gobichettipalayam<br>ERODE 638505</div>
+            </div>
+
+            <div class="info-col text-right">
+                <div class="col-title text-right">TRANSACTION INFO</div>
+                <div class="info-table">
+                    <div class="info-row"><span class="label">Date:</span> <span class="val">Oct 24, 2023</span></div>
+                    <div class="info-row"><span class="label">Status:</span> <span class="val">SUCCESS</span></div>
+                    <div class="info-row"><span class="label">Method:</span> <span class="val">UPI</span></div>
+                </div>
+            </div>
+        </div>
+
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th style="text-align: left;">DESCRIPTION</th>
+                    <th>QTY</th>
+                    <th style="text-align: right;">PRICE</th>
+                    <th style="text-align: right;">TOTAL</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td style="text-align: left;">MacBook Pro 14" M2 Max (Silver)</td>
+                    <td>1</td>
+                    <td style="text-align: right;">â‚¹1,100.00</td>
+                    <td style="text-align: right; font-weight: 600;">â‚¹1,100.00</td>
+                </tr>
+                <tr>
+                    <td style="text-align: left;">Thunderbolt Dock Station</td>
+                    <td>1</td>
+                    <td style="text-align: right;">â‚¹150.00</td>
+                    <td style="text-align: right; font-weight: 600;">â‚¹150.00</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <div class="receipt-summary-row">
+            <div class="stamp">
+                <div class="stamp-circle">
+                    <span class="stamp-text-top">CLOUD</span>
+                    <span class="stamp-text-mid">VERIFIED</span>
+                    <span class="stamp-text-bot">BASKET</span>
+                </div>
+            </div>
+            <div class="totals-col">
+                <div class="total-row"><span>Subtotal</span><span>â‚¹1,250.00</span></div>
+                <div class="total-row"><span>Taxes</span><span>â‚¹0.00</span></div>
+                <div class="total-row grand-total"><span style="color: #003366;">Paid</span><span>â‚¹1,250.00</span></div>
+            </div>
+        </div>
+
+        <div class="thank-you-msg">THANK YOU FOR YOUR BUSINESS</div>
+
+        <div class="receipt-actions">
+            <button class="btn-cancel" id="close-receipt-btn">CLOSE</button>
+        </div>
+    </div>
+</div>
+
+<script type="module" src="../../js/payments.js?v=7"></script>
+<!-- ==========================================================
+                    LOGOUT MODAL
+=========================================================== -->
+
+<div class="modal-overlay" id="logout-modal">
+    <div class="logout-modal">
+        <div class="logout-icon">
+            <!-- Logout SVG -->
+            <svg width="45" height="45" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/>
+                <polyline points="16 17 21 12 16 7"></polyline>
+                <line x1="21" y1="12" x2="9" y2="12"></line>
+            </svg>
+        </div>
+        <h2>Confirm Logout</h2>
+        <p>Are you sure you want to logout from CloudBasket?</p>
+        <div class="logout-buttons">
+            <button id="cancel-logout">Cancel</button>
+            <button id="confirm-logout">Logout</button>
+        </div>
+    </div>
+</div>
+</body>
+</html>
