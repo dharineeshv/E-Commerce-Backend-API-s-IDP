@@ -11,21 +11,21 @@ function getAuthHeaders() {
   };
 }
 
-// Check if reviewService endpoint is explicitly defined and distinct from default API gateway root
-const isRemoteServiceActive = API.reviewService && 
-  API.reviewService !== "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
-
 export async function fetchProductReviews(productId) {
-  if (isRemoteServiceActive) {
-    try {
-      const response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
-      if (response.ok) {
-        const data = await response.json();
-        return data.data || data;
+  try {
+    const response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
+    if (response.ok) {
+      const data = await response.json();
+      if (data && (data.success || data.data || Array.isArray(data))) {
+        const remoteRes = data.data || data.reviews || (Array.isArray(data) ? data : []);
+        const reviews = Array.isArray(remoteRes) ? remoteRes : (remoteRes.reviews || []);
+        if (reviews && reviews.length > 0) {
+          return computeSummary(productId, reviews);
+        }
       }
-    } catch (error) {
-      // Quiet fallback
     }
+  } catch (error) {
+    console.warn("Failed to fetch remote reviews from API Gateway, using local reviews:", error);
   }
 
   return getLocalReviewsFallback(productId);
@@ -34,22 +34,20 @@ export async function fetchProductReviews(productId) {
 export async function postReview({ productId, rating, title, comment, customerName }) {
   const savedLocal = saveLocalReviewFallback({ productId, rating, title, comment, customerName });
 
-  if (isRemoteServiceActive) {
-    try {
-      const headers = getAuthHeaders();
-      const response = await fetch(`${API.reviewService}/api/v1/reviews`, {
-        method: "POST",
-        headers,
-        body: JSON.stringify({ productId, rating, title, comment, customerName }),
-      });
+  try {
+    const headers = getAuthHeaders();
+    const response = await fetch(`${API.reviewService}/api/v1/reviews`, {
+      method: "POST",
+      headers,
+      body: JSON.stringify({ productId, rating: Number(rating), title, comment, customerName }),
+    });
 
-      if (response.ok) {
-        const data = await response.json();
-        if (data.success) return data;
-      }
-    } catch (error) {
-      // Quiet fallback
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.success) return data.data || data;
     }
+  } catch (error) {
+    console.warn("Remote review submission failed, persisted locally:", error);
   }
 
   return savedLocal;

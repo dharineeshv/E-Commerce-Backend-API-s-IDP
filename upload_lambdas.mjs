@@ -15,6 +15,7 @@ const map = {
   "order-service": "Dharineesh_order-service",
   "payment-service": "Dharineesh_payment-service",
   "product-service": "Dharineesh_product_service",
+  "review-service": "Dharineesh_review-service",
   "user-profile-service": "Dharineesh_Profile-Service",
   "wishlist-service": "Dharineesh_wishlist"
 };
