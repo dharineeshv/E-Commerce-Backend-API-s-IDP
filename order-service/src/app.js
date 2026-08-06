@@ -16,7 +16,14 @@ const app = express();
 app.disable("x-powered-by");
 
 app.use(express.json());
-app.use(cors());
+const corsOptions = {
+  origin: process.env.ALLOWED_ORIGINS 
+    ? process.env.ALLOWED_ORIGINS.split(",") 
+    : ["https://d2vghmouksu39n.cloudfront.net", "https://d29i6xvt5mglve.cloudfront.net", "http://localhost:3000"],
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  allowedHeaders: ["Content-Type", "Authorization", "X-Amz-Date", "X-Api-Key", "X-Amz-Security-Token"]
+};
+app.use(cors(corsOptions));
 
 // X-Ray: open segment before routes
 if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
