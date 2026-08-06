@@ -82,9 +82,23 @@ async function initProductPage() {
                 return;
             }
             buyNowBtn.disabled = true;
-            const origHtml = buyNowBtn.innerHTML;
             buyNowBtn.innerHTML = `<span>Processing...</span>`;
-            await addToCart(productId, product.name || product.title);
+
+            const price = Number(product.sellingPrice || product.price || product.mrp || 0);
+            const directItem = {
+                productId: productId,
+                productName: product.name || product.title || 'Product',
+                price: price,
+                sellingPrice: price,
+                imageUrl: product.imageUrl || product.image || (product.images && product.images[0]) || '',
+                quantity: 1,
+                isDirectBuyNow: true
+            };
+            sessionStorage.setItem('direct_buy_now_item', JSON.stringify(directItem));
+
+            try {
+                await addToCart(productId, product.name || product.title);
+            } catch(err) {}
             window.location.href = 'checkout.html';
         });
     }

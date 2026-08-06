@@ -47,8 +47,22 @@ document.addEventListener('DOMContentLoaded', () => {
     async function loadCheckoutCart() {
         if (!summaryList) return;
         
-        summaryList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">Loading your cart...</p>';
+        summaryList.innerHTML = '<p style="text-align: center; color: #64748b; padding: 20px;">Loading your order summary...</p>';
 
+        // 1. Check for Direct Buy Now item in sessionStorage
+        const directItemRaw = sessionStorage.getItem('direct_buy_now_item');
+        let isDirectBuyNow = false;
+        if (directItemRaw) {
+            try {
+                const directItem = JSON.parse(directItemRaw);
+                if (directItem && (directItem.productId || directItem.id)) {
+                    cartItems = [directItem];
+                    isDirectBuyNow = true;
+                }
+            } catch(e) {}
+        }
+
+        // 2. Fetch products map for detail enrichment
         try {
             const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
             const prodData = await prodRes.json();
@@ -71,26 +85,41 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch(e) {
             console.error('Error fetching marketing sale in checkout', e);
         }
-        try {
-            const response = await apiFetch(`${API.orderService}/api/v1/cart`);
-            
-            if (response.status === 401 || response.status === 403) {
-                window.location.href = "index.html";
-                return;
+
+        // 3. If not Direct Buy Now, load full cart from backend
+        if (!isDirectBuyNow) {
+            try {
+                const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`);
+                
+                if (response.status === 401 || response.status === 403) {
+                    window.location.href = "index.html";
+                    return;
+                }
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    cartItems = data.data?.items || data.items || data.data || [];
+                } else {
+                    cartItems = [];
+                }
+            } catch (error) {
+                console.error("Error loading cart for checkout:", error);
+                cartItems = [];
             }
-            const data = await response.json();
-            
-            if (response.ok && data.success) {
-                cartItems = data.data?.items || data.items || data.data || [];
-                renderSummary();
-            } else {
-                throw new Error(data.message || 'Failed to load cart');
-            }
-        } catch (error) {
-            console.error("Error loading cart for checkout:", error);
-            summaryList.innerHTML = '<p style="text-align: center; color: #ef4444; padding: 20px;">Failed to load cart. Please refresh.</p>';
-            cartItems = [];
         }
+
+        // 4. Enrich cart items with product details and prices if missing
+        cartItems.forEach(item => {
+            const pId = item.productId || item.id || item.cartItemId;
+            const itemTitle = item.productName || item.title || '';
+            const matchedProd = (pId && allProductsMap[pId]) || (itemTitle && allProductsMap[itemTitle.toLowerCase().trim()]) || {};
+            
+            item.productName = item.productName || item.title || matchedProd.name || matchedProd.title || 'Product';
+            item.price = Number(item.price || item.unitPrice || item.sellingPrice || matchedProd.sellingPrice || matchedProd.price || matchedProd.mrp || 0);
+            item.imageUrl = item.imageUrl || item.image || matchedProd.imageUrl || matchedProd.image || (matchedProd.images && matchedProd.images[0]) || '';
+        });
+
+        renderSummary();
     }
     function renderSummary() {
         if (!summaryList) return;
@@ -215,14 +244,25 @@ document.addEventListener('DOMContentLoaded', () => {
             try {
                 const response = await apiFetch(`${API.orderService}/api/v1/order`, {
                     method: 'POST',
-                    body: JSON.stringify({ shippingAddress, calculatedTotal: checkoutTotal })
+                    body: JSON.stringify({ shippingAddress, calculatedTotal: checkoutTotal, items: cartItems })
                 });
                 const data = await response.json();
                 if (response.ok && data.success) {
                     const orderId = data.data?.orderId || data.data?.id || '';
                     const orderTotal = data.data?.calculatedTotal || data.data?.orderTotal || 0;
                     
-                    // Create Razorpay Order
+                    // Check selected payment method
+                    const selectedPaymentRadio = document.querySelector('input[name="payment_method"]:checked');
+                    const paymentMethod = selectedPaymentRadio ? selectedPaymentRadio.value : 'cod';
+
+                    // Cash On Delivery (COD) Flow
+                    if (paymentMethod === 'cod') {
+                        sessionStorage.removeItem('direct_buy_now_item');
+                        window.location.href = `payment-success.html?orderId=${orderId}&paymentMethod=COD`;
+                        return;
+                    }
+
+                    // Online Payment Flow (Razorpay)
                     const amountInPaise = Math.round(orderTotal * 100);
                     const razorpayResponse = await apiFetch(`${API.paymentService}/api/v1/payment/razorpay/create-order`, {
                         method: 'POST',

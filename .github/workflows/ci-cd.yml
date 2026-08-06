@@ -34,8 +34,10 @@ jobs:
         with:
           node-version: '20'
 
-      - name: Execute All Unit Test Suites
+      - name: Install Service Dependencies & Execute Unit Test Suites
         run: |
+          npm --prefix CloudBasket-Frontend install --no-audit --no-fund || true
+          npm --prefix product-service install --no-audit --no-fund || true
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
           node --test product-service/test/productService.test.js
 
