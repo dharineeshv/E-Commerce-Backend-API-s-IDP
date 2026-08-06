@@ -3,27 +3,21 @@
 // ==========================================
 
 export async function apiFetch(url, options = {}) {
-
-    const token = localStorage.getItem("accessToken");
+    const token = localStorage.getItem("accessToken") || localStorage.getItem("idToken");
+    const headers = {
+        "Content-Type": "application/json",
+        ...(options.headers || {})
+    };
+    if (token && token !== "null" && token !== "undefined") {
+        headers["Authorization"] = `Bearer ${token}`;
+    }
 
     const response = await fetch(url, {
-
         ...options,
-
-        headers: {
-
-            "Content-Type": "application/json",
-
-            Authorization: `Bearer ${token}`,
-
-            ...options.headers
-
-        }
-
+        headers
     });
 
     return response;
-
 }
 
 function parseJwt(token) {
