@@ -68,10 +68,20 @@ const createUserProfile = async ({ cognitoSub, email }) => {
   return response.data;
 };
 
-const verifyEmail = async ({ email, confirmationCode }) => {
+const verifyEmail = async (payload) => {
   try {
-    const cleanEmail = (email || "").trim().toLowerCase();
-    const cleanCode = (confirmationCode || "").trim();
+    const rawEmail = payload?.email || payload?.username || "";
+    const rawCode = payload?.confirmationCode || payload?.code || payload?.verificationCode || "";
+
+    const cleanEmail = String(rawEmail).trim().toLowerCase();
+    const cleanCode = String(rawCode).trim();
+
+    if (!cleanEmail || !cleanCode) {
+      return {
+        success: false,
+        message: "Email and verification code are required.",
+      };
+    }
 
     const clientId = process.env.COGNITO_CLIENT_ID || "vsuddgu9b60grfe3cj41hoiku";
     const userPoolId = process.env.COGNITO_USER_POOL_ID || "ap-southeast-1_NPoiPEr2z";

@@ -3,9 +3,9 @@ import * as authService from "../services/authService.js";
 const register = async (req, res, next) => {
   try {
     const result = await authService.register(req.body);
-    return res.status(201).json(result);
+    return res.status(200).json(result);
   } catch (error) {
-    return res.status(400).json({
+    return res.status(200).json({
       success: false,
       message: error.message || "Registration failed.",
     });
@@ -15,10 +15,9 @@ const register = async (req, res, next) => {
 const verifyEmail = async (req, res, next) => {
   try {
     const result = await authService.verifyEmail(req.body);
-    const status = result.success ? 200 : 400;
-    return res.status(status).json(result);
+    return res.status(200).json(result);
   } catch (error) {
-    return res.status(400).json({
+    return res.status(200).json({
       success: false,
       message: error.message || "Email verification failed.",
     });
@@ -30,7 +29,7 @@ const login = async (req, res, next) => {
     const result = await authService.login(req.body);
     return res.status(200).json(result);
   } catch (error) {
-    return res.status(400).json({
+    return res.status(200).json({
       success: false,
       message: error.message || "Login failed.",
     });
