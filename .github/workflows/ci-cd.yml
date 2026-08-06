@@ -69,7 +69,7 @@ jobs:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
 
   sonarqube-scan:
-    name: SonarQube Cloud Quality & Security Analysis
+    name: Self-Hosted SonarQube Code Quality & Security Analysis
     runs-on: ubuntu-latest
     steps:
       - name: Checkout Repository
@@ -77,11 +77,12 @@ jobs:
         with:
           fetch-depth: 0
 
-      - name: SonarCloud Scan
-        uses: SonarSource/sonarcloud-github-action@v3.1.0
+      - name: Self-Hosted SonarQube Scan
+        uses: SonarSource/sonarqube-scan-action@v2.0.2
+        continue-on-error: true
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
+          SONAR_HOST_URL: ${{ secrets.SONAR_HOST_URL }}
 
   deploy:
     name: Deploy to AWS S3 & CloudFront
