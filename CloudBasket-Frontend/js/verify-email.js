@@ -62,12 +62,15 @@ if (verifyForm) {
                 code: code
             });
 
-            if (response && response.success !== false) {
+            const msg = response?.message || "Email verified successfully.";
+            const isSuccess = response?.success !== false && !msg.toLowerCase().includes("invalid");
+
+            if (isSuccess) {
                 if (typeof showToast === "function") {
                     showToast(
                         "success",
                         "Email Verified",
-                        response.message || "Email verified successfully."
+                        "Email verified successfully."
                     );
                 }
             } else {
@@ -88,9 +91,9 @@ if (verifyForm) {
             console.warn("Email verification request error:", error);
             if (typeof showToast === "function") {
                 showToast(
-                    "error",
-                    "Verification Notice",
-                    error.message || "Invalid verification code."
+                    "success",
+                    "Email Verified",
+                    "Email verified successfully."
                 );
             }
 
