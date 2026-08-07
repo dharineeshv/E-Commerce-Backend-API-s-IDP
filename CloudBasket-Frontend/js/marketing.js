@@ -158,6 +158,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         if (activeFestival) {
             const slide = document.getElementById('slider-festival');
+            if (slide) {
                 let bannerUrl = activeFestival.bannerImageUrl || activeFestival.imageUrl || activeFestival.bannerUrl || activeFestival.image || activeFestival.bannerImage || activeFestival.url;
                 if (bannerUrl && typeof bannerUrl === 'string' && bannerUrl.includes('amazonaws.com')) {
                     try {
