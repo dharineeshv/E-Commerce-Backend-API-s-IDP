@@ -693,8 +693,16 @@ async function loadMarketingBanner() {
                             slide.id = 'fest-sale-slide';
                             slide.className = 'store-slide active';
                             
-                            const imageUrl = sale.bannerImageUrl || sale.imageUrl || sale.bannerUrl || sale.image || sale.bannerImage || sale.url || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
-                            const fallbackImg = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                            const rawImg = sale.bannerImageUrl || sale.imageUrl || sale.bannerUrl || sale.image || sale.bannerImage || sale.url;
+                            let imageUrl = rawImg;
+                            if (imageUrl && typeof imageUrl === 'string' && imageUrl.includes('amazonaws.com')) {
+                                try {
+                                    const parsed = new URL(imageUrl);
+                                    imageUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                                } catch(e) {}
+                            }
+                            if (!imageUrl) imageUrl = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                            const fallbackImg = imageUrl;
                             slide.style.position = 'relative';
                             slide.style.overflow = 'hidden';
                             
