@@ -87,10 +87,21 @@ document.addEventListener('DOMContentLoaded', async () => {
         displayDate.textContent = formattedDate;
     }
 
-    // Transaction ID formatting
+    // Transaction ID formatting using Crypto API (SonarQube compliant)
+    let secureOnlineTxnId = 'pay_ONLINE';
+    if (typeof window !== 'undefined' && window.crypto && window.crypto.getRandomValues) {
+        const array = new Uint8Array(5);
+        window.crypto.getRandomValues(array);
+        const hex = Array.from(array, byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
+        secureOnlineTxnId = `pay_${hex}`;
+    } else {
+        const orderHash = orderId ? orderId.replace(/[^a-zA-Z0-9]/g, '').substring(0, 8).toUpperCase() : 'ONLINE';
+        secureOnlineTxnId = `pay_${orderHash}`;
+    }
+
     const txnIdText = isCOD 
         ? `COD-${orderId.substring(0, 8).toUpperCase()}`
-        : `pay_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+        : secureOnlineTxnId;
 
     if (displayTxnId) {
         displayTxnId.innerHTML = `
