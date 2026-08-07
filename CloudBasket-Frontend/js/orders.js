@@ -334,12 +334,6 @@ function setupLayoutLogic() {
             }
         });
     }
-
-    // Admin info fallback
-    document.getElementById('profile-full-name').textContent = "Dharineesh V";
-    document.getElementById('profile-email').textContent = "admin@cloudbasket.com";
-    document.getElementById('profile-phone').textContent = "+1 234 567 8900";
-    document.getElementById('profile-username').textContent = "dharineesh.admin";
 }
 
 function resetDOMFilters() {
