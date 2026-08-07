@@ -177,10 +177,15 @@ async function loadOrders() {
         }
 
         return;
-    }
-
-    const rawOrdersList = response.data || response.orders || (Array.isArray(response) ? response : []);
+    }    const rawOrdersList = response.data || response.orders || (Array.isArray(response) ? response : []);
     const orders = Array.isArray(rawOrdersList) ? rawOrdersList : [];
+
+    // Sort orders descending by creation timestamp (newest first)
+    const sortedOrders = [...orders].sort((a, b) => {
+        const timeA = new Date(a.createdAt || a.createdDate || a.orderDate || a.date || a.updatedAt || 0).getTime();
+        const timeB = new Date(b.createdAt || b.createdDate || b.orderDate || b.date || b.updatedAt || 0).getTime();
+        return timeB - timeA;
+    });
 
     const isToday = (dateVal) => {
         if (!dateVal) return false;
@@ -201,9 +206,9 @@ async function loadOrders() {
     };
 
     // Filter orders created today (excluding cancelled)
-    const todayOrdersList = orders.filter(order => {
+    const todayOrdersList = sortedOrders.filter(order => {
         const status = (order.orderStatus ?? order.status ?? "").toString().toUpperCase();
-        if (status === "CANCELLED") return false;
+        if (status === "CANCELLED" || status === "CANCELED") return false;
         const dateVal = order.createdAt || order.createdDate || order.orderDate || order.date;
         return isToday(dateVal);
     });
@@ -219,7 +224,8 @@ async function loadOrders() {
     animateCounter("today-orders", todayOrdersCount);
     animateCounter("today-revenue", todayRevenue);
 
-    const recentOrders = orders.slice(0, 3);
+    // Display top 5 most recent orders
+    const recentOrders = sortedOrders.slice(0, 5);
 
     if (recentOrders.length === 0) {
         tableBody.innerHTML = `
@@ -257,24 +263,35 @@ async function loadOrders() {
                 order.customer?.fullName ||
                 "";
 
-            if (!customerName && order.customerId) {
+            const isPlaceholder = !customerName || 
+                customerName.trim().toLowerCase() === 'customer' || 
+                customerName.trim().toLowerCase().includes('google-sso') ||
+                customerName.trim().toLowerCase() === 'google sso user';
+
+            if ((isPlaceholder || !customerName) && order.shippingAddress) {
+                const ship = order.shippingAddress;
+                customerName = ship.fullName || ship.name || (ship.firstName ? `${ship.firstName} ${ship.lastName || ''}`.trim() : null) || ship.email || ship.customerEmail;
+            }
+
+            if ((isPlaceholder || !customerName) && order.customerId) {
                 try {
                     const profileResponse = await getProfile(order.customerId);
-                    customerName =
+                    const profName =
                         profileResponse?.data?.fullName ||
                         profileResponse?.fullName ||
                         profileResponse?.data?.name ||
                         profileResponse?.name ||
-                        "";
-                } catch (error) {
-                    console.error("Failed to fetch profile for customer:", order.customerId, error);
-                }
+                        profileResponse?.data?.email ||
+                        profileResponse?.email;
+                    if (profName && !profName.toLowerCase().includes('google-sso')) {
+                        customerName = profName;
+                    }
+                } catch (error) {}
             }
 
-            if (!customerName && order.shippingAddress) {
-                customerName = `${order.shippingAddress.firstName || ''} ${order.shippingAddress.lastName || ''}`.trim();
+            if (!customerName || customerName.trim().toLowerCase().includes('google-sso')) {
+                customerName = order.customerEmail || order.email || (order.shippingAddress && order.shippingAddress.email) || `Customer (${String(order.customerId || '001').replace(/^cust-/i, '')})`;
             }
-            customerName = customerName || "Unknown Customer";
 
             const orderIdVal = order.orderId || order.id || "N/A";
             const paymentObj = paymentMap[orderIdVal] || paymentMap[order.orderId] || paymentMap[order.id] || {};
@@ -309,7 +326,7 @@ async function loadOrders() {
                         <span class="status-badge ${
                             orderStatus === "DELIVERED"
                                 ? "success"
-                                : orderStatus === "CANCELLED"
+                                : (orderStatus === "CANCELLED" || orderStatus === "CANCELED")
                                 ? "cancelled"
                                 : "pending"
                         }">
@@ -319,7 +336,6 @@ async function loadOrders() {
                 </tr>
             `;
         })
-
     );
 
     tableBody.innerHTML = rows.join("");
