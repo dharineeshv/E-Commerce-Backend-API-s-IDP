@@ -4,7 +4,7 @@
     <link rel="icon" type="image/png" href="/favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Payment Successful - CloudBasket</title>
+    <title>Order Confirmed - CloudBasket</title>
     <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Main CSS -->
@@ -20,10 +20,10 @@
     <!-- Storefront Header -->
     <header class="store-header">
         <div class="header-container">
-            <div class="logo"><a href="login.html">CloudBasket</a></div>
+            <div class="logo"><a href="index.html">CloudBasket</a></div>
             
             <nav class="header-nav">
-                <a href="login.html" class="nav-link">
+                <a href="index.html" class="nav-link">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><rect x="3" y="14" width="7" height="7"></rect></svg>
                     <span>Categories</span>
                 </a>
@@ -39,7 +39,7 @@
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path></svg>
                     <span>Wishlist</span>
                 </a>
-                <a href="#" class="nav-link">
+                <a href="profile.html" class="nav-link">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="nav-svg"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
                     <span>Profile</span>
                 </a>
@@ -62,7 +62,7 @@
             </div>
 
             <!-- Title & Message -->
-            <h1 class="success-title">Payment Successful</h1>
+            <h1 class="success-title" id="success-page-title">Order Confirmed</h1>
             <p class="success-message">
                 Your order <strong id="display-order-id">#CB-ORD-XXXXX</strong> has been placed successfully.<br>
                 A confirmation email has been sent to your registered address.
@@ -72,31 +72,23 @@
             <div class="transaction-card">
                 <div class="transaction-left">
                     <div class="detail-group">
-                        <div class="detail-label">TRANSACTION ID</div>
+                        <div class="detail-label" id="display-txn-label">TRANSACTION ID</div>
                         <div class="detail-value" id="display-txn-id">
-                            pay_XXXXXX 
-                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="margin-left: 4px;">
-                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                            </svg>
+                            pay_XXXXXX
                         </div>
                     </div>
                     <div class="detail-group">
                         <div class="detail-label">PAYMENT METHOD</div>
-                        <div class="detail-value">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f4a8a" stroke-width="2">
-                                <rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect>
-                                <line x1="1" y1="10" x2="23" y2="10"></line>
-                            </svg>
-                            Razorpay / Visa
+                        <div class="detail-value" id="display-payment-method">
+                            Cash On Delivery
                         </div>
                     </div>
                 </div>
                 <div class="transaction-right">
-                    <div class="amount-label">TOTAL AMOUNT PAID</div>
-                    <div class="amount-value" id="display-amount">₹0.00</div>
+                    <div class="amount-label" id="display-amount-label">TOTAL AMOUNT</div>
+                    <div class="amount-value" id="display-amount">Loading...</div>
                     
-                    <div class="date-label">PAYMENT DATE</div>
+                    <div class="date-label">ORDER DATE</div>
                     <div class="date-value" id="display-date">Loading...</div>
                 </div>
             </div>
@@ -130,7 +122,7 @@
 
             <!-- Action Buttons -->
             <div class="action-buttons">
-                <a href="order-details.html" id="btn-view-order-details" class="btn-view-order">
+                <a href="orders.html" id="btn-view-order-details" class="btn-view-order">
                     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"></path>
                         <line x1="3" y1="6" x2="21" y2="6"></line>
@@ -138,7 +130,7 @@
                     </svg>
                     View Order Details
                 </a>
-                <a href="login.html" class="btn-continue">
+                <a href="index.html" class="btn-continue">
                     Continue Shopping
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <line x1="5" y1="12" x2="19" y2="12"></line>
@@ -153,11 +145,11 @@
 
         </div>
 
-        <!-- Hidden Invoice Template matching Screenshot 2 -->
+        <!-- Hidden Invoice Template -->
         <div id="invoice-template-wrapper" style="height: 0; overflow: hidden; position: relative;">
             <div id="invoice-template" style="display: block; width: 750px; padding: 40px 45px; background: #ffffff; font-family: Arial, Helvetica, sans-serif; color: #334155; box-sizing: border-box; font-size: 14px; line-height: 1.5;">
                 
-                <!-- Header Table (Top Left: CloudBasket Enterprise Solutions, Top Right: CUST ID #) -->
+                <!-- Header Table -->
                 <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
                     <tr>
                         <td style="vertical-align: top; text-align: left;">
@@ -188,9 +180,9 @@
                         <td style="vertical-align: top; text-align: right; width: 50%;">
                             <div style="font-size: 11px; font-weight: bold; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">TRANSACTION INFO</div>
                             <div style="font-size: 13px; color: #334155; line-height: 1.6;">
-                                Date: <span id="pdf-date-str" style="font-weight: 600;">Aug 5, 2026</span><br>
-                                Status: <span style="font-weight: bold; color: #16a34a;">SUCCESS</span><br>
-                                Method: <span style="font-weight: bold;" id="pdf-payment-method">RAZORPAY</span>
+                                Date: <span id="pdf-date-str" style="font-weight: 600;">Loading...</span><br>
+                                Status: <span style="font-weight: bold; color: #16a34a;">CONFIRMED</span><br>
+                                Method: <span style="font-weight: bold;" id="pdf-payment-method">CASH ON DELIVERY</span>
                             </div>
                         </td>
                     </tr>
@@ -237,7 +229,7 @@
                                     <td colspan="2" style="padding: 6px 0;"><div style="height: 1px; background-color: #cbd5e1; width: 100%;"></div></td>
                                 </tr>
                                 <tr>
-                                    <td style="padding: 6px 0; font-size: 18px; color: #003366; font-weight: bold;">Paid</td>
+                                    <td style="padding: 6px 0; font-size: 18px; color: #003366; font-weight: bold;">Total Amount</td>
                                     <td style="padding: 6px 0; font-size: 18px; color: #003366; text-align: right; font-weight: bold;" id="pdf-total-amount">₹0.00</td>
                                 </tr>
                             </table>
@@ -247,7 +239,7 @@
 
                 <!-- Footer Thank You Message -->
                 <div style="text-align: center; color: #94a3b8; font-size: 12px; font-weight: bold; letter-spacing: 1.5px; margin-top: 40px; text-transform: uppercase;">
-                    THANK YOU FOR YOUR BUSINESS
+                    THANK YOU FOR YOUR ORDER
                 </div>
 
             </div>
@@ -255,7 +247,7 @@
 
     </main>
 
-    <script src="js/payment-success.js?v=2" type="module"></script>
+    <script src="js/payment-success.js?v=3" type="module"></script>
     <script src="js/components/chatbot.js"></script>
 </body>
 </html>

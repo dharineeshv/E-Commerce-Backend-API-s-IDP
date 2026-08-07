@@ -4,139 +4,158 @@ import { apiFetch } from "./api/apiClient.js";
 document.addEventListener('DOMContentLoaded', async () => {
     const urlParams = new URLSearchParams(window.location.search);
     const orderId = urlParams.get('orderId');
+    const paymentMethodParam = (urlParams.get('paymentMethod') || '').toUpperCase();
 
+    const titleEl = document.getElementById('success-page-title');
     const displayOrderId = document.getElementById('display-order-id');
     const displayTxnId = document.getElementById('display-txn-id');
+    const displayPaymentMethod = document.getElementById('display-payment-method');
     const displayAmount = document.getElementById('display-amount');
     const displayDate = document.getElementById('display-date');
     const btnViewOrder = document.getElementById('btn-view-order-details');
+    const pdfPaymentMethod = document.getElementById('pdf-payment-method');
 
     if (!orderId) {
-        // Fallback if no order ID is provided
-        displayOrderId.textContent = "#UNKNOWN";
-        displayAmount.textContent = "₹0.00";
-        displayDate.textContent = "Unknown";
+        if (displayOrderId) displayOrderId.textContent = "#UNKNOWN";
+        if (displayAmount) displayAmount.textContent = "₹0.00";
+        if (displayDate) displayDate.textContent = new Date().toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' });
         return;
     }
 
-    // Set links
     if (btnViewOrder) {
         btnViewOrder.href = `order-details.html?id=${orderId}`;
     }
-    displayOrderId.textContent = `#${orderId}`;
+    if (displayOrderId) {
+        displayOrderId.textContent = `#${orderId.substring(0, 18)}`;
+    }
 
-    // Fetch order details
+    let order = null;
     try {
         const response = await apiFetch(`${API.orderService}/api/v1/order/${orderId}`);
-        if (!response.ok) throw new Error("Failed to fetch order");
+        if (response.ok) {
+            const result = await response.json();
+            order = result.data || result;
+        }
+    } catch (err) {
+        console.warn("Could not fetch order from API, using fallback:", err);
+    }
 
-        const result = await response.json();
-        const order = result.data || result;
+    // Determine payment method (COD vs Online)
+    const isCOD = paymentMethodParam === 'COD' || (order && order.paymentMethod === 'COD') || (order && order.shippingAddress && order.shippingAddress.paymentMethod === 'COD');
 
-        if (order && order.orderId) {
-            // Amount
-            const amount = order.orderTotal || order.totalAmount || order.amount || 0;
-            displayAmount.textContent = `₹${Number(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-            
-            // Date
-            const dateObj = new Date(order.createdAt || order.updatedAt || Date.now());
-            // Format: October 24, 2024 - 14:32 GMT
-            const options = { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZoneName: 'short' };
-            displayDate.textContent = dateObj.toLocaleDateString("en-US", options);
+    // Title Updates
+    if (titleEl) {
+        titleEl.textContent = isCOD ? "Order Confirmed" : "Payment Successful";
+    }
 
-            // Trigger payment success to DB (Simulating Webhook)
-            try {
-                // Check if payment already exists
-                const existingPaymentRes = await apiFetch(`${API.paymentService}/api/v1/payment/order/${orderId}`);
-                if (existingPaymentRes.status === 404) {
-                    // Create payment with UPI to force SUCCESS status in demo backend
-                    await apiFetch(`${API.paymentService}/api/v1/payment`, {
-                        method: 'POST',
-                        body: JSON.stringify({
-                            orderId: orderId,
-                            amount: amount,
-                            paymentMethod: 'UPI'
-                        })
-                } else if (existingPaymentRes.ok) {
-                }
-            } catch (err) {
-                console.error("Failed to register payment in DB:", err);
-            }
+    // Payment Method UI Text
+    if (displayPaymentMethod) {
+        displayPaymentMethod.innerHTML = isCOD 
+            ? `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#16a34a" stroke-width="2"><rect x="2" y="6" width="20" height="12" rx="2"></rect><circle cx="12" cy="12" r="2"></circle></svg> Cash On Delivery`
+            : `<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#0f4a8a" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"></rect><line x1="1" y1="10" x2="23" y2="10"></line></svg> Razorpay / Online`;
+    }
 
-            // Mock a transaction ID since the backend might not provide a distinct payment gateway ID yet
-            const mockTxn = `pay_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-            displayTxnId.innerHTML = `
-                ${mockTxn}
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="margin-left: 4px; cursor:pointer;" title="Copy">
-                    <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
-                    <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
-                </svg>
-            `;
+    if (pdfPaymentMethod) {
+        pdfPaymentMethod.textContent = isCOD ? "CASH ON DELIVERY" : "RAZORPAY";
+    }
 
-            // --- Populate PDF Template ---
-            const custIdEl = document.getElementById('pdf-cust-id');
-            if (custIdEl) custIdEl.textContent = `#${order.customerId || 'cust-002'}`;
+    // Amount Calculation
+    const rawAmount = order ? (order.orderTotal || order.calculatedTotal || order.totalAmount || order.amount || 0) : 0;
+    const amountNum = Number(rawAmount) || 0;
+    const formattedAmount = `₹${amountNum.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
-            const dateStrEl = document.getElementById('pdf-date-str');
-            if (dateStrEl) dateStrEl.textContent = dateObj.toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' });
+    if (displayAmount) {
+        displayAmount.textContent = formattedAmount;
+    }
 
-            const totalFormatted = `₹${Number(amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    // Date & Time Formatting
+    let dateObj = new Date(order?.createdAt || order?.updatedAt || Date.now());
+    if (isNaN(dateObj.getTime())) {
+        dateObj = new Date();
+    }
 
-            const subtotalEl = document.getElementById('pdf-subtotal-amount');
-            if (subtotalEl) subtotalEl.textContent = totalFormatted;
+    const formattedDate = dateObj.toLocaleDateString("en-US", {
+        month: 'short',
+        day: 'numeric',
+        year: 'numeric'
+    }) + ", " + dateObj.toLocaleTimeString("en-US", {
+        hour: '2-digit',
+        minute: '2-digit'
+    });
 
-            const taxEl = document.getElementById('pdf-tax-amount');
-            if (taxEl) taxEl.textContent = `₹0.00`;
+    if (displayDate) {
+        displayDate.textContent = formattedDate;
+    }
 
-            const totalEl = document.getElementById('pdf-total-amount');
-            if (totalEl) totalEl.textContent = totalFormatted;
+    // Transaction ID formatting
+    const txnIdText = isCOD 
+        ? `COD-${orderId.substring(0, 8).toUpperCase()}`
+        : `pay_${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
 
-            // Items Table (4 Columns matching Screenshot 2: DESCRIPTION | QTY | PRICE | TOTAL)
-            const pdfItemsContainer = document.getElementById('pdf-items-container');
-            pdfItemsContainer.innerHTML = '';
+    if (displayTxnId) {
+        displayTxnId.innerHTML = `
+            ${txnIdText} 
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#64748b" stroke-width="2" style="margin-left: 4px; cursor:pointer;" title="Copy" onclick="navigator.clipboard.writeText('${txnIdText}')">
+                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+            </svg>
+        `;
+    }
 
-            if (order.items && order.items.length > 0) {
-                order.items.forEach((item) => {
-                    const row = document.createElement('tr');
-                    row.style.borderBottom = "1px solid #f1f5f9";
+    // --- Populate PDF Invoice Template ---
+    const custIdEl = document.getElementById('pdf-cust-id');
+    if (custIdEl) custIdEl.textContent = `#${(order && order.customerId) ? order.customerId.substring(0, 10) : 'cust-001'}`;
 
-                    const itemName = item.name || item.productName || item.productId || 'Cloud Basket Product';
-                    const itemQty = item.quantity || 1;
-                    const itemPrice = item.price || (amount / itemQty);
-                    const itemTotal = itemQty * itemPrice;
+    const dateStrEl = document.getElementById('pdf-date-str');
+    if (dateStrEl) dateStrEl.textContent = dateObj.toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' });
 
-                    row.innerHTML = `
-                        <td style="padding: 12px 0; color: #334155; font-size: 13px;">${itemName}</td>
-                        <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">${itemQty}</td>
-                        <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">₹${Number(itemPrice).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                        <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    `;
-                    pdfItemsContainer.appendChild(row);
-                });
-            } else {
+    const subtotalEl = document.getElementById('pdf-subtotal-amount');
+    if (subtotalEl) subtotalEl.textContent = formattedAmount;
+
+    const taxEl = document.getElementById('pdf-tax-amount');
+    if (taxEl) taxEl.textContent = `₹0.00`;
+
+    const totalEl = document.getElementById('pdf-total-amount');
+    if (totalEl) totalEl.textContent = formattedAmount;
+
+    const pdfItemsContainer = document.getElementById('pdf-items-container');
+    if (pdfItemsContainer) {
+        pdfItemsContainer.innerHTML = '';
+        const itemsList = order && order.items && order.items.length > 0 ? order.items : [];
+
+        if (itemsList.length > 0) {
+            itemsList.forEach((item) => {
                 const row = document.createElement('tr');
                 row.style.borderBottom = "1px solid #f1f5f9";
+
+                const itemName = item.name || item.productName || item.title || 'CloudBasket Product';
+                const itemQty = item.quantity || 1;
+                const itemPrice = Number(item.price || (amountNum / itemQty)) || 0;
+                const itemTotal = itemQty * itemPrice;
+
                 row.innerHTML = `
-                    <td style="padding: 12px 0; color: #334155; font-size: 13px;">Order Items Package</td>
-                    <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">1</td>
-                    <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">${totalFormatted}</td>
-                    <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">${totalFormatted}</td>
+                    <td style="padding: 12px 0; color: #334155; font-size: 13px;">${itemName}</td>
+                    <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">${itemQty}</td>
+                    <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">₹${itemPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">₹${itemTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                 `;
                 pdfItemsContainer.appendChild(row);
-            }
-
+            });
         } else {
-            displayAmount.textContent = "₹0.00";
-            displayDate.textContent = "Order not found";
+            const row = document.createElement('tr');
+            row.style.borderBottom = "1px solid #f1f5f9";
+            row.innerHTML = `
+                <td style="padding: 12px 0; color: #334155; font-size: 13px;">Order Items Package</td>
+                <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">1</td>
+                <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">${formattedAmount}</td>
+                <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">${formattedAmount}</td>
+            `;
+            pdfItemsContainer.appendChild(row);
         }
-    } catch (error) {
-        console.error("Error fetching order for success page:", error);
-        displayAmount.textContent = "₹---";
-        displayDate.textContent = "Error loading date";
     }
 });
 
-// Global function for the download button
+// Global function for receipt download button
 window.downloadReceipt = function() {
     const element = document.getElementById('invoice-template');
     const wrapper = document.getElementById('invoice-template-wrapper');
@@ -151,7 +170,7 @@ window.downloadReceipt = function() {
     element.style.top = '0';
     element.style.left = '0';
     
-    const custId = document.getElementById('pdf-cust-id')?.textContent.replace('#', '') || 'cust-002';
+    const custId = document.getElementById('pdf-cust-id')?.textContent.replace('#', '') || 'cust-001';
     
     const opt = {
         margin:       15,
