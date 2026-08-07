@@ -36,8 +36,8 @@ jobs:
 
       - name: Install Service Dependencies & Execute Unit Test Suites
         run: |
-          npm --prefix CloudBasket-Frontend install --no-audit --no-fund || true
-          npm --prefix product-service install --no-audit --no-fund || true
+          npm --prefix CloudBasket-Frontend install --ignore-scripts --no-audit --no-fund || true
+          npm --prefix product-service install --ignore-scripts --no-audit --no-fund || true
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
           node --test product-service/test/productService.test.js
 
@@ -54,7 +54,6 @@ jobs:
           npx --yes sonarqube-scanner \
             -Dsonar.organization=dharineeshv \
             -Dsonar.projectKey=dharineeshv_E-Commerce-Backend-API-s-IDP \
-            -Dsonar.sources=. \
             -Dsonar.host.url=https://sonarcloud.io || echo "SonarQube scan complete"
         env:
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
@@ -83,7 +82,7 @@ jobs:
           for svc in authentication-service cart-service inventory-service marketing-service notification-service order-service payment-service product-service review-service user-profile-service wishlist-service; do
             if [ -d "$svc" ]; then
               echo "Installing production deps for $svc..."
-              npm --prefix "$svc" install --omit=dev --no-audit --no-fund || true
+              npm --prefix "$svc" install --omit=dev --ignore-scripts --no-audit --no-fund || true
             fi
           done
           node upload_lambdas.mjs
