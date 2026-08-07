@@ -12,7 +12,6 @@ import { getAllAdminPayments } from "./api/paymentApi.js";
 import { getProfile } from "./api/userProfileApi.js";
 
 async function loadFestivalSale() {
-
     const response = await getActiveFestivalSale();
 
     const titleElement = document.getElementById("festival-title");
@@ -20,6 +19,15 @@ async function loadFestivalSale() {
     const discountElement = document.getElementById("festival-discount");
     const durationElement = document.getElementById("festival-duration");
     const banner = document.getElementById("festival-banner");
+    const festivalBtn = document.getElementById("festival-button");
+
+    if (festivalBtn) {
+        festivalBtn.onclick = () => {
+            window.location.href = "../../pages/marketing/marketing.html";
+        };
+    }
+
+    const fallbackImg = "https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80";
 
     if (!response || !response.success || !response.data) {
         const festivalStatus = document.getElementById("festival-status");
@@ -30,7 +38,10 @@ async function loadFestivalSale() {
         if (descriptionElement) descriptionElement.textContent = "";
         if (discountElement) discountElement.textContent = "--";
         if (durationElement) durationElement.textContent = "--";
-        if (banner) banner.src = "../../assets/images/no-festival.png";
+        if (banner) {
+            banner.onerror = function() { this.onerror = null; this.src = fallbackImg; };
+            banner.src = fallbackImg;
+        }
         return;
     }
 
@@ -42,23 +53,36 @@ async function loadFestivalSale() {
         festivalStatus.innerHTML = `<span style="display: block; font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2; word-break: break-word; overflow-wrap: break-word;" title="${festival.title}">${festival.title}</span><span style="display: inline-block; margin-top: 3px; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">● Active</span>`;
     }
 
-    titleElement.textContent = `${festival.title} Live`;
-    descriptionElement.textContent = festival.subtitle || "";
-    discountElement.textContent =
-        festival.discountType === "PERCENTAGE"
-            ? `${festival.discountValue}% OFF`
-            : `₹${festival.discountValue} OFF`;
+    if (titleElement) titleElement.textContent = `${festival.title} Live`;
+    if (descriptionElement) descriptionElement.textContent = festival.subtitle || "";
+    if (discountElement) {
+        discountElement.textContent =
+            festival.discountType === "PERCENTAGE" || festival.discountType === "percentage"
+                ? `${festival.discountValue}% OFF`
+                : `₹${festival.discountValue} OFF`;
+    }
 
-    const startDate = new Date(festival.startDate);
-    const endDate = new Date(festival.endDate);
+    if (durationElement) {
+        const startDate = new Date(festival.startDate);
+        const endDate = new Date(festival.endDate);
+        durationElement.textContent =
+            `${startDate.toLocaleDateString("en-IN")} - ${endDate.toLocaleDateString("en-IN")}`;
+    }
 
-    durationElement.textContent =
-        `${startDate.toLocaleDateString("en-IN")} - ${endDate.toLocaleDateString("en-IN")}`;
-
-    banner.src =
-        festival.bannerImage ||
-        "../../assets/images/no-festival.png";
-
+    if (banner) {
+        let rawImg = festival.bannerImageUrl || festival.imageUrl || festival.bannerUrl || festival.image || festival.bannerImage || festival.url;
+        if (rawImg && rawImg.includes('amazonaws.com')) {
+            try {
+                const parsed = new URL(rawImg);
+                rawImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            } catch (e) {}
+        }
+        banner.onerror = function() {
+            this.onerror = null;
+            this.src = fallbackImg;
+        };
+        banner.src = rawImg || fallbackImg;
+    }
 }
 
 // ===========================================
