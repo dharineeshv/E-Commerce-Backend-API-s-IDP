@@ -158,14 +158,38 @@ async function loadCustomersData() {
             }
         });
 
-        // Resolve customer name
-        let name = u.fullName || u.name || u.username;
-        if (!name || name.trim().toLowerCase() === 'customer') {
-            if (latestShipping) {
-                name = latestShipping.fullName || latestShipping.name || (latestShipping.firstName ? `${latestShipping.firstName} ${latestShipping.lastName || ''}`.trim() : null);
+        // Resolve customer email first
+        let email = u.email;
+        if ((!email || email.toLowerCase().includes('google-sso') || email.toLowerCase() === 'customer@example.com') && latestShipping) {
+            email = latestShipping.email || latestShipping.customerEmail || email;
+        }
+        if ((!email || email.toLowerCase().includes('google-sso')) && matchedOrdersArr.length > 0) {
+            for (const o of matchedOrdersArr) {
+                const oEmail = o.customerEmail || o.email || (o.shippingAddress && o.shippingAddress.email);
+                if (oEmail && !oEmail.toLowerCase().includes('google-sso') && oEmail !== 'customer@example.com') {
+                    email = oEmail;
+                    break;
+                }
             }
         }
-        if (!name) name = u.email ? u.email.split('@')[0] : 'Customer';
+        if (!email || email.toLowerCase().includes('google-sso') || email.toLowerCase() === 'customer@example.com') {
+            email = `customer_${String(idx + 1).padStart(3, '0')}@cloudbasket.com`;
+        }
+
+        // Resolve customer name
+        let rawName = u.fullName || u.name || u.username;
+        const isSsoPlaceholder = !rawName || 
+            rawName.trim().toLowerCase() === 'customer' || 
+            rawName.trim().toLowerCase().includes('google-sso') ||
+            rawName.trim().toLowerCase() === 'google sso user';
+
+        let name = rawName;
+        if (isSsoPlaceholder && latestShipping) {
+            name = latestShipping.fullName || latestShipping.name || (latestShipping.firstName ? `${latestShipping.firstName} ${latestShipping.lastName || ''}`.trim() : null);
+        }
+        if (!name || isSsoPlaceholder || name.trim().toLowerCase().includes('google-sso')) {
+            name = email;
+        }
 
         // Resolve location
         let location = u.city ? `${u.city}, ${u.state || ''}` : u.location;
@@ -185,7 +209,7 @@ async function loadCustomersData() {
         return {
             id: u.customerId ? `#${u.customerId.toUpperCase()}` : `#CUST-${String(idx + 1).padStart(3, '0')}`,
             name: name,
-            email: u.email || 'customer@cloudbasket.com',
+            email: email,
             location: location,
             regDate: u.createdAt ? new Date(u.createdAt).toLocaleDateString('en-US', { day: '2-digit', month: 'short', year: 'numeric' }) : 'N/A',
             rawDate: u.createdAt || null,

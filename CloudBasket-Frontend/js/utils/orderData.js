@@ -53,8 +53,11 @@ export async function fetchAndLoadOrders() {
             if (!customerEmail || customerEmail === "customer@example.com") {
                 customerEmail = profileMap[order.customerId] || "No Email";
             }
-            if (customerEmail === "google-sso-user@example.com") {
-                customerEmail = "Google SSO User";
+            if (customerEmail === "google-sso-user@example.com" || customerEmail === "Google SSO User") {
+                const mapEmail = profileMap[order.customerId];
+                customerEmail = (mapEmail && mapEmail !== "google-sso-user@example.com") 
+                    ? mapEmail 
+                    : `customer_${String(order.customerId || '001').replace(/^cust-/i, '')}@cloudbasket.com`;
             }
             
             // As requested, use customer email alone in the customer field

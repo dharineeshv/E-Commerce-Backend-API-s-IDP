@@ -25,9 +25,11 @@ const getProfileBySub = async (req, res, next) => {
 
 const getMyProfile = async (req, res, next) => {
   try {
-    const cognitoSub = req.user.sub;
+    const cognitoSub = req.user ? (req.user.sub || req.user.username) : null;
+    const email = req.user ? (req.user.email || req.user.username) : null;
+    const name = req.user ? (req.user.name || req.user.given_name || (email ? email.split('@')[0] : null)) : null;
 
-    const result = await userProfileService.getMyProfile(cognitoSub);
+    const result = await userProfileService.getMyProfile(cognitoSub, email, name);
 
     return res.status(200).json(result);
   } catch (error) {

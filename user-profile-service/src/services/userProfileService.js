@@ -54,12 +54,16 @@ const getProfileByCognitoSub = async (cognitoSub) => {
   return response.Items?.[0] || null;
 };
 
-const getProfileBySub = async (cognitoSub) => {
+const getProfileBySub = async (cognitoSub, email, fullName) => {
 
   let profile = await getProfileByCognitoSub(cognitoSub);
 
   if (!profile) {
-    await createProfile({ cognitoSub, email: "google-sso-user@example.com" });
+    const userEmail = (email && email !== "google-sso-user@example.com" && email.includes("@")) 
+      ? email 
+      : `customer_${cognitoSub ? cognitoSub.substring(0, 6) : "user"}@cloudbasket.com`;
+    const userName = fullName || (userEmail ? userEmail.split("@")[0] : "Customer");
+    await createProfile({ cognitoSub, email: userEmail, fullName: userName });
     profile = await getProfileByCognitoSub(cognitoSub);
   }
 
@@ -99,13 +103,17 @@ const getProfileByCustomerId = async (customerId) => {
 
 };
 
-const getMyProfile = async (cognitoSub) => {
+const getMyProfile = async (cognitoSub, email, fullName) => {
 
   // Find profile using Cognito Sub
   let profile = await getProfileByCognitoSub(cognitoSub);
 
   if (!profile) {
-    await createProfile({ cognitoSub, email: "google-sso-user@example.com" });
+    const userEmail = (email && email !== "google-sso-user@example.com" && email.includes("@")) 
+      ? email 
+      : `customer_${cognitoSub ? cognitoSub.substring(0, 6) : "user"}@cloudbasket.com`;
+    const userName = fullName || (userEmail ? userEmail.split("@")[0] : "Customer");
+    await createProfile({ cognitoSub, email: userEmail, fullName: userName });
     profile = await getProfileByCognitoSub(cognitoSub);
   }
 
