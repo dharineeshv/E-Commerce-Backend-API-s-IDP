@@ -7,9 +7,9 @@ import https from "https";
 import reviewRoutes from "./routes/reviewRoutes.js";
 
 // Capture all outbound HTTP/HTTPS calls
-AWSXRay.setContextMissingStrategy("LOG_ERROR");
-AWSXRay.captureHTTPsGlobal(http, true);
-AWSXRay.captureHTTPsGlobal(https, true);
+// AWSXRay.setContextMissingStrategy("LOG_ERROR");
+// AWSXRay.captureHTTPsGlobal(http, true);
+// AWSXRay.captureHTTPsGlobal(https, true);
 
 const app = express();
 app.disable("x-powered-by");
