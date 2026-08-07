@@ -549,11 +549,32 @@ function setupModals() {
     }
 }
 
-function openPaymentPanel(paymentId) {
+async function ensureProductCatalog() {
+    if (window._productCatalogMap) return window._productCatalogMap;
+    try {
+        const { getAllProducts } = await import("./api/productApi.js");
+        const res = await getAllProducts();
+        const list = res ? (res.products || res.data || (Array.isArray(res) ? res : [])) : [];
+        const catalogMap = {};
+        list.forEach(p => {
+            const pId = p.productId || p.id || p.sku;
+            if (pId) catalogMap[pId] = p;
+        });
+        window._productCatalogMap = catalogMap;
+        return catalogMap;
+    } catch (e) {
+        window._productCatalogMap = {};
+        return {};
+    }
+}
+
+async function openPaymentPanel(paymentId) {
     const payment = state.allPayments.find(p => p.paymentId === paymentId);
     if (!payment) return;
     
     currentViewedPayment = payment;
+
+    const catalogMap = await ensureProductCatalog();
 
     const detailsPanel = document.getElementById('payment-details-panel');
     const panelOverlay = document.getElementById('payment-details-overlay');
@@ -576,12 +597,10 @@ function openPaymentPanel(paymentId) {
     const avatar = detailsPanel.querySelector('.customer-header-row .avatar');
     const name = detailsPanel.querySelector('.customer-header-row h3');
     const email = detailsPanel.querySelectorAll('.customer-info-row .info-value')[0];
-    const phone = detailsPanel.querySelectorAll('.customer-info-row .info-value')[1]; // Currently not available in order model natively, can mock or omit
 
     if (avatar) avatar.textContent = payment.customerAvatar;
     if (name) name.textContent = payment.customerName;
     if (email) email.textContent = payment.customerEmail;
-    if (phone) phone.textContent = "N/A"; // Or extract from shippingAddress if available
 
     // Payment Info Grid
     const paymentIdBox = detailsPanel.querySelectorAll('.payment-info-grid .box-value')[0];
@@ -595,20 +614,56 @@ function openPaymentPanel(paymentId) {
     if (orderSummaryContainer) {
         let orderHtml = '';
         const items = payment.orderItems || [];
+        const totalPaidAmount = Number(payment.amount || 0);
+
         items.forEach(item => {
+            const itemPid = item.productId || item.id || item.sku;
+            const catalogItem = (catalogMap && itemPid) ? catalogMap[itemPid] : null;
+
+            const rawName = item.name || item.productName || item.title;
+            const isUuidName = !rawName || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawName);
+            
+            let prodName = rawName;
+            if (isUuidName && catalogItem && (catalogItem.name || catalogItem.title)) {
+                prodName = catalogItem.name || catalogItem.title;
+            } else if (isUuidName && itemPid) {
+                prodName = `Product (${itemPid.substring(0, 8)})`;
+            }
+            if (!prodName) prodName = 'Product Item';
+
+            const qty = item.quantity || item.qty || 1;
+            
+            let itemPrice = Number(item.price || catalogItem?.price || 0);
+            if (items.length === 1 && totalPaidAmount > 0) {
+                itemPrice = totalPaidAmount / qty;
+            }
+
+            let rawImg = item.imageUrl || item.image || item.bannerImageUrl || catalogItem?.imageUrl || catalogItem?.image || catalogItem?.images?.[0] || catalogItem?.thumbnail;
+            if (rawImg && rawImg.includes('amazonaws.com')) {
+                try {
+                    const parsed = new URL(rawImg);
+                    rawImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                } catch (e) {}
+            }
+
+            const fallbackImg = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=300&q=80';
+            const imgUrl = rawImg || fallbackImg;
+
             orderHtml += `
-                <div class="order-item">
-                    <div class="item-img bg-light-gray"></div>
-                    <div class="item-details">
-                        <h4 style="font-size:0.85rem;">${item.name || item.productId}</h4>
-                        <p>Qty: ${item.quantity}</p>
+                <div class="order-item" style="display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 0; border-bottom: 1px solid #f1f5f9;">
+                    <div style="display: flex; align-items: center; gap: 12px;">
+                        <img src="${imgUrl}" alt="${escapeXml(prodName)}" style="width: 48px; height: 48px; border-radius: 8px; object-fit: cover; border: 1px solid #e2e8f0;" onerror="this.onerror=null; this.src='${fallbackImg}';">
+                        <div class="item-details">
+                            <h4 style="font-size:0.9rem; margin:0 0 2px 0; font-weight: 600; color: #0f172a;">${escapeXml(prodName)}</h4>
+                            <p style="margin:0; font-size:0.8rem; color:#64748b;">Qty: ${qty}</p>
+                        </div>
                     </div>
-                    <div class="item-price">${formatCurrency(item.price)}</div>
+                    <div class="item-price" style="font-weight:600; color: #1e293b;">${formatCurrency(itemPrice * qty)}</div>
                 </div>
             `;
         });
         orderHtml += `
-            <div class="order-total-row">
+            <div class="order-total-row" style="margin-top: 12px;">
                 <span>Total Amount Paid</span>
                 <span class="total-price">${payment.amountFormatted}</span>
             </div>
@@ -620,11 +675,14 @@ function openPaymentPanel(paymentId) {
     if (panelOverlay) panelOverlay.classList.add('active');
 }
 
-function populateReceipt(payment) {
+async function populateReceipt(payment) {
     const modal = document.getElementById('receipt-modal');
     if (!modal) return;
 
-    modal.querySelector('.receipt-header h3').textContent = `#${payment.customerId}`;
+    const catalogMap = await ensureProductCatalog();
+
+    const customerDisplayId = payment.customerId || payment.orderId || payment.paymentId;
+    modal.querySelector('.receipt-header h3').textContent = `#${String(customerDisplayId).substring(0, 10)}`;
 
     const txInfo = modal.querySelectorAll('.info-table .info-row .val');
     if (txInfo.length >= 3) {
@@ -637,14 +695,37 @@ function populateReceipt(payment) {
     if (tbody) {
         let itemsHtml = '';
         const items = payment.orderItems || [];
+        const totalPaidAmount = Number(payment.amount || 0);
+
         items.forEach(item => {
-            const total = item.quantity * item.price;
+            const itemPid = item.productId || item.id || item.sku;
+            const catalogItem = (catalogMap && itemPid) ? catalogMap[itemPid] : null;
+
+            const rawName = item.name || item.productName || item.title;
+            const isUuidName = !rawName || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawName);
+            
+            let prodName = rawName;
+            if (isUuidName && catalogItem && (catalogItem.name || catalogItem.title)) {
+                prodName = catalogItem.name || catalogItem.title;
+            } else if (isUuidName && itemPid) {
+                prodName = `Product (${itemPid.substring(0, 8)})`;
+            }
+            if (!prodName) prodName = 'Product Item';
+
+            const qty = item.quantity || item.qty || 1;
+
+            let itemUnitPrice = Number(item.price || catalogItem?.price || 0);
+            if (items.length === 1 && totalPaidAmount > 0) {
+                itemUnitPrice = totalPaidAmount / qty;
+            }
+            const lineTotal = itemUnitPrice * qty;
+
             itemsHtml += `
                 <tr>
-                    <td style="text-align: left;">${item.name || item.productId}</td>
-                    <td>${item.quantity}</td>
-                    <td style="text-align: right;">${formatCurrency(item.price)}</td>
-                    <td style="text-align: right; font-weight: 600;">${formatCurrency(total)}</td>
+                    <td style="text-align: left; font-weight: 500;">${escapeXml(prodName)}</td>
+                    <td>${qty}</td>
+                    <td style="text-align: right;">${formatCurrency(itemUnitPrice)}</td>
+                    <td style="text-align: right; font-weight: 600;">${formatCurrency(lineTotal)}</td>
                 </tr>
             `;
         });

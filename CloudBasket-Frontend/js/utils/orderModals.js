@@ -78,8 +78,11 @@ export function openViewModal(orderId) {
     document.getElementById('modal-customer-email').textContent = currentOrder.customerEmail;
     
     const shipping = currentOrder._raw.shippingAddress || {};
-    const phone = shipping.phone || "+1 (555) 000-0000";
-    
+    let rawPhone = shipping.phone || shipping.phoneNumber || currentOrder._raw.customerPhone || currentOrder._raw.phone || shipping.mobile || "";
+    if (rawPhone === "000-000-0000" || rawPhone === "+1 (555) 000-0000") {
+        rawPhone = "";
+    }
+
     const addressLine = shipping.address || shipping.addressLine1 || '';
     const city = shipping.city || '';
     const shipState = shipping.state || '';
@@ -96,7 +99,17 @@ export function openViewModal(orderId) {
     
     const address = parts.join('<br>');
 
-    document.getElementById('modal-customer-phone').textContent = phone;
+    const phoneEl = document.getElementById('modal-customer-phone');
+    if (phoneEl) {
+        if (rawPhone && rawPhone.trim()) {
+            phoneEl.textContent = rawPhone.trim();
+            phoneEl.style.display = "";
+        } else {
+            phoneEl.textContent = "";
+            phoneEl.style.display = "none";
+        }
+    }
+
     document.getElementById('modal-shipping-name').textContent = displayName;
     
     const shippingAddress = document.getElementById('modal-shipping-address');
@@ -132,44 +145,95 @@ function closeAllModals() {
     currentOrder = null;
 }
 
-function renderOrderItems(order) {
+function escapeXml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
+async function renderOrderItems(order) {
     const tbody = document.getElementById('modal-items-body');
     if (!tbody) return;
-    tbody.innerHTML = '';
+    tbody.innerHTML = '<tr><td colspan="3" style="text-align: center; color: #64748b; padding: 20px;">Loading items...</td></tr>';
     
     const items = order._raw.items || [];
     
     if (items.length === 0) {
         tbody.innerHTML = `<tr><td colspan="3" style="text-align: center; color: #64748b; padding: 20px;">No items in this order.</td></tr>`;
-    } else {
-        items.forEach(item => {
-            const name = item.name || item.productId || 'Unknown Item';
-            const sku = item.productId ? `SKU: ${item.productId}` : 'SKU: N/A';
-            const qty = item.quantity || 1;
-            const price = item.price || 0;
-            const encodedName = encodeURIComponent(name);
-            const imgUrl = `https://source.unsplash.com/150x150/?product,${encodedName}`;
-
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td>
-                    <div style="display: flex; align-items: center; gap: 15px;">
-                        <img src="${imgUrl}" alt="${name}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover;" onerror="this.src='https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?auto=format&fit=crop&w=150&q=80'">
-                        <div>
-                            <h4 style="margin: 0 0 4px 0; font-size: 14px; color: #0f172a;">${name}</h4>
-                            <p style="margin: 0; font-size: 12px; color: #64748b;">${sku}</p>
-                        </div>
-                    </div>
-                </td>
-                <td style="text-align: right;">₹${Number(price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                <td style="text-align: center;">${qty}</td>
-            `;
-            tbody.appendChild(tr);
-        });
+        return;
     }
 
+    let productCatalogMap = window._productCatalogMap || null;
+    if (!productCatalogMap) {
+        try {
+            const { getAllProducts } = await import('../api/productApi.js');
+            const res = await getAllProducts();
+            const list = res ? (res.products || res.data || (Array.isArray(res) ? res : [])) : [];
+            productCatalogMap = {};
+            list.forEach(p => {
+                const pId = p.productId || p.id || p.sku;
+                if (pId) productCatalogMap[pId] = p;
+            });
+            window._productCatalogMap = productCatalogMap;
+        } catch (e) {
+            productCatalogMap = {};
+        }
+    }
+
+    tbody.innerHTML = '';
+    items.forEach(item => {
+        const itemPid = item.productId || item.id || item.sku;
+        const catalogItem = (productCatalogMap && itemPid) ? productCatalogMap[itemPid] : null;
+
+        const rawName = item.name || item.productName || item.title;
+        const isUuidName = !rawName || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawName);
+        
+        let name = rawName;
+        if (isUuidName && catalogItem && (catalogItem.name || catalogItem.title)) {
+            name = catalogItem.name || catalogItem.title;
+        } else if (isUuidName && itemPid) {
+            name = `Product (${itemPid.substring(0, 8)})`;
+        }
+        if (!name) name = 'Product Item';
+
+        const sku = itemPid ? `SKU: ${itemPid}` : 'SKU: N/A';
+        const qty = item.quantity || item.qty || 1;
+        const price = item.price || item.unitPrice || catalogItem?.price || catalogItem?.mrp || 0;
+
+        let rawImg = item.imageUrl || item.image || item.bannerImageUrl || catalogItem?.imageUrl || catalogItem?.image || catalogItem?.images?.[0] || catalogItem?.thumbnail;
+        if (rawImg && rawImg.includes('amazonaws.com')) {
+            try {
+                const parsed = new URL(rawImg);
+                rawImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            } catch (e) {}
+        }
+
+        const fallbackImg = 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=300&q=80';
+        const imgUrl = rawImg || fallbackImg;
+
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+            <td>
+                <div style="display: flex; align-items: center; gap: 15px;">
+                    <img src="${imgUrl}" alt="${escapeXml(name)}" style="width: 50px; height: 50px; border-radius: 6px; object-fit: cover; border: 1px solid #e2e8f0;" onerror="this.onerror=null; this.src='${fallbackImg}';">
+                    <div>
+                        <h4 style="margin: 0 0 4px 0; font-size: 14px; font-weight: 600; color: #0f172a;">${escapeXml(name)}</h4>
+                        <p style="margin: 0; font-size: 12px; color: #64748b;">${escapeXml(sku)}</p>
+                    </div>
+                </div>
+            </td>
+            <td style="text-align: right; font-weight: 600;">₹${Number(price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: center; font-weight: 600;">${qty}</td>
+        `;
+        tbody.appendChild(tr);
+    });
+
     const totalEl = document.getElementById('modal-order-total');
-    if (totalEl) totalEl.textContent = '₹' + Number(order.amount).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    if (totalEl) totalEl.textContent = '₹' + Number(order.amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
 function openUpdateStatusModal() {
