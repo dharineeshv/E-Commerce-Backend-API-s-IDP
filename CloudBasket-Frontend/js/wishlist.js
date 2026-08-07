@@ -303,6 +303,7 @@ async function loadSuggestedProducts(currentWishlist) {
                         </svg>
                     </button>
                     <img src="${imageUrl}" alt="${title}" onerror="this.onerror=null; this.src='https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';" style="max-height: 100%; max-width: 100%; object-fit: contain;">
+                    <button class="quick-view-btn" data-product-id="${id}">Quick View</button>
                 </div>
                 <div class="card-body" style="display: flex; flex-direction: column; margin-top: 12px; flex-grow: 1;">
                     <div style="font-size: 0.68rem; color: #64748b; text-transform: uppercase; font-weight: 600; letter-spacing: 0.05em;">${category}</div>
@@ -321,10 +322,19 @@ async function loadSuggestedProducts(currentWishlist) {
             `;
             
             card.addEventListener('click', (e) => {
-                if (!e.target.closest('.wishlist-btn') && !e.target.closest('.suggested-cart-btn')) {
+                if (!e.target.closest('.wishlist-btn') && !e.target.closest('.suggested-cart-btn') && !e.target.closest('.quick-view-btn')) {
                     window.location.href = 'product.html?id=' + id;
                 }
             });
+
+            // Quick View Button Event Listener
+            const quickViewBtn = card.querySelector('.quick-view-btn');
+            if (quickViewBtn) {
+                quickViewBtn.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    window.location.href = `product.html?id=${id}`;
+                });
+            }
 
             // Wishlist Toggle
             const wishBtn = card.querySelector('.wishlist-btn');
