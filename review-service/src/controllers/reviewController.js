@@ -41,7 +41,7 @@ export async function addReview(req, res) {
 
 export async function getProductReviews(req, res) {
   try {
-    const productId = req.params.productId;
+    const productId = req.params.productId || req.params[0] || req.query.productId;
 
     if (!productId) {
       return res.status(200).json({
@@ -62,10 +62,11 @@ export async function getProductReviews(req, res) {
     });
   } catch (error) {
     console.warn("Error fetching reviews, returning default payload:", error.message);
+    const fallbackPid = req.params.productId || req.params[0] || req.query.productId || "";
     return res.status(200).json({
       success: true,
       data: {
-        productId: req.params.productId || "",
+        productId: fallbackPid,
         summary: { totalReviews: 0, averageRating: 5.0, ratingBreakdown: { 1: 0, 2: 0, 3: 0, 4: 0, 5: 0 } },
         reviews: []
       }

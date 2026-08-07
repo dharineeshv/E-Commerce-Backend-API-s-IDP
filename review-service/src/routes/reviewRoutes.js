@@ -6,6 +6,7 @@ const router = express.Router();
 
 // Public route to fetch reviews for a product
 router.get("/product/:productId", reviewController.getProductReviews);
+router.get("/:productId", reviewController.getProductReviews);
 
 // Protected routes (Requires valid JWT token)
 router.post("/", cognitoAuthMiddleware, reviewController.addReview);

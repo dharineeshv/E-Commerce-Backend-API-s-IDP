@@ -13,14 +13,19 @@ function getAuthHeaders() {
 
 export async function fetchProductReviews(productId) {
   let remoteData = null;
-  try {
-    const response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
-    if (response.ok) {
-      const data = await response.json();
-      remoteData = data.data || data;
+  if (productId) {
+    try {
+      let response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}`);
+      if (!response || !response.ok) {
+        response = await fetch(`${API.reviewService}/api/v1/reviews/${productId}`);
+      }
+      if (response && response.ok) {
+        const data = await response.json();
+        remoteData = data.data || data;
+      }
+    } catch (error) {
+      console.warn("Failed to fetch remote reviews from API Gateway, using local reviews:", error);
     }
-  } catch (error) {
-    console.warn("Failed to fetch remote reviews from API Gateway, using local reviews:", error);
   }
 
   const localData = getLocalReviewsFallback(productId);
