@@ -693,7 +693,7 @@ async function loadMarketingBanner() {
                             slide.id = 'fest-sale-slide';
                             slide.className = 'store-slide active';
                             
-                            const imageUrl = sale.bannerImageUrl || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
+                            const imageUrl = sale.bannerImageUrl || sale.imageUrl || sale.bannerUrl || sale.image || sale.bannerImage || sale.url || 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
                             const fallbackImg = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
                             slide.style.position = 'relative';
                             slide.style.overflow = 'hidden';

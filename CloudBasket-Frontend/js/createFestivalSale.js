@@ -132,6 +132,9 @@ document.addEventListener("DOMContentLoaded", () => {
                     endDate,
                     status: "ACTIVE",
                     bannerImageUrl: finalImageUrl,
+                    imageUrl: finalImageUrl,
+                    bannerUrl: finalImageUrl,
+                    image: finalImageUrl,
                     isFeatured: true,
                     displayOrder: 1
                 };

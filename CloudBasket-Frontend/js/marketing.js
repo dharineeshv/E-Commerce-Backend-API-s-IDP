@@ -159,8 +159,9 @@ document.addEventListener("DOMContentLoaded", () => {
         if (activeFestival) {
             const slide = document.getElementById('slider-festival');
             if (slide) {
-                if (activeFestival.bannerImageUrl) {
-                    slide.style.backgroundImage = `url('${activeFestival.bannerImageUrl}')`;
+                const bannerUrl = activeFestival.bannerImageUrl || activeFestival.imageUrl || activeFestival.bannerUrl || activeFestival.image || activeFestival.bannerImage || activeFestival.url;
+                if (bannerUrl) {
+                    slide.style.backgroundImage = `url('${bannerUrl}')`;
                 }
                 
                 const title = document.getElementById('slider-festival-title');
@@ -277,8 +278,10 @@ document.addEventListener("DOMContentLoaded", () => {
                 festStatusBadgeHtml = `<span style="background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Inactive</span>`;
             }
 
+            const festBannerImg = fest.bannerImageUrl || fest.imageUrl || fest.bannerUrl || fest.image || fest.bannerImage || fest.url || 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80';
+
             tr.innerHTML = `
-                <td style="padding: 14px;"><img src="${fest.bannerImageUrl || 'https://images.unsplash.com/photo-1607082349566-187342175e2f?auto=format&fit=crop&w=1200&q=80'}" style="width: 80px; height: 30px; object-fit: cover; border-radius: 4px;"></td>
+                <td style="padding: 14px;"><img src="${festBannerImg}" style="width: 80px; height: 30px; object-fit: cover; border-radius: 4px;"></td>
                 <td style="padding: 14px; font-weight: 600; color: #003366;">${fest.title}</td>
                 <td style="padding: 14px; font-weight: 700;">${discountText}</td>
                 <td style="padding: 14px;">${startDateStr}</td>

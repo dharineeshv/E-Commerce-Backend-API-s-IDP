@@ -134,6 +134,8 @@ const createFestivalSale = async (festivalSaleData) => {
     // Create Festival Sale
     // ==========================================
 
+    const resolvedBannerImg = festivalSaleData.bannerImageUrl || festivalSaleData.imageUrl || festivalSaleData.bannerUrl || festivalSaleData.image || festivalSaleData.bannerImage || festivalSaleData.url || "";
+
     const festivalSale = {
 
         festivalSaleId: uuidv4(),
@@ -142,7 +144,13 @@ const createFestivalSale = async (festivalSaleData) => {
 
         subtitle,
 
-        bannerImageUrl,
+        bannerImageUrl: resolvedBannerImg,
+
+        imageUrl: resolvedBannerImg,
+
+        bannerUrl: resolvedBannerImg,
+
+        image: resolvedBannerImg,
 
         discountType,
 
