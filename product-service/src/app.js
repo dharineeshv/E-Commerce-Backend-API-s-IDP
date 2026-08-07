@@ -13,8 +13,12 @@ dotenv.config();
 
 // Capture all outbound HTTP/HTTPS calls
 AWSXRay.setContextMissingStrategy("LOG_ERROR");
-AWSXRay.captureHTTPsGlobal(http, true);
-AWSXRay.captureHTTPsGlobal(https, true);
+if (!process.env.AWS_LAMBDA_FUNCTION_NAME) {
+  try {
+    AWSXRay.captureHTTPsGlobal(http, true);
+    AWSXRay.captureHTTPsGlobal(https, true);
+  } catch (e) {}
+}
 
 const app = express();
 app.disable("x-powered-by");

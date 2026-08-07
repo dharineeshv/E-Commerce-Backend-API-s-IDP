@@ -811,8 +811,8 @@ async function loadAndRenderReviews(productId) {
                 reviews.forEach((rev) => {
                     const dateStr = rev.createdAt ? new Date(rev.createdAt).toLocaleDateString('en-US', { year: 'numeric', month: 'short', day: 'numeric' }) : 'Recently';
                     let authorName = rev.customerName;
-                    if (!authorName || authorName === 'Verified Customer' || authorName === 'Verified Buyer' || authorName === 'anonymous') {
-                        authorName = getCurrentUserDisplayName();
+                    if (!authorName || authorName === 'anonymous') {
+                        authorName = "Verified Customer";
                     }
                     const card = document.createElement('div');
                     card.className = 'review-card';
