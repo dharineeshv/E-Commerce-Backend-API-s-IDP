@@ -346,6 +346,26 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         });
     }
+    function updateDeliveryDate() {
+        const deliveryDateEl = document.getElementById('delivery-date-text');
+        if (!deliveryDateEl) return;
+
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+
+        const dayName = tomorrow.toLocaleDateString("en-US", { weekday: 'long' });
+        const monthName = tomorrow.toLocaleDateString("en-US", { month: 'short' });
+        const dateNum = tomorrow.getDate();
+
+        let suffix = 'th';
+        if (dateNum % 10 === 1 && dateNum !== 11) suffix = 'st';
+        else if (dateNum % 10 === 2 && dateNum !== 12) suffix = 'nd';
+        else if (dateNum % 10 === 3 && dateNum !== 13) suffix = 'rd';
+
+        deliveryDateEl.textContent = `Arriving by ${dayName}, ${monthName} ${dateNum}${suffix}`;
+    }
+
     // Initialize
+    updateDeliveryDate();
     loadCheckoutCart();
 });
