@@ -273,17 +273,18 @@ function renderOrderDetails(order, allProducts = []) {
             // Items
             doc.text("Order Items:", 20, 95);
             let y = 105;
-            items.forEach((item, idx) => {
+            const pdfItems = calculatedItems && calculatedItems.length > 0 ? calculatedItems : items;
+            pdfItems.forEach((item, idx) => {
                 const itemName = item.name || item.productId || 'Unknown Item';
-                const itemQty = item.quantity || 1;
-                const itemPrice = item.price || 0;
-                doc.text(`${idx + 1}. ${itemName} (Qty: ${itemQty}) - Rs. ${(itemQty * itemPrice).toFixed(2)}`, 25, y);
+                const itemQty = item.qty || item.quantity || 1;
+                const itemTotalVal = item.itemTotal || (itemQty * Number(item.price || 0));
+                doc.text(`${idx + 1}. ${itemName} (Qty: ${itemQty}) - Rs. ${Number(itemTotalVal).toFixed(2)}`, 25, y);
                 y += 7;
             });
             
             y += 10;
             doc.setFontSize(14);
-            doc.text(`Total Amount: Rs. ${totalAmount.toFixed(2)}`, 20, y);
+            doc.text(`Total Amount: Rs. ${Number(displayTotal || orderTotal || 0).toFixed(2)}`, 20, y);
             
             y += 15;
             doc.setFontSize(12);
