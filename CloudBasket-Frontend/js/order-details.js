@@ -58,6 +58,16 @@ function sanitizeUrl(url) {
     return url;
 }
 
+function escapeXml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 function renderOrderDetails(order, allProducts = []) {
     const orderId = order.orderId || order.id || 'UNKNOWN';
     document.getElementById('breadcrumb-order-id').textContent = `Order History > Order #${orderId}`;
@@ -88,48 +98,84 @@ function renderOrderDetails(order, allProducts = []) {
         if (stepIcons[2]) stepIcons[2].classList.add('completed');
     }
 
-    // Item Summary
+    // Item & Financial Summary Calculation
     const items = order.items || [];
     document.getElementById('item-summary-title').textContent = `Item Summary (${items.length})`;
     
     const itemsList = document.getElementById('order-items-list');
     itemsList.innerHTML = '';
-    
+
+    const orderTotal = Number(order.orderTotal || order.totalAmount || order.amount || 0);
+
+    let calculatedItems = [];
+    let itemsSubtotal = 0;
+
     if (items.length > 0) {
-        items.forEach(item => {
+        const rawSum = items.reduce((acc, it) => acc + ((it.quantity || 1) * Number(it.price || 0)), 0);
+
+        calculatedItems = items.map(item => {
             const pId = item.productId || item.id;
             const pName = item.name || item.productName || item.title || '';
             
-            // Find actual product details from the Product API array
             const realProduct = (pId ? allProducts.find(p => (p.productId || p.id) === pId) : null) || 
                                 (pName ? allProducts.find(p => (p.name || p.title || '').toLowerCase() === pName.toLowerCase()) : null) || {};
             
-            const name = realProduct.name || realProduct.title || pName || 'Product';
-            const qty = item.quantity || 1;
-            const price = item.price || realProduct.sellingPrice || realProduct.price || 0;
+            const isUuidName = !pName || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(pName);
+            let name = pName;
+            if (isUuidName && (realProduct.name || realProduct.title)) {
+                name = realProduct.name || realProduct.title;
+            } else if (isUuidName && pId) {
+                name = `Product (${pId.substring(0, 8)})`;
+            }
+            if (!name) name = realProduct.name || realProduct.title || 'Product Item';
+
+            const qty = item.quantity || item.qty || 1;
+
+            let price = Number(item.price || 0);
+            if (items.length === 1 && orderTotal > 0) {
+                // Item total matches Order Total directly
+                price = orderTotal / qty;
+            } else if (price === 0 || Math.abs(rawSum - orderTotal) > 5) {
+                const catalogPrice = Number(realProduct.sellingPrice || realProduct.price || 0);
+                if (catalogPrice > 0 && rawSum > 0 && orderTotal > 0) {
+                    price = (catalogPrice / rawSum) * orderTotal;
+                } else if (orderTotal > 0) {
+                    price = orderTotal / (items.reduce((a, b) => a + (b.quantity || 1), 0));
+                }
+            }
+
             const itemTotal = qty * price;
-            
-            const itemDiv = document.createElement('div');
-            itemDiv.className = 'ordered-item';
-            
+            itemsSubtotal += itemTotal;
+
             let rawImg = item.imageUrl || item.image || realProduct.imageUrl || realProduct.image;
             if (!rawImg && realProduct.images && realProduct.images.length > 0) {
                 const firstImg = realProduct.images[0];
                 rawImg = typeof firstImg === 'string' ? firstImg : (firstImg.imageUrl || firstImg.url || firstImg.image);
             }
-            
-            const imgUrl = sanitizeUrl(rawImg);
-            const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
 
+            return {
+                name,
+                qty,
+                price,
+                itemTotal,
+                imgUrl: sanitizeUrl(rawImg)
+            };
+        });
+
+        const fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
+
+        calculatedItems.forEach(item => {
+            const itemDiv = document.createElement('div');
+            itemDiv.className = 'ordered-item';
             itemDiv.innerHTML = `
                 <div class="item-image">
-                    <img src="${imgUrl}" alt="${name}" onerror="this.onerror=null; this.src='${fallbackImg}';">
+                    <img src="${item.imgUrl}" alt="${escapeXml(item.name)}" onerror="this.onerror=null; this.src='${fallbackImg}';">
                 </div>
                 <div class="item-info">
-                    <div class="item-name" style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">${name}</div>
-                    <div class="item-qty-price">Qty: ${qty} &nbsp;&nbsp; ₹${Number(price).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="item-name" style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">${escapeXml(item.name)}</div>
+                    <div class="item-qty-price">Qty: ${item.qty} &nbsp;&nbsp; ₹${Number(item.price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                 </div>
-                <div class="item-total">₹${Number(itemTotal).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                <div class="item-total">₹${Number(item.itemTotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             `;
             itemsList.appendChild(itemDiv);
         });
@@ -138,21 +184,26 @@ function renderOrderDetails(order, allProducts = []) {
     }
 
     // Financial Summary
-    const totalAmount = Number(order.orderTotal || order.totalAmount || order.amount || 0);
-    // Rough estimate of tax and shipping if not provided by backend directly for display purposes
-    const shipping = 25.00;
-    const taxRate = 0.08;
-    const subtotal = totalAmount / (1 + taxRate) - shipping; // Reversed calculation for dummy data
+    const displaySubtotal = itemsSubtotal > 0 ? itemsSubtotal : orderTotal;
+    const displayTotal = displaySubtotal;
 
-    document.getElementById('summary-subtotal').textContent = `₹${subtotal > 0 ? subtotal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2}) : '0.00'}`;
-    document.getElementById('summary-shipping').textContent = `₹${totalAmount > 0 ? shipping.toFixed(2) : '0.00'}`;
+    const subtotalEl = document.getElementById('summary-subtotal');
+    const shippingEl = document.getElementById('summary-shipping');
+    const taxEl = document.getElementById('summary-tax');
+    const totalEl = document.getElementById('summary-total');
+
+    if (subtotalEl) subtotalEl.textContent = `₹${displaySubtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (shippingEl) shippingEl.textContent = `₹30.00`;
     
-    const tax = subtotal > 0 ? subtotal * taxRate : 0;
-    document.getElementById('summary-tax').textContent = `₹${tax.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
+    // Hide Estimated Tax row completely per user instruction
+    if (taxEl) {
+        const taxRow = taxEl.closest('.fin-row');
+        if (taxRow) taxRow.style.display = 'none';
+    }
+
+    if (totalEl) totalEl.textContent = `₹${displayTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     
-    document.getElementById('summary-total').textContent = `₹${totalAmount.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}`;
-    
-    const points = Math.floor(totalAmount);
+    const points = Math.floor(displayTotal);
     document.getElementById('summary-points').innerHTML = `
         <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" stroke="none">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"></polygon>

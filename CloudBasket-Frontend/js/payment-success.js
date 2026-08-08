@@ -113,7 +113,32 @@ document.addEventListener('DOMContentLoaded', async () => {
         `;
     }
 
+    // Wire Contact Support button to trigger Chatbot / Robot
+    const contactSupportBtn = document.getElementById('contact-support-btn');
+    if (contactSupportBtn) {
+        contactSupportBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (typeof window.toggleChatbot === 'function') {
+                window.toggleChatbot();
+            } else {
+                const fab = document.getElementById('chatbot-fab');
+                if (fab) fab.click();
+            }
+        });
+    }
+
     // --- Populate PDF Invoice Template ---
+    let catalogMap = {};
+    try {
+        const { getAllProducts } = await import("./api/productApi.js");
+        const res = await getAllProducts();
+        const list = res ? (res.products || res.data || (Array.isArray(res) ? res : [])) : [];
+        list.forEach(p => {
+            const pId = p.productId || p.id || p.sku;
+            if (pId) catalogMap[pId] = p;
+        });
+    } catch (e) {}
+
     const custIdEl = document.getElementById('pdf-cust-id');
     if (custIdEl) custIdEl.textContent = `#${(order && order.customerId) ? order.customerId.substring(0, 10) : 'cust-001'}`;
 
@@ -139,13 +164,29 @@ document.addEventListener('DOMContentLoaded', async () => {
                 const row = document.createElement('tr');
                 row.style.borderBottom = "1px solid #f1f5f9";
 
-                const itemName = item.name || item.productName || item.title || 'CloudBasket Product';
+                const itemPid = item.productId || item.id || item.sku;
+                const catalogItem = itemPid ? catalogMap[itemPid] : null;
+
+                const rawName = item.name || item.productName || item.title;
+                const isUuidName = !rawName || /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(rawName);
+                
+                let prodName = rawName;
+                if (isUuidName && catalogItem && (catalogItem.name || catalogItem.title)) {
+                    prodName = catalogItem.name || catalogItem.title;
+                } else if (isUuidName && itemPid) {
+                    prodName = `Product (${itemPid.substring(0, 8)})`;
+                }
+                if (!prodName) prodName = 'CloudBasket Product';
+
                 const itemQty = item.quantity || 1;
-                const itemPrice = Number(item.price || (amountNum / itemQty)) || 0;
+                let itemPrice = Number(item.price || catalogItem?.price || (amountNum / itemQty)) || 0;
+                if (itemsList.length === 1 && amountNum > 0) {
+                    itemPrice = amountNum / itemQty;
+                }
                 const itemTotal = itemQty * itemPrice;
 
                 row.innerHTML = `
-                    <td style="padding: 12px 0; color: #334155; font-size: 13px;">${itemName}</td>
+                    <td style="padding: 12px 0; color: #334155; font-size: 13px; font-weight: 500;">${escapeXml(prodName)}</td>
                     <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">${itemQty}</td>
                     <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">₹${itemPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                     <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">₹${itemTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
@@ -156,7 +197,7 @@ document.addEventListener('DOMContentLoaded', async () => {
             const row = document.createElement('tr');
             row.style.borderBottom = "1px solid #f1f5f9";
             row.innerHTML = `
-                <td style="padding: 12px 0; color: #334155; font-size: 13px;">Order Items Package</td>
+                <td style="padding: 12px 0; color: #334155; font-size: 13px; font-weight: 500;">Order Items Package</td>
                 <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">1</td>
                 <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">${formattedAmount}</td>
                 <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">${formattedAmount}</td>
@@ -166,43 +207,57 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
 });
 
+function escapeXml(str) {
+    if (!str) return '';
+    return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+}
+
 // Global function for receipt download button
 window.downloadReceipt = function() {
     const element = document.getElementById('invoice-template');
-    const wrapper = document.getElementById('invoice-template-wrapper');
     if (!element) return;
-    
-    if (wrapper) {
-        wrapper.style.height = 'auto';
-        wrapper.style.overflow = 'visible';
-    }
-    element.style.display = 'block';
-    element.style.position = 'relative';
-    element.style.top = '0';
-    element.style.left = '0';
     
     const custId = document.getElementById('pdf-cust-id')?.textContent.replace('#', '') || 'cust-001';
     
+    // Temporarily position element fixed at (0,0) for html2canvas full-width rendering
+    const prevPosition = element.style.position;
+    const prevLeft = element.style.left;
+    const prevTop = element.style.top;
+    const prevDisplay = element.style.display;
+    const prevZIndex = element.style.zIndex;
+
+    element.style.position = 'fixed';
+    element.style.left = '0';
+    element.style.top = '0';
+    element.style.zIndex = '999999';
+    element.style.display = 'block';
+    element.style.backgroundColor = '#ffffff';
+
     const opt = {
-        margin:       15,
+        margin:       [20, 20, 20, 20],
         filename:     `CloudBasket-Receipt-${custId}.pdf`,
         image:        { type: 'jpeg', quality: 0.98 },
-        html2canvas:  { scale: 2, useCORS: true, logging: false, width: 750, windowWidth: 750 },
+        html2canvas:  { scale: 2, useCORS: true, logging: false, scrollX: 0, scrollY: 0, windowWidth: 800 },
         jsPDF:        { unit: 'pt', format: 'a4', orientation: 'portrait' }
     };
     
     html2pdf().set(opt).from(element).save().then(() => {
-        element.style.display = 'none';
-        if (wrapper) {
-            wrapper.style.height = '0';
-            wrapper.style.overflow = 'hidden';
-        }
+        element.style.position = prevPosition || 'relative';
+        element.style.left = prevLeft || '0';
+        element.style.top = prevTop || '0';
+        element.style.display = prevDisplay || 'block';
+        element.style.zIndex = prevZIndex || '1';
     }).catch(err => {
         console.error("PDF Generation Error:", err);
-        element.style.display = 'none';
-        if (wrapper) {
-            wrapper.style.height = '0';
-            wrapper.style.overflow = 'hidden';
-        }
+        element.style.position = prevPosition || 'relative';
+        element.style.left = prevLeft || '0';
+        element.style.top = prevTop || '0';
+        element.style.display = prevDisplay || 'block';
+        element.style.zIndex = prevZIndex || '1';
     });
 };

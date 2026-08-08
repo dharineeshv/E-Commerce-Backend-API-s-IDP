@@ -93,32 +93,7 @@
                 </div>
             </div>
 
-            <!-- Receipt Block -->
-            <div class="receipt-block">
-                <div class="receipt-info">
-                    <div class="receipt-icon">
-                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                            <polyline points="14 2 14 8 20 8"></polyline>
-                            <line x1="16" y1="13" x2="8" y2="13"></line>
-                            <line x1="16" y1="17" x2="8" y2="17"></line>
-                            <polyline points="10 9 9 9 8 9"></polyline>
-                        </svg>
-                    </div>
-                    <div class="receipt-text">
-                        <h4>Official Invoice</h4>
-                        <p>CloudBasket Logistics Industrial Receipt</p>
-                    </div>
-                </div>
-                <button class="btn-download" onclick="downloadReceipt()">
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
-                        <polyline points="7 10 12 15 17 10"></polyline>
-                        <line x1="12" y1="15" x2="12" y2="3"></line>
-                    </svg>
-                    Download Receipt
-                </button>
-            </div>
+
 
             <!-- Action Buttons -->
             <div class="action-buttons">
@@ -140,111 +115,10 @@
             </div>
 
             <p class="support-text">
-                Need help with this order? <a href="#">Contact Support</a>
+                Need help with this order? <a href="javascript:void(0)" id="contact-support-btn" style="cursor: pointer; color: #003366; font-weight: 600; text-decoration: underline;">Contact Support</a>
             </p>
 
         </div>
-
-        <!-- Hidden Invoice Template -->
-        <div id="invoice-template-wrapper" style="height: 0; overflow: hidden; position: relative;">
-            <div id="invoice-template" style="display: block; width: 750px; padding: 40px 45px; background: #ffffff; font-family: Arial, Helvetica, sans-serif; color: #334155; box-sizing: border-box; font-size: 14px; line-height: 1.5;">
-                
-                <!-- Header Table -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 5px;">
-                    <tr>
-                        <td style="vertical-align: top; text-align: left;">
-                            <div style="color: #003366; font-size: 28px; font-weight: bold; margin-bottom: 2px;">CloudBasket</div>
-                            <div style="color: #64748b; font-size: 14px;">Enterprise Solutions</div>
-                        </td>
-                        <td style="vertical-align: top; text-align: right;">
-                            <div style="color: #94a3b8; font-size: 14px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">CUST ID #</div>
-                            <div style="color: #1e293b; font-size: 18px; font-weight: bold; margin-top: 2px;" id="pdf-cust-id">#cust-002</div>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- Dark Blue Horizontal Line -->
-                <div style="height: 3px; background-color: #003366; width: 100%; margin: 15px 0 25px 0;"></div>
-
-                <!-- Billed From & Transaction Info Table -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
-                    <tr>
-                        <td style="vertical-align: top; text-align: left; width: 50%;">
-                            <div style="font-size: 11px; font-weight: bold; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">BILLED FROM</div>
-                            <div style="font-size: 15px; font-weight: bold; color: #1e293b; margin-bottom: 2px;">CloudBasket</div>
-                            <div style="font-size: 13px; color: #64748b; line-height: 1.4;">
-                                Gobichettipalayam<br>
-                                ERODE 638505
-                            </div>
-                        </td>
-                        <td style="vertical-align: top; text-align: right; width: 50%;">
-                            <div style="font-size: 11px; font-weight: bold; color: #94a3b8; letter-spacing: 0.5px; margin-bottom: 4px; text-transform: uppercase;">TRANSACTION INFO</div>
-                            <div style="font-size: 13px; color: #334155; line-height: 1.6;">
-                                Date: <span id="pdf-date-str" style="font-weight: 600;">Loading...</span><br>
-                                Status: <span style="font-weight: bold; color: #16a34a;">CONFIRMED</span><br>
-                                Method: <span style="font-weight: bold;" id="pdf-payment-method">CASH ON DELIVERY</span>
-                            </div>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- Items Table -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 25px;">
-                    <thead>
-                        <tr style="border-bottom: 1px solid #cbd5e1; color: #94a3b8;">
-                            <th style="padding: 10px 0; text-align: left; font-size: 12px; font-weight: bold; text-transform: uppercase;">DESCRIPTION</th>
-                            <th style="padding: 10px 0; text-align: center; font-size: 12px; font-weight: bold; text-transform: uppercase; width: 60px;">QTY</th>
-                            <th style="padding: 10px 0; text-align: right; font-size: 12px; font-weight: bold; text-transform: uppercase; width: 120px;">PRICE</th>
-                            <th style="padding: 10px 0; text-align: right; font-size: 12px; font-weight: bold; text-transform: uppercase; width: 120px;">TOTAL</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdf-items-container">
-                        <!-- Items injected dynamically -->
-                    </tbody>
-                </table>
-
-                <!-- Totals Block -->
-                <table style="width: 100%; border-collapse: collapse; margin-bottom: 40px;">
-                    <tr>
-                        <td style="vertical-align: bottom; width: 160px;">
-                            <!-- Circular Stamp Seal -->
-                            <div style="width: 100px; height: 100px; border: 2px dashed #cbd5e1; border-radius: 50%; text-align: center; color: #cbd5e1; box-sizing: border-box; padding-top: 20px; transform: rotate(-15deg);">
-                                <div style="font-size: 9px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">CLOUD</div>
-                                <div style="font-size: 12px; font-weight: bold; letter-spacing: 1px; margin: 2px 0;">VERIFIED</div>
-                                <div style="font-size: 8px; font-weight: bold; letter-spacing: 0.5px; text-transform: uppercase;">BASKET</div>
-                            </div>
-                        </td>
-                        <td></td>
-                        <td style="width: 250px; vertical-align: top;">
-                            <table style="width: 100%; border-collapse: collapse;">
-                                <tr>
-                                    <td style="padding: 4px 0; font-size: 14px; color: #64748b;">Subtotal</td>
-                                    <td style="padding: 4px 0; font-size: 14px; color: #334155; text-align: right; font-weight: 600;" id="pdf-subtotal-amount">₹0.00</td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 4px 0; font-size: 14px; color: #64748b;">Taxes</td>
-                                    <td style="padding: 4px 0; font-size: 14px; color: #334155; text-align: right; font-weight: 600;" id="pdf-tax-amount">₹0.00</td>
-                                </tr>
-                                <tr>
-                                    <td colspan="2" style="padding: 6px 0;"><div style="height: 1px; background-color: #cbd5e1; width: 100%;"></div></td>
-                                </tr>
-                                <tr>
-                                    <td style="padding: 6px 0; font-size: 18px; color: #003366; font-weight: bold;">Total Amount</td>
-                                    <td style="padding: 6px 0; font-size: 18px; color: #003366; text-align: right; font-weight: bold;" id="pdf-total-amount">₹0.00</td>
-                                </tr>
-                            </table>
-                        </td>
-                    </tr>
-                </table>
-
-                <!-- Footer Thank You Message -->
-                <div style="text-align: center; color: #94a3b8; font-size: 12px; font-weight: bold; letter-spacing: 1.5px; margin-top: 40px; text-transform: uppercase;">
-                    THANK YOU FOR YOUR ORDER
-                </div>
-
-            </div>
-        </div>
-
     </main>
 
     <script src="js/payment-success.js?v=3" type="module"></script>
