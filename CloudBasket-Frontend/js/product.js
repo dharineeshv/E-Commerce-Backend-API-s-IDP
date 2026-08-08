@@ -1,6 +1,6 @@
 import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
-import { fetchProductReviews, postReview } from "./api/reviewApi.js";
+import { fetchProductReviews, postReview, deleteReviewApi } from "./api/reviewApi.js";
 
 let activeFestivalSale = null;
 
@@ -814,16 +814,30 @@ async function loadAndRenderReviews(productId) {
                     if (!authorName || authorName === 'anonymous') {
                         authorName = "Verified Customer";
                     }
+                    const revId = rev.reviewId || rev.id;
+
                     const card = document.createElement('div');
                     card.className = 'review-card';
-                    card.style.cssText = 'background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05);';
+                    card.style.cssText = 'background: white; border: 1px solid #e2e8f0; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); position: relative;';
                     card.innerHTML = `
                         <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 8px;">
                             <div>
                                 <div style="color: #f59e0b; font-size: 16px; margin-bottom: 4px;">${renderStarRating(rev.rating)}</div>
                                 <h4 style="margin: 0; font-size: 16px; color: #0f172a; font-weight: 700;">${escapeHtml(rev.title || 'Great Product')}</h4>
                             </div>
-                            <span style="font-size: 12px; color: #94a3b8;">${dateStr}</span>
+                            <div style="display: flex; align-items: center; gap: 10px;">
+                                <span style="font-size: 12px; color: #94a3b8;">${dateStr}</span>
+                                ${revId ? `
+                                <button class="delete-review-btn" data-review-id="${revId}" title="Delete Review" style="background: #fef2f2; border: 1px solid #fee2e2; cursor: pointer; color: #ef4444; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; transition: all 0.2s;">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                        <polyline points="3 6 5 6 21 6"></polyline>
+                                        <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                                        <line x1="10" y1="11" x2="10" y2="17"></line>
+                                        <line x1="14" y1="11" x2="14" y2="17"></line>
+                                    </svg>
+                                </button>
+                                ` : ''}
+                            </div>
                         </div>
                         <p style="margin: 8px 0 12px 0; color: #334155; font-size: 14px; line-height: 1.6;">${escapeHtml(rev.comment)}</p>
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
@@ -835,6 +849,36 @@ async function loadAndRenderReviews(productId) {
                             </span>
                         </div>
                     `;
+
+                    const deleteBtn = card.querySelector('.delete-review-btn');
+                    if (deleteBtn) {
+                        deleteBtn.addEventListener('click', async (e) => {
+                            e.preventDefault();
+                            const targetRevId = deleteBtn.getAttribute('data-review-id');
+                            if (!targetRevId) return;
+
+                            const confirmDel = confirm("Are you sure you want to delete this review?");
+                            if (confirmDel) {
+                                deleteBtn.disabled = true;
+                                try {
+                                    const res = await deleteReviewApi(targetRevId, productId);
+                                    if (res && res.success) {
+                                        if (window.showCustomAlert) window.showCustomAlert("Review deleted successfully.");
+                                        else alert("Review deleted successfully.");
+                                        await loadAndRenderReviews(productId);
+                                    } else {
+                                        alert("Failed to delete review.");
+                                        deleteBtn.disabled = false;
+                                    }
+                                } catch (err) {
+                                    console.error("Delete review error:", err);
+                                    alert("Failed to delete review.");
+                                    deleteBtn.disabled = false;
+                                }
+                            }
+                        });
+                    }
+
                     listEl.appendChild(card);
                 });
             }

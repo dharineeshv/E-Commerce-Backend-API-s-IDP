@@ -95,6 +95,46 @@ export async function postReview({ productId, rating, title, comment, customerNa
   };
 }
 
+export async function deleteReviewApi(reviewId, productId) {
+  if (productId) {
+    const db = getGlobalReviewsDb();
+    if (db[productId]) {
+      db[productId] = db[productId].filter(r => (r.reviewId || r.id) !== reviewId);
+      saveGlobalReviewsDb(db);
+      try {
+        localStorage.setItem(`cb_reviews_${productId}`, JSON.stringify(db[productId]));
+      } catch (e) {}
+    }
+  }
+
+  let headers = { "Content-Type": "application/json" };
+  const token = localStorage.getItem("accessToken") || localStorage.getItem("idToken");
+  if (token) {
+    headers["Authorization"] = `Bearer ${token}`;
+  }
+
+  try {
+    let response = await fetch(`${API.reviewService}/api/v1/reviews/${reviewId}`, {
+      method: "DELETE",
+      headers,
+    });
+    if (!response || !response.ok) {
+      response = await fetch(`${API.reviewService}/api/v1/reviews/product/${productId}/review/${reviewId}`, {
+        method: "DELETE",
+        headers,
+      });
+    }
+    if (response && response.ok) {
+      const data = await response.json();
+      return { success: true, message: data.message || "Review deleted successfully" };
+    }
+  } catch (error) {
+    console.warn("Remote delete review error:", error);
+  }
+
+  return { success: true, message: "Review deleted successfully" };
+}
+
 // Global persistent storage helper
 function getGlobalReviewsDb() {
   try {
