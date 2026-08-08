@@ -853,30 +853,28 @@ async function loadAndRenderReviews(productId) {
 
                     const deleteBtn = card.querySelector('.delete-review-btn');
                     if (deleteBtn) {
-                        deleteBtn.addEventListener('click', async (e) => {
+                        deleteBtn.addEventListener('click', (e) => {
                             e.preventDefault();
                             const targetRevId = deleteBtn.getAttribute('data-review-id');
                             if (!targetRevId) return;
 
-                            const confirmDel = confirm("Are you sure you want to delete this review?");
-                            if (confirmDel) {
+                            showConfirmPopup("Are you sure you want to delete this review?", async () => {
                                 deleteBtn.disabled = true;
                                 try {
                                     const res = await deleteReviewApi(targetRevId, productId);
                                     if (res && res.success) {
-                                        if (window.showCustomAlert) window.showCustomAlert("Review deleted successfully.");
-                                        else alert("Review deleted successfully.");
+                                        showAlertPopup("Review deleted successfully.");
                                         await loadAndRenderReviews(productId);
                                     } else {
-                                        alert("Failed to delete review.");
+                                        showAlertPopup("Failed to delete review.");
                                         deleteBtn.disabled = false;
                                     }
                                 } catch (err) {
                                     console.error("Delete review error:", err);
-                                    alert("Failed to delete review.");
+                                    showAlertPopup("Failed to delete review.");
                                     deleteBtn.disabled = false;
                                 }
-                            }
+                            });
                         });
                     }
 
@@ -961,6 +959,105 @@ function escapeHtml(str) {
         .replace(/</g, '&lt;')
         .replace(/>/g, '&gt;')
         .replace(/"/g, '&quot;');
+}
+
+function showConfirmPopup(message, onConfirm) {
+    if (typeof window.showCustomConfirm === 'function') {
+        window.showCustomConfirm(message, onConfirm);
+        return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease;';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background: white; padding: 28px 24px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-width: 400px; width: 90%; text-align: center; transform: scale(0.95); transition: transform 0.2s ease;';
+
+    box.innerHTML = `
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #fef2f2; color: #ef4444; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="3 6 5 6 21 6"></polyline>
+                <path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path>
+                <line x1="10" y1="11" x2="10" y2="17"></line>
+                <line x1="14" y1="11" x2="14" y2="17"></line>
+            </svg>
+        </div>
+        <h3 style="margin: 0 0 8px 0; font-size: 18px; font-weight: 700; color: #0f172a;">Delete Review</h3>
+        <p style="margin: 0 0 24px 0; font-size: 14px; color: #64748b; line-height: 1.5;">${escapeHtml(message)}</p>
+        <div style="display: flex; gap: 12px; justify-content: center;">
+            <button class="btn-cancel-modal" style="flex: 1; padding: 10px 18px; background: #f1f5f9; color: #475569; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Cancel</button>
+            <button class="btn-confirm-modal" style="flex: 1; padding: 10px 18px; background: #ef4444; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">Delete</button>
+        </div>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+        overlay.style.opacity = '1';
+        box.style.transform = 'scale(1)';
+    });
+
+    const closeOverlay = () => {
+        overlay.style.opacity = '0';
+        box.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 200);
+    };
+
+    box.querySelector('.btn-cancel-modal').onclick = closeOverlay;
+    box.querySelector('.btn-confirm-modal').onclick = () => {
+        closeOverlay();
+        onConfirm();
+    };
+    overlay.onclick = (e) => {
+        if (e.target === overlay) closeOverlay();
+    };
+}
+
+function showAlertPopup(message) {
+    if (typeof window.showCustomAlert === 'function') {
+        window.showCustomAlert(message);
+        return;
+    }
+
+    const overlay = document.createElement('div');
+    overlay.style.cssText = 'position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(15, 23, 42, 0.4); backdrop-filter: blur(4px); z-index: 99999; display: flex; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.2s ease;';
+
+    const box = document.createElement('div');
+    box.style.cssText = 'background: white; padding: 28px 24px; border-radius: 16px; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15), 0 10px 10px -5px rgba(0, 0, 0, 0.04); max-width: 380px; width: 90%; text-align: center; transform: scale(0.95); transition: transform 0.2s ease;';
+
+    box.innerHTML = `
+        <div style="width: 48px; height: 48px; border-radius: 50%; background: #dcfce7; color: #16a34a; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px auto;">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="20 6 9 17 4 12"></polyline>
+            </svg>
+        </div>
+        <p style="margin: 0 0 20px 0; font-size: 15px; font-weight: 600; color: #0f172a; line-height: 1.5;">${escapeHtml(message)}</p>
+        <button class="btn-ok-modal" style="width: 100%; padding: 10px; background: #003366; color: white; border: none; border-radius: 8px; font-weight: 600; font-size: 14px; cursor: pointer;">OK</button>
+    `;
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+
+    requestAnimationFrame(() => {
+        overlay.style.opacity = '1';
+        box.style.transform = 'scale(1)';
+    });
+
+    const closeOverlay = () => {
+        overlay.style.opacity = '0';
+        box.style.transform = 'scale(0.95)';
+        setTimeout(() => {
+            if (overlay.parentNode) overlay.parentNode.removeChild(overlay);
+        }, 200);
+    };
+
+    box.querySelector('.btn-ok-modal').onclick = closeOverlay;
+    overlay.onclick = (e) => {
+        if (e.target === overlay) closeOverlay();
+    };
 }
 
 function setupReviewForm(productId) {
