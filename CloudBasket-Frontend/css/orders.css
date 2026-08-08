@@ -257,10 +257,19 @@ body {
     color: #ffffff;
 }
 
+.step-icon.cancelled {
+    background-color: #ef4444;
+    color: #ffffff;
+}
+
 .step-label {
     font-size: 13px;
     font-weight: 600;
     color: #64748b;
+}
+
+.step-label.cancelled {
+    color: #ef4444;
 }
 
 .tracker-step.completed .step-label {

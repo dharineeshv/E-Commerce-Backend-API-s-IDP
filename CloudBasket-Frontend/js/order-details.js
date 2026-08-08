@@ -89,13 +89,29 @@ function renderOrderDetails(order, allProducts = []) {
     const trackerSteps = document.querySelectorAll('.tracker-step');
     const stepIcons = document.querySelectorAll('.step-icon');
     
-    if (status === 'SHIPPED' || status === 'DELIVERED') {
-        if (trackerSteps[1]) trackerSteps[1].classList.add('completed');
-        if (stepIcons[1]) stepIcons[1].classList.add('completed');
-    }
-    if (status === 'DELIVERED') {
-        if (trackerSteps[2]) trackerSteps[2].classList.add('completed');
-        if (stepIcons[2]) stepIcons[2].classList.add('completed');
+    if (status === 'CANCELLED' || status === 'CANCELED') {
+        if (trackerSteps[1]) {
+            const labelEl = trackerSteps[1].querySelector('.step-label');
+            const iconEl = trackerSteps[1].querySelector('.step-icon');
+            if (labelEl) {
+                labelEl.textContent = 'Cancelled';
+                labelEl.classList.add('cancelled');
+            }
+            if (iconEl) {
+                iconEl.className = 'step-icon cancelled';
+                iconEl.innerHTML = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>`;
+            }
+            trackerSteps[1].classList.add('completed');
+        }
+    } else {
+        if (status === 'SHIPPED' || status === 'DELIVERED') {
+            if (trackerSteps[1]) trackerSteps[1].classList.add('completed');
+            if (stepIcons[1]) stepIcons[1].classList.add('completed');
+        }
+        if (status === 'DELIVERED') {
+            if (trackerSteps[2]) trackerSteps[2].classList.add('completed');
+            if (stepIcons[2]) stepIcons[2].classList.add('completed');
+        }
     }
 
     // Item & Financial Summary Calculation
