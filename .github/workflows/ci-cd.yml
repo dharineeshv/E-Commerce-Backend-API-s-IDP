@@ -37,9 +37,9 @@ jobs:
       - name: Install Service Dependencies & Execute Unit Test Suites
         run: |
           npm --prefix CloudBasket-Frontend install --ignore-scripts --no-audit --no-fund || true
-          npm --prefix product-service install --ignore-scripts --no-audit --no-fund || true
+          npm --prefix backend/product-service install --ignore-scripts --no-audit --no-fund || true
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
-          node --test product-service/test/productService.test.js
+          node --test backend/product-service/test/productService.test.js
 
       - name: Snyk Security Scan (Non-blocking)
         continue-on-error: true
@@ -80,9 +80,9 @@ jobs:
         run: |
           sudo apt-get update && sudo apt-get install -y zip
           for svc in authentication-service cart-service inventory-service marketing-service notification-service order-service payment-service product-service review-service user-profile-service wishlist-service; do
-            if [ -d "$svc" ]; then
+            if [ -d "backend/$svc" ]; then
               echo "Installing production deps for $svc..."
-              npm --prefix "$svc" install --omit=dev --ignore-scripts --no-audit --no-fund || true
+              npm --prefix "backend/$svc" install --omit=dev --ignore-scripts --no-audit --no-fund || true
             fi
           done
           node upload_lambdas.mjs

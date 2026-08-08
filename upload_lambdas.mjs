@@ -27,7 +27,7 @@ for (const [svc, fn] of Object.entries(map)) {
   console.log(`Processing [${svc}] -> Lambda [${fn}]`);
   console.log(`========================================`);
   const zipPath = path.join(tmpDir, `${svc}.zip`);
-  const svcDir = path.join(baseDir, svc);
+  const svcDir = path.join(baseDir, "backend", svc);
   
   if (!fs.existsSync(svcDir)) {
     console.warn(`Directory ${svcDir} does not exist, skipping...`);
