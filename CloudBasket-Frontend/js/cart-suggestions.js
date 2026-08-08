@@ -125,11 +125,15 @@ async function loadSuggestedProducts() {
 
     try {
         // 1. Fetch Cart to know what's inside
-        const cartRes = await apiFetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart');
         let cartItems = [];
-        if (cartRes.ok) {
-            const data = await cartRes.json();
-            cartItems = data.data && data.data.items ? data.data.items : (data.items || []);
+        try {
+            const cartRes = await apiFetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart');
+            if (cartRes && cartRes.ok) {
+                const data = await cartRes.json();
+                cartItems = data.data && data.data.items ? data.data.items : (data.items || []);
+            }
+        } catch (e) {
+            console.warn("Could not fetch cart items for suggestions:", e);
         }
 
         const cartProductIds = cartItems.map(item => item.productId || item.id);
