@@ -815,6 +815,7 @@ async function loadAndRenderReviews(productId) {
                         authorName = "Verified Customer";
                     }
                     const revId = rev.reviewId || rev.id;
+                    const isOwnReview = isReviewOwnedByCurrentUser(rev);
 
                     const card = document.createElement('div');
                     card.className = 'review-card';
@@ -827,7 +828,7 @@ async function loadAndRenderReviews(productId) {
                             </div>
                             <div style="display: flex; align-items: center; gap: 10px;">
                                 <span style="font-size: 12px; color: #94a3b8;">${dateStr}</span>
-                                ${revId ? `
+                                ${(revId && isOwnReview) ? `
                                 <button class="delete-review-btn" data-review-id="${revId}" title="Delete Review" style="background: #fef2f2; border: 1px solid #fee2e2; cursor: pointer; color: #ef4444; padding: 4px 8px; border-radius: 6px; display: inline-flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; transition: all 0.2s;">
                                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                         <polyline points="3 6 5 6 21 6"></polyline>
@@ -919,6 +920,38 @@ function getCurrentUserDisplayName() {
         } catch (e) {}
     }
     return name || "Customer";
+}
+
+function isReviewOwnedByCurrentUser(rev) {
+    let currentName = (getCurrentUserDisplayName() || '').toLowerCase().trim();
+    let currentEmail = (localStorage.getItem("userEmail") || '').toLowerCase().trim();
+    
+    let currentSub = '';
+    try {
+        const idToken = localStorage.getItem('idToken') || localStorage.getItem('accessToken');
+        if (idToken) {
+            const payload = JSON.parse(atob(idToken.split('.')[1]));
+            currentSub = (payload.sub || payload["cognito:username"] || '').toLowerCase().trim();
+            if (payload.email && !currentEmail) {
+                currentEmail = payload.email.toLowerCase().trim();
+            }
+        }
+    } catch (e) {}
+
+    const revAuthor = (rev.customerName || rev.name || rev.author || '').toLowerCase().trim();
+    const revCustId = (rev.customerId || rev.userId || rev.sub || '').toLowerCase().trim();
+    const revEmail = (rev.email || rev.customerEmail || '').toLowerCase().trim();
+
+    if (revCustId && currentSub && revCustId === currentSub) return true;
+    if (revEmail && currentEmail && revEmail === currentEmail) return true;
+    if (revAuthor && currentName && revAuthor !== 'verified customer' && revAuthor !== 'anonymous') {
+        if (revAuthor === currentName || currentName.includes(revAuthor) || revAuthor.includes(currentName)) {
+            return true;
+        }
+    }
+    if (rev.reviewId && String(rev.reviewId).startsWith('rev-user-')) return true;
+
+    return false;
 }
 
 function escapeHtml(str) {
