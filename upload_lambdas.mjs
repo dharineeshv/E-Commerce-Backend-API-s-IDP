@@ -47,15 +47,16 @@ for (const [svc, fn] of Object.entries(map)) {
 
   if (fs.existsSync(zipPath)) fs.unlinkSync(zipPath);
   
-  // Zip from baseDir so zip contains the service folder name (e.g. cart-service/lambda.js)
+  // Zip from backend/ directory so zip contains the service folder name (e.g. cart-service/lambda.js)
   // to match AWS Lambda Handler configuration: "cart-service/lambda.handler"
+  const backendDir = path.join(baseDir, "backend");
   const isWindows = process.platform === "win32";
   const zipCmd = isWindows 
     ? `powershell -Command "Compress-Archive -Path '${svc}' -DestinationPath '${zipPath}' -Force"`
     : `zip -r "${zipPath}" "${svc}" -x "*.git*"`;
 
   console.log(`Zipping ${svc}...`);
-  execSync(zipCmd, { stdio: "inherit", cwd: baseDir });
+  execSync(zipCmd, { stdio: "inherit", cwd: backendDir });
   
   const stats = fs.statSync(zipPath);
   console.log(`Zip size: ${(stats.size / 1024 / 1024).toFixed(2)} MB`);
