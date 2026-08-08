@@ -38,8 +38,8 @@ jobs:
         run: |
           (cd CloudBasket-Frontend && npm install --include=dev --ignore-scripts --no-audit --no-fund)
           (cd backend/product-service && npm install --include=dev --ignore-scripts --no-audit --no-fund)
-          node --test CloudBasket-Frontend/test/frontendUtils.test.js
-          node --test backend/product-service/test/productService.test.js
+          (cd CloudBasket-Frontend && node --test test/frontendUtils.test.js)
+          (cd backend/product-service && node --test test/productService.test.js)
 
       - name: Snyk Security Scan (Non-blocking)
         continue-on-error: true

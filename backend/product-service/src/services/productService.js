@@ -1,5 +1,7 @@
-import dotenv from 'dotenv';
-dotenv.config();
+try {
+  const dotenv = await import('dotenv');
+  if (dotenv && dotenv.default) dotenv.default.config();
+} catch (e) {}
 
 import { DynamoDBClient } from '@aws-sdk/client-dynamodb';
 import { PutObjectCommand } from "@aws-sdk/client-s3";
