@@ -94,7 +94,7 @@ function renderEmpty(container) {
             </div>
             <h3 style="font-size: 20px; color: #0f172a; margin-bottom: 10px;">No Orders Found</h3>
             <p style="color: #64748b; margin-bottom: 24px;">Looks like you haven't placed any orders yet.</p>
-            <button onclick="window.location.href='index.html'" class="btn-solid-orange">Start Shopping</button>
+            <button onclick="window.location.href='login.html'" class="btn-solid-orange">Start Shopping</button>
         </div>
     `;
 }
