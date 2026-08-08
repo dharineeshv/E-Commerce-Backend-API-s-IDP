@@ -36,10 +36,9 @@ jobs:
 
       - name: Install Service Dependencies & Execute Unit Test Suites
         run: |
-          cd CloudBasket-Frontend && npm install --no-audit --no-fund && cd ..
-          cd backend/product-service && npm install --no-audit --no-fund && cd ../..
-          cd CloudBasket-Frontend && node --test test/frontendUtils.test.js && cd ..
-          cd backend/product-service && node --test test/productService.test.js && cd ../..
+          (cd backend/product-service && npm install --no-audit --no-fund)
+          node --test CloudBasket-Frontend/test/frontendUtils.test.js
+          (cd backend/product-service && node --test test/productService.test.js)
 
       - name: Snyk Security Scan (Non-blocking)
         continue-on-error: true
