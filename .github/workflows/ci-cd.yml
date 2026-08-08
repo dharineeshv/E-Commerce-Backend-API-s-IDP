@@ -36,8 +36,8 @@ jobs:
 
       - name: Install Service Dependencies & Execute Unit Test Suites
         run: |
-          npm --prefix CloudBasket-Frontend install --ignore-scripts --no-audit --no-fund || true
-          npm --prefix backend/product-service install --ignore-scripts --no-audit --no-fund || true
+          (cd CloudBasket-Frontend && npm install --include=dev --ignore-scripts --no-audit --no-fund)
+          (cd backend/product-service && npm install --include=dev --ignore-scripts --no-audit --no-fund)
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
           node --test backend/product-service/test/productService.test.js
 
@@ -82,7 +82,7 @@ jobs:
           for svc in authentication-service cart-service inventory-service marketing-service notification-service order-service payment-service product-service review-service user-profile-service wishlist-service; do
             if [ -d "backend/$svc" ]; then
               echo "Installing production deps for $svc..."
-              npm --prefix "backend/$svc" install --omit=dev --ignore-scripts --no-audit --no-fund || true
+              (cd "backend/$svc" && npm install --omit=dev --ignore-scripts --no-audit --no-fund)
             fi
           done
           node upload_lambdas.mjs
