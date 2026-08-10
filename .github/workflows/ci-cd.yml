@@ -40,12 +40,22 @@ jobs:
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
           (cd backend/product-service && node --test test/productService.test.js)
 
-      - name: Snyk Security Scan (Non-blocking)
+      - name: Snyk Security Scan & Report Generation
         continue-on-error: true
         run: |
-          npx --yes snyk test || echo "Snyk security scan complete"
+          npx --yes snyk test --json-file-output=snyk-report.json || echo "Snyk security scan complete"
+          npx --yes snyk test --sarif-file-output=snyk.sarif || echo "Snyk SARIF report complete"
         env:
           SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+
+      - name: Upload Snyk Security Scan Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: snyk-security-report
+          path: |
+            snyk-report.json
+            snyk.sarif
+          retention-days: 7
 
       - name: SonarQube Cloud Analysis (Non-blocking)
         continue-on-error: true
