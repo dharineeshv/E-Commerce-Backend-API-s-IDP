@@ -49,7 +49,7 @@ widgets.push({
   properties: {
     metrics: [
       ["AWS/CloudFront", "TotalErrorRate", "Region", "Global", "DistributionId", primaryDistributionId, { id: "cf_err_1", visible: false, region: "us-east-1", stat: "Average" }],
-      [{ expression: "100 - cf_err_1", label: "Primary CDN Uptime (%)", id: "cf_uptime_1", region: "us-east-1" }]
+      [{ expression: "100 - FILL(cf_err_1, 0)", label: "Primary CDN Uptime (%)", id: "cf_uptime_1", region: "us-east-1" }]
     ],
     view: "singleValue",
     region: region,
@@ -66,7 +66,7 @@ widgets.push({
   properties: {
     metrics: [
       ["AWS/CloudFront", "TotalErrorRate", "Region", "Global", "DistributionId", secondaryDistributionId, { id: "cf_err_2", visible: false, region: "us-east-1", stat: "Average" }],
-      [{ expression: "100 - cf_err_2", label: "Secondary CDN Uptime (%)", id: "cf_uptime_2", region: "us-east-1" }]
+      [{ expression: "100 - FILL(cf_err_2, 0)", label: "Secondary CDN Uptime (%)", id: "cf_uptime_2", region: "us-east-1" }]
     ],
     view: "singleValue",
     region: region,
@@ -232,9 +232,13 @@ widgets.push({
   x: 0, y: 30, width: 12, height: 6,
   properties: {
     metrics: [
-      ["AWS/ApiGateway", "Count", "ApiName", apiId, { label: "Total API Requests", stat: "Sum" }],
+      ["AWS/ApiGateway", "Count", "ApiName", apiId, { label: "Total API Requests", stat: "Sum", color: "#1f77b4" }],
+      ["AWS/ApiGateway", "Count", "ApiName", apiId, "Stage", "api", { label: "API Stage: api", stat: "Sum", visible: false }],
       ["AWS/ApiGateway", "4XXError", "ApiName", apiId, { label: "4XX Client Errors", stat: "Sum", color: "#ff7f0e" }],
-      ["AWS/ApiGateway", "5XXError", "ApiName", apiId, { label: "5XX Server Errors", stat: "Sum", color: "#d62728" }]
+      ["AWS/ApiGateway", "5XXError", "ApiName", apiId, { label: "5XX Server Errors", stat: "Sum", color: "#d62728" }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"Count\"', 'Sum', 300)", label: "Total Gateway Requests (Auto-Discovered)", id: "apigw_cnt", period: 300 }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"4XXError\"', 'Sum', 300)", label: "Gateway 4XX Errors (Auto-Discovered)", id: "apigw_4xx", period: 300 }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"5XXError\"', 'Sum', 300)", label: "Gateway 5XX Errors (Auto-Discovered)", id: "apigw_5xx", period: 300 }]
     ],
     view: "timeSeries",
     region: region,

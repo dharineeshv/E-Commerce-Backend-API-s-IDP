@@ -123,7 +123,9 @@ widgets.push({
   x: 0, y: 10, width: 8, height: 6,
   properties: {
     metrics: [
-      ["AWS/ApiGateway", "Count", "ApiName", apiId, { label: "Total API Requests", stat: "Sum" }]
+      ["AWS/ApiGateway", "Count", "ApiName", apiId, { label: "Total API Requests", stat: "Sum" }],
+      ["AWS/ApiGateway", "Count", "ApiName", apiId, "Stage", "api", { label: "Stage: api Requests", stat: "Sum", visible: false }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"Count\"', 'Sum', 300)", label: "Total Gateway Requests (Auto-Discovered)", id: "apigw_cnt", period: 300 }]
     ],
     view: "timeSeries",
     region: region,
@@ -138,7 +140,9 @@ widgets.push({
   properties: {
     metrics: [
       ["AWS/ApiGateway", "4XXError", "ApiName", apiId, { label: "4XX Client Errors", stat: "Sum", color: "#ff7f0e" }],
-      ["AWS/ApiGateway", "5XXError", "ApiName", apiId, { label: "5XX Server Errors", stat: "Sum", color: "#d62728" }]
+      ["AWS/ApiGateway", "5XXError", "ApiName", apiId, { label: "5XX Server Errors", stat: "Sum", color: "#d62728" }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"4XXError\"', 'Sum', 300)", label: "4XX Client Errors (Auto-Discovered)", id: "apigw_4xx", period: 300 }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"5XXError\"', 'Sum', 300)", label: "5XX Server Errors (Auto-Discovered)", id: "apigw_5xx", period: 300 }]
     ],
     view: "timeSeries",
     region: region,
@@ -153,7 +157,8 @@ widgets.push({
   properties: {
     metrics: [
       ["AWS/ApiGateway", "Latency", "ApiName", apiId, { label: "End-to-End Latency (ms)", stat: "Average" }],
-      ["AWS/ApiGateway", "IntegrationLatency", "ApiName", apiId, { label: "Integration Latency (ms)", stat: "Average" }]
+      ["AWS/ApiGateway", "IntegrationLatency", "ApiName", apiId, { label: "Integration Latency (ms)", stat: "Average" }],
+      [{ expression: "SEARCH('{AWS/ApiGateway} MetricName=\"Latency\"', 'Average', 300)", label: "Latency (Auto-Discovered)", id: "apigw_lat", period: 300 }]
     ],
     view: "timeSeries",
     region: region,
