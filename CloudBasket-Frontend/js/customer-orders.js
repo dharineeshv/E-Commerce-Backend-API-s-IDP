@@ -1,7 +1,7 @@
 import { API } from "./config.js";
 import { apiFetch } from "./api/apiClient.js";
 
-let allProductsMap = Object.create(null);
+const allProductsMap = new Map();
 
 function sanitizeUrl(url) {
     if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
@@ -28,9 +28,9 @@ async function init() {
         if (Array.isArray(list)) {
             list.forEach(p => {
                 const pId = p.productId || p.id;
-                if (pId) allProductsMap[pId] = p;
-                if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
-                if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+                if (pId) allProductsMap.set(String(pId), p);
+                if (p.name) allProductsMap.set(p.name.toLowerCase().trim(), p);
+                if (p.title) allProductsMap.set(p.title.toLowerCase().trim(), p);
             });
         }
     } catch (e) {}
@@ -147,7 +147,7 @@ function renderOrders(container, orders) {
             const pId = firstItem.productId || firstItem.id;
             const pName = firstItem.productName || firstItem.name || firstItem.title || '';
             
-            const matchedProd = (pId && allProductsMap[pId]) || (pName && allProductsMap[pName.toLowerCase().trim()]) || {};
+            const matchedProd = (pId && allProductsMap.get(String(pId))) || (pName && allProductsMap.get(pName.toLowerCase().trim())) || {};
             
             let rawImg = firstItem.imageUrl || firstItem.image || matchedProd.imageUrl || matchedProd.image;
             if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {

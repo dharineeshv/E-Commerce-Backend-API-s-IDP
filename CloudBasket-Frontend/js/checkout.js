@@ -70,9 +70,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Array.isArray(list)) {
                 list.forEach(p => {
                     const pId = p.productId || p.id;
-                    if (pId) allProductsMap[pId] = p;
-                    if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
-                    if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+                    if (pId) allProductsMap.set(String(pId), p);
+                    if (p.name) allProductsMap.set(p.name.toLowerCase().trim(), p);
+                    if (p.title) allProductsMap.set(p.title.toLowerCase().trim(), p);
                 });
             }
         } catch (e) {}
@@ -112,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cartItems.forEach(item => {
             const pId = item.productId || item.id || item.cartItemId;
             const itemTitle = item.productName || item.title || '';
-            const matchedProd = (pId && allProductsMap[pId]) || (itemTitle && allProductsMap[itemTitle.toLowerCase().trim()]) || {};
+            const matchedProd = (pId && allProductsMap.get(String(pId))) || (itemTitle && allProductsMap.get(itemTitle.toLowerCase().trim())) || {};
             
             item.productName = item.productName || item.title || matchedProd.name || matchedProd.title || 'Product';
             item.price = Number(item.price || item.unitPrice || item.sellingPrice || matchedProd.sellingPrice || matchedProd.price || matchedProd.mrp || 0);
@@ -135,7 +135,7 @@ document.addEventListener('DOMContentLoaded', () => {
         cartItems.forEach(item => {
             const pId = item.productId || item.id || item.cartItemId;
             const itemTitle = item.productName || item.title || '';
-            const matchedProd = (pId && allProductsMap[pId]) || (itemTitle && allProductsMap[itemTitle.toLowerCase().trim()]) || {};
+            const matchedProd = (pId && allProductsMap.get(String(pId))) || (itemTitle && allProductsMap.get(itemTitle.toLowerCase().trim())) || {};
             
             const title = itemTitle || matchedProd.name || matchedProd.title || 'Product';
             let originalPrice = Number(item.price || item.unitPrice || matchedProd.sellingPrice || matchedProd.price || matchedProd.mrp || 0);

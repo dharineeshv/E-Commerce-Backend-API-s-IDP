@@ -27,7 +27,7 @@ function checkAuth() {
     }
 }
 
-let allProductsMap = Object.create(null);
+const allProductsMap = new Map();
 
 function sanitizeUrl(url) {
     if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
@@ -52,9 +52,9 @@ async function loadWishlist() {
         if (Array.isArray(list)) {
             list.forEach(p => {
                 const pId = p.productId || p.id;
-                if (pId) allProductsMap[pId] = p;
-                if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
-                if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+                if (pId) allProductsMap.set(String(pId), p);
+                if (p.name) allProductsMap.set(p.name.toLowerCase().trim(), p);
+                if (p.title) allProductsMap.set(p.title.toLowerCase().trim(), p);
             });
         }
     } catch (e) {}
@@ -94,7 +94,7 @@ function renderWishlistItems(items) {
         const category = product.category || 'Category';
         const price = product.sellingPrice || product.price || 0;
         
-        const matchedProd = (id && allProductsMap[id]) || (title && allProductsMap[title.toLowerCase().trim()]) || {};
+        const matchedProd = (id && allProductsMap.get(String(id))) || (title && allProductsMap.get(title.toLowerCase().trim())) || {};
         
         let rawImg = product.imageUrl || product.image || matchedProd.imageUrl || matchedProd.image;
         if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {

@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
-    let allProductsMap = Object.create(null);
+    const allProductsMap = new Map();
 
     function sanitizeUrl(url) {
         if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
@@ -29,9 +29,9 @@ document.addEventListener('DOMContentLoaded', () => {
             if (Array.isArray(list)) {
                 list.forEach(p => {
                     const pId = p.productId || p.id;
-                    if (pId) allProductsMap[pId] = p;
-                    if (p.name) allProductsMap[p.name.toLowerCase().trim()] = p;
-                    if (p.title) allProductsMap[p.title.toLowerCase().trim()] = p;
+                    if (pId) allProductsMap.set(String(pId), p);
+                    if (p.name) allProductsMap.set(p.name.toLowerCase().trim(), p);
+                    if (p.title) allProductsMap.set(p.title.toLowerCase().trim(), p);
                 });
             }
         } catch (e) {}
@@ -144,7 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const quantity = item.quantity || 1;
             
             const pId = item.productId || item.id;
-            const matchedProd = (pId && allProductsMap[pId]) || (title && allProductsMap[title.toLowerCase().trim()]) || {};
+            const matchedProd = (pId && allProductsMap.get(String(pId))) || (title && allProductsMap.get(title.toLowerCase().trim())) || {};
             
             let rawImg = item.imageUrl || item.image || matchedProd.imageUrl || matchedProd.image;
             if (!rawImg && matchedProd.images && matchedProd.images.length > 0) {
