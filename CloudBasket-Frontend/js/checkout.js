@@ -27,7 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const btnPurchase = document.getElementById('btn-complete-purchase');
     let cartItems = [];
     let checkoutTotal = 0;
-    let allProductsMap = {};
+    let allProductsMap = Object.create(null);
 
     function sanitizeUrl(url) {
         if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';

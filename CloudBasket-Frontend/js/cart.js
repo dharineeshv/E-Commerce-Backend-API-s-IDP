@@ -8,7 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
         return '\u20B9' + Number(value).toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2});
     }
 
-    let allProductsMap = {};
+    let allProductsMap = Object.create(null);
 
     function sanitizeUrl(url) {
         if (!url) return 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
