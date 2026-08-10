@@ -400,14 +400,17 @@ try {
     const token = localStorage.getItem('idToken') || localStorage.getItem('accessToken');
     if (token) {
         const payload = JSON.parse(atob(token.split('.')[1]));
-        if (payload.sub) CUSTOMER_ID = payload.sub;
+        if (payload.sub && typeof payload.sub === 'string') {
+            CUSTOMER_ID = encodeURIComponent(String(payload.sub).replace(/[^a-zA-Z0-9_-]/g, ''));
+        }
     }
 } catch (e) {
     console.error("Failed to parse token for CUSTOMER_ID", e);
 }
 
 if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
-    apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}`)
+    const safeCustomerId = encodeURIComponent(String(CUSTOMER_ID).replace(/[^a-zA-Z0-9_-]/g, ''));
+    apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${safeCustomerId}`)
         .then(res => res.ok ? res.json() : null)
         .then(wishData => {
             if (wishData && wishData.items) {
@@ -433,7 +436,9 @@ window.toggleWishlist = async function(event, id, btnElement) {
                         svgFill === 'rgb(239, 68, 68)';
 
         if (isAdded) {
-            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
+            const safeCustomerId = encodeURIComponent(String(CUSTOMER_ID).replace(/[^a-zA-Z0-9_-]/g, ''));
+            const safeProdId = encodeURIComponent(String(id).replace(/[^a-zA-Z0-9_-]/g, ''));
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${safeCustomerId}/${safeProdId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
