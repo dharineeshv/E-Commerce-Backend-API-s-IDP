@@ -10,7 +10,7 @@ data "archive_file" "dummy" {
 locals {
   env_vars = {
     PORT = "3000"
-    ALLOWED_ORIGINS = "*"
+    ALLOWED_ORIGINS = "https://dl21dk0zl04jl.cloudfront.net,http://localhost:5500,http://127.0.0.1:5500"
     COGNITO_USER_POOL_ID = aws_cognito_user_pool.pool.id
     COGNITO_CLIENT_ID = aws_cognito_user_pool_client.client.id
     CART_TABLE = aws_dynamodb_table.cart.name
