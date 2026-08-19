@@ -1,4 +1,4 @@
-// ==========================================
+﻿// ==========================================
 // CloudBasket Login
 // ==========================================
 
@@ -117,10 +117,12 @@ loginForm.addEventListener("submit", async (event) => {
             returns different names.
         */
 
-       
+        if (!response.success) {
+            throw new Error(response.message || 'Login failed.');
+        }
 
-       localStorage.setItem(
-    "accessToken",
+        localStorage.setItem(
+      "accessToken",
     response.data.accessToken
 );
 
@@ -288,3 +290,5 @@ window.addEventListener("DOMContentLoaded", async () => {
         window.history.replaceState({}, document.title, cleanUrl);
     }
 });
+
+
