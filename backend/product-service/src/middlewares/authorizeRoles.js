@@ -8,7 +8,7 @@ const authorizeRoles = (...allowedRoles) => {
     );
 
     // If no groups are assigned, and the route allows Customers, assume they are a standard Customer
-    if (userGroups.length === 0 && allowedRoles.includes("Customer")) {
+    if (allowedRoles.includes("Customer") && !userGroups.includes("Admin")) {
       isAuthorized = true;
     }
 
