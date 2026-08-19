@@ -1,4 +1,4 @@
-// JS for CloudBasket Home Page (storefront)
+﻿// JS for CloudBasket Home Page (storefront)
 import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
 import { fetchProductReviews } from "./api/reviewApi.js";
@@ -415,7 +415,7 @@ function renderProducts(products) {
         if (imageUrl && imageUrl.includes('amazonaws.com')) {
             try {
                 const parsed = new URL(imageUrl);
-                imageUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                imageUrl = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
             } catch (e) {}
         }
         
@@ -575,10 +575,10 @@ function renderStars(rating) {
     const fullStars = Math.floor(r);
     const hasHalf = (r - fullStars) >= 0.5;
     let stars = '';
-    for (let i = 0; i < fullStars; i++) stars += '★';
-    if (hasHalf && fullStars < 5) stars += '★';
+    for (let i = 0; i < fullStars; i++) stars += 'â˜…';
+    if (hasHalf && fullStars < 5) stars += 'â˜…';
     const emptyCount = 5 - fullStars - (hasHalf ? 1 : 0);
-    for (let i = 0; i < emptyCount; i++) stars += '☆';
+    for (let i = 0; i < emptyCount; i++) stars += 'â˜†';
     return stars;
 }
 
@@ -698,7 +698,7 @@ async function loadMarketingBanner() {
                             if (imageUrl && typeof imageUrl === 'string' && imageUrl.includes('amazonaws.com')) {
                                 try {
                                     const parsed = new URL(imageUrl);
-                                    imageUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                                    imageUrl = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
                                 } catch(e) {}
                             }
                             if (!imageUrl) imageUrl = 'https://images.unsplash.com/photo-1607082348824-0a96f2a4b9da?auto=format&fit=crop&w=1200&q=80';
@@ -716,7 +716,7 @@ async function loadMarketingBanner() {
                                     </div>
                                     
                                     <h2 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                                        🎉 ${sale.festivalName || sale.title || 'Special Offer'}
+                                        ðŸŽ‰ ${sale.festivalName || sale.title || 'Special Offer'}
                                     </h2>
                                     
                                     <p style="font-size: 1.25rem; color: #f8fafc; line-height: 1.5; margin-bottom: 30px; margin-top: 0;">

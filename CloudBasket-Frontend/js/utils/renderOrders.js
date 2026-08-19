@@ -1,4 +1,4 @@
-import { getPaginatedOrders, getTotalPages, state, goToPage } from './orderData.js';
+﻿import { getPaginatedOrders, getTotalPages, state, goToPage } from './orderData.js';
 
 export function renderOrdersTable() {
     const tbody = document.getElementById('orders-table-body');
@@ -49,7 +49,7 @@ export function renderOrdersTable() {
             <td>
                 <span class="customer-email-alone">${order.customerName}</span>
             </td>
-            <td class="amount-text">₹${order.amount.toFixed(2)}</td>
+            <td class="amount-text">â‚¹${order.amount.toFixed(2)}</td>
             <td>
                 <span class="badge-payment ${payClass}">${order.paymentStatus}</span>
             </td>
@@ -112,5 +112,5 @@ export function renderStats(stats) {
     // Shipped card removed
     document.getElementById('stat-delivered-orders').textContent = stats.delivered.toLocaleString();
     document.getElementById('stat-cancelled-orders').textContent = stats.cancelled.toLocaleString();
-    document.getElementById('stat-today-revenue').textContent = '₹' + stats.todayRev.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    document.getElementById('stat-today-revenue').textContent = 'â‚¹' + stats.todayRev.toLocaleString(undefined, {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }

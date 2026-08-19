@@ -1,4 +1,4 @@
-const fs = require('fs');
+﻿const fs = require('fs');
 
 const path = 'C:/Users/dharineesh.v/OneDrive - IDP Education Ltd/Documents/E-Commerce App/CloudBasket-Frontend/js/order-details.js';
 let content = fs.readFileSync(path, 'utf8');

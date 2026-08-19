@@ -1,4 +1,4 @@
-// ==========================================================
+﻿// ==========================================================
 // Toast Notification
 // ==========================================================
 
@@ -29,19 +29,19 @@ export function showToast(message, type = "info") {
     const toast = document.createElement("div");
 
     let borderColor = "#2563EB";
-    let icon = "ℹ";
+    let icon = "â„¹";
 
     if (type === "success") {
 
         borderColor = "#16A34A";
-        icon = "✓";
+        icon = "âœ“";
 
     }
 
     if (type === "error") {
 
         borderColor = "#DC2626";
-        icon = "✕";
+        icon = "âœ•";
 
     }
 

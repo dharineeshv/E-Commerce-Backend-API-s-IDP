@@ -1,4 +1,4 @@
-export function openViewModal(productId) {
+﻿export function openViewModal(productId) {
     const modal = document.getElementById('viewProductModal');
     if (modal) {
         modal.classList.add('active');

@@ -1,4 +1,4 @@
-// ==========================================================
+﻿// ==========================================================
 // Hero Banner
 // ==========================================================
 
@@ -23,7 +23,7 @@ export function initializeHero() {
     if (hour >= 5 && hour < 12) {
 
         greeting.textContent =
-            "Good Morning, Dharineesh 👋";
+            "Good Morning, Dharineesh ðŸ‘‹";
 
         quote.textContent =
             "Every sunrise is a new opportunity to grow.";
@@ -40,7 +40,7 @@ export function initializeHero() {
     else if (hour >= 12 && hour < 17) {
 
         greeting.textContent =
-            "Good Afternoon, Dharineesh ☀️";
+            "Good Afternoon, Dharineesh â˜€ï¸";
 
         quote.textContent =
             "Stay focused. Your goals are closer than you think.";
@@ -57,7 +57,7 @@ export function initializeHero() {
     else if (hour >= 17 && hour < 20) {
 
         greeting.textContent =
-            "Good Evening, Dharineesh 🌇";
+            "Good Evening, Dharineesh ðŸŒ‡";
 
         quote.textContent =
             "Celebrate today's progress and prepare for tomorrow.";
@@ -73,7 +73,7 @@ heroBanner.style.backgroundImage =
     else {
 
         greeting.textContent =
-            "Good Night, Dharineesh 🌙";
+            "Good Night, Dharineesh ðŸŒ™";
 
         quote.textContent =
             "Rest well. Great businesses are built one day at a time.";

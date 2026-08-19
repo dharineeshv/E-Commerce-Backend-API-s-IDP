@@ -1,9 +1,9 @@
-// Inject the Chatbot widget into the page when the DOM is loaded
+﻿// Inject the Chatbot widget into the page when the DOM is loaded
 document.addEventListener('DOMContentLoaded', () => {
     const chatbotHTML = `
         <div id="global-chatbot-widget">
             <div class="chatbot-tooltip" id="chatbot-tooltip">
-                <span class="wave-emoji">👋</span> Hi, I am Tara. How can I help you?
+                <span class="wave-emoji">ðŸ‘‹</span> Hi, I am Tara. How can I help you?
             </div>
             
             <!-- Chatbot Window Overlay -->
@@ -24,22 +24,22 @@ document.addEventListener('DOMContentLoaded', () => {
                             <span class="chatbot-status">Online</span>
                         </div>
                     </div>
-                    <button class="chatbot-close-btn" onclick="toggleChatbot()">×</button>
+                    <button class="chatbot-close-btn" onclick="toggleChatbot()">Ã—</button>
                 </div>
                 
                 <div class="chatbot-messages" id="chatbot-messages">
                     <div class="chat-msg bot-msg">
-                        Hi! I am <strong>Tara</strong>, your CloudBasket AI Assistant 🤖<br>How can I help you today?
+                        Hi! I am <strong>Tara</strong>, your CloudBasket AI Assistant ðŸ¤–<br>How can I help you today?
                     </div>
                 </div>
                 
                 <div class="chatbot-quick-replies" id="chatbot-quick-replies">
-                    <button class="quick-reply-btn" onclick="sendQuickReply('Hii 👋')">Hii 👋</button>
-                    <button class="quick-reply-btn" onclick="sendQuickReply('My Cart 🛒')">My Cart 🛒</button>
-                    <button class="quick-reply-btn" onclick="sendQuickReply('My Wishlist ❤️')">My Wishlist ❤️</button>
-                    <button class="quick-reply-btn" onclick="sendQuickReply('Recent Orders 📦')">Recent Orders 📦</button>
-                    <button class="quick-reply-btn" onclick="sendQuickReply('Available Coupons 🏷️')">Available Coupons 🏷️</button>
-                    <button class="quick-reply-btn" onclick="sendQuickReply('Contact Support 📞')">Contact Support 📞</button>
+                    <button class="quick-reply-btn" onclick="sendQuickReply('Hii ðŸ‘‹')">Hii ðŸ‘‹</button>
+                    <button class="quick-reply-btn" onclick="sendQuickReply('My Cart ðŸ›’')">My Cart ðŸ›’</button>
+                    <button class="quick-reply-btn" onclick="sendQuickReply('My Wishlist â¤ï¸')">My Wishlist â¤ï¸</button>
+                    <button class="quick-reply-btn" onclick="sendQuickReply('Recent Orders ðŸ“¦')">Recent Orders ðŸ“¦</button>
+                    <button class="quick-reply-btn" onclick="sendQuickReply('Available Coupons ðŸ·ï¸')">Available Coupons ðŸ·ï¸</button>
+                    <button class="quick-reply-btn" onclick="sendQuickReply('Contact Support ðŸ“ž')">Contact Support ðŸ“ž</button>
                 </div>
                 
                 <div class="chatbot-input-area">
@@ -223,18 +223,18 @@ async function respondToMessage(text) {
     
     // 1. Common Greeting Interactions
     if (/^(hi|hii|hiii|hello|hey|heyy|greetings|hola|good morning|good afternoon|good evening|sup)\b/.test(lowerText)) {
-        appendBotMessage("Hello! 👋 Welcome to <strong>CloudBasket</strong>! I'm Tara, your AI assistant. How can I help you today? You can check your <strong>Cart 🛒</strong>, <strong>Wishlist ❤️</strong>, <strong>Recent Orders 📦</strong>, or <strong>Coupons 🏷️</strong>!");
+        appendBotMessage("Hello! ðŸ‘‹ Welcome to <strong>CloudBasket</strong>! I'm Tara, your AI assistant. How can I help you today? You can check your <strong>Cart ðŸ›’</strong>, <strong>Wishlist â¤ï¸</strong>, <strong>Recent Orders ðŸ“¦</strong>, or <strong>Coupons ðŸ·ï¸</strong>!");
     } 
     // 2. How are you / Who are you
     else if (lowerText.includes('how are you') || lowerText.includes('how r u') || lowerText.includes('hows it going')) {
-        appendBotMessage("I'm doing awesome, thank you for asking! 😊 Ready to help you view your cart, wishlist, or orders. What would you like to check?");
+        appendBotMessage("I'm doing awesome, thank you for asking! ðŸ˜Š Ready to help you view your cart, wishlist, or orders. What would you like to check?");
     }
     else if (lowerText.includes('who are you') || lowerText.includes('your name') || lowerText.includes('what are you')) {
-        appendBotMessage("I'm <strong>Tara</strong>, your personal CloudBasket AI Assistant! 🤖 I can show your Cart details, Wishlist items, Recent orders, and find active coupons for you!");
+        appendBotMessage("I'm <strong>Tara</strong>, your personal CloudBasket AI Assistant! ðŸ¤– I can show your Cart details, Wishlist items, Recent orders, and find active coupons for you!");
     }
     // 3. Cart Details Display
     else if (lowerText.includes('cart')) {
-        appendBotMessage("Fetching your cart items... 🛒");
+        appendBotMessage("Fetching your cart items... ðŸ›’");
         const cart = await fetchCartData();
         if (cart && cart.length > 0) {
             let totalAmount = 0;
@@ -266,7 +266,7 @@ async function respondToMessage(text) {
             const formattedGrandTotal = new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(totalAmount);
             
             const cartCardHtml = `
-                <p>Here are your <strong>Cart Items</strong> 🛒:</p>
+                <p>Here are your <strong>Cart Items</strong> ðŸ›’:</p>
                 <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-top: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0;">
                         <span style="font-weight: 700; color: #0f172a; font-size: 13px;">Shopping Cart</span>
@@ -275,19 +275,19 @@ async function respondToMessage(text) {
                     ${itemsHtml}
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
                         <span style="font-size: 13px; font-weight: 800; color: #1e293b;">Total: ${formattedGrandTotal}</span>
-                        <a href="cart.html" style="font-size: 12px; color: #2563eb; font-weight: 700; text-decoration: none;">View Cart 🛒 →</a>
+                        <a href="cart.html" style="font-size: 12px; color: #2563eb; font-weight: 700; text-decoration: none;">View Cart ðŸ›’ â†’</a>
                     </div>
                 </div>
             `;
             
             appendBotMessage(cartCardHtml);
         } else {
-            appendBotMessage("🛒 Your shopping cart is currently empty! Explore top items in our <a href='product.html' style='color: #2563eb; font-weight: 700;'>Shop Catalog</a> to add items.");
+            appendBotMessage("ðŸ›’ Your shopping cart is currently empty! Explore top items in our <a href='product.html' style='color: #2563eb; font-weight: 700;'>Shop Catalog</a> to add items.");
         }
     }
     // 4. Wishlist Details Display
     else if (lowerText.includes('wishlist') || lowerText.includes('saved') || lowerText.includes('favorite') || lowerText.includes('fav')) {
-        appendBotMessage("Fetching your saved wishlist items... ❤️");
+        appendBotMessage("Fetching your saved wishlist items... â¤ï¸");
         const wishlist = await fetchWishlistData();
         if (wishlist && wishlist.length > 0) {
             let wishlistItemsHtml = '';
@@ -310,7 +310,7 @@ async function respondToMessage(text) {
             }
             
             const wishlistCardHtml = `
-                <p>Here are your <strong>Wishlist Items</strong> ❤️:</p>
+                <p>Here are your <strong>Wishlist Items</strong> â¤ï¸:</p>
                 <div style="background: #ffffff; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px; margin-top: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.04);">
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid #e2e8f0;">
                         <span style="font-weight: 700; color: #0f172a; font-size: 13px;">Saved Wishlist</span>
@@ -318,21 +318,21 @@ async function respondToMessage(text) {
                     </div>
                     ${wishlistItemsHtml}
                     <div style="display: flex; justify-content: flex-end; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
-                        <a href="wishlist.html" style="font-size: 12px; color: #db2777; font-weight: 700; text-decoration: none;">Manage Wishlist ❤️ →</a>
+                        <a href="wishlist.html" style="font-size: 12px; color: #db2777; font-weight: 700; text-decoration: none;">Manage Wishlist â¤ï¸ â†’</a>
                     </div>
                 </div>
             `;
             
             appendBotMessage(wishlistCardHtml);
         } else {
-            appendBotMessage("❤️ Your wishlist is currently empty! Click the heart icon on any product in the <a href='product.html' style='color: #2563eb; font-weight: 700;'>Storefront</a> to save it for later.");
+            appendBotMessage("â¤ï¸ Your wishlist is currently empty! Click the heart icon on any product in the <a href='product.html' style='color: #2563eb; font-weight: 700;'>Storefront</a> to save it for later.");
         }
     }
     // 5. Recent Orders Interaction & Display
     else if (lowerText.includes('order') || lowerText.includes('track') || lowerText.includes('purchase')) {
         const orders = getRecentOrdersFromStorage();
         
-        let ordersHtml = `<p>Here are your <strong>Recent Orders</strong> 📦:</p>`;
+        let ordersHtml = `<p>Here are your <strong>Recent Orders</strong> ðŸ“¦:</p>`;
         
         orders.slice(0, 2).forEach(order => {
             const dateStr = order.createdAt ? new Date(order.createdAt).toLocaleDateString('en-IN', { month: 'short', day: 'numeric', year: 'numeric' }) : 'Recently';
@@ -346,10 +346,10 @@ async function respondToMessage(text) {
                         <span style="font-weight: 700; color: #0f172a; font-size: 13px;">${order.orderId}</span>
                         <span style="background: ${statusBg}; color: ${statusColor}; font-size: 11px; padding: 3px 8px; border-radius: 12px; font-weight: 700;">${order.status || 'PROCESSING'}</span>
                     </div>
-                    <div style="font-size: 12px; color: #64748b; margin-bottom: 6px;">Date: ${dateStr} • ${order.itemsCount || 1} Item(s)</div>
+                    <div style="font-size: 12px; color: #64748b; margin-bottom: 6px;">Date: ${dateStr} â€¢ ${order.itemsCount || 1} Item(s)</div>
                     <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px; padding-top: 8px; border-top: 1px dashed #e2e8f0;">
                         <span style="font-size: 14px; font-weight: 800; color: #1e293b;">${formattedTotal}</span>
-                        <a href="orders.html" style="font-size: 12px; color: #2563eb; font-weight: 700; text-decoration: none;">Track Order →</a>
+                        <a href="orders.html" style="font-size: 12px; color: #2563eb; font-weight: 700; text-decoration: none;">Track Order â†’</a>
                     </div>
                 </div>
             `;
@@ -384,12 +384,12 @@ async function respondToMessage(text) {
             });
             
             if (activeCoupons.length > 0) {
-                let couponsList = "🎉 <strong>Current Active Coupons:</strong><br><br>";
+                let couponsList = "ðŸŽ‰ <strong>Current Active Coupons:</strong><br><br>";
                 activeCoupons.forEach(c => {
                     const code = c.couponCode || c.code || 'COUPON';
                     const isPercent = c.discountType && c.discountType.toUpperCase().includes('PERCENT');
-                    const desc = c.description || (isPercent ? `${c.discountValue}% OFF` : `Flat ₹${c.discountValue} OFF`);
-                    couponsList += `• <strong>${code}</strong> — ${desc}<br>`;
+                    const desc = c.description || (isPercent ? `${c.discountValue}% OFF` : `Flat â‚¹${c.discountValue} OFF`);
+                    couponsList += `â€¢ <strong>${code}</strong> â€” ${desc}<br>`;
                 });
                 appendBotMessage(couponsList);
             } else {
@@ -402,7 +402,7 @@ async function respondToMessage(text) {
     }
     // 7. Contact Support
     else if (lowerText.includes('contact') || lowerText.includes('support') || lowerText.includes('phone') || lowerText.includes('email') || lowerText.includes('number')) {
-        appendBotMessage("You can reach our CloudBasket customer support anytime:<br>📞 Mobile / Phone: <strong>+971 50 203 20</strong> (or <strong>9715020320</strong>)<br>✉️ Email: <strong>dharineeshv18@gmail.com</strong><br>🕒 Hours: 24/7 Live Assistance");
+        appendBotMessage("You can reach our CloudBasket customer support anytime:<br>ðŸ“ž Mobile / Phone: <strong>+971 50 203 20</strong> (or <strong>9715020320</strong>)<br>âœ‰ï¸ Email: <strong>dharineeshv18@gmail.com</strong><br>ðŸ•’ Hours: 24/7 Live Assistance");
     }
     // 8. About CloudBasket
     else if (lowerText.includes('about') || lowerText.includes('cloudbasket')) {
@@ -410,6 +410,6 @@ async function respondToMessage(text) {
     }
     // Fallback default
     else {
-        appendBotMessage("I'm here to help! You can try asking about:<br>• <strong>'Cart'</strong> to check items in your cart<br>• <strong>'Wishlist'</strong> to view saved items<br>• <strong>'Recent Orders'</strong> to check your order status<br>• <strong>'Coupons'</strong> for discount codes<br>• <strong>'Contact Support'</strong> for helpline info");
+        appendBotMessage("I'm here to help! You can try asking about:<br>â€¢ <strong>'Cart'</strong> to check items in your cart<br>â€¢ <strong>'Wishlist'</strong> to view saved items<br>â€¢ <strong>'Recent Orders'</strong> to check your order status<br>â€¢ <strong>'Coupons'</strong> for discount codes<br>â€¢ <strong>'Contact Support'</strong> for helpline info");
     }
 }

@@ -1,4 +1,4 @@
-export function loadDashboardCards() {
+﻿export function loadDashboardCards() {
 
     return `
 
@@ -8,7 +8,7 @@ export function loadDashboardCards() {
 
             <div class="card-icon products">
 
-                📦
+                ðŸ“¦
 
             </div>
 
@@ -34,7 +34,7 @@ export function loadDashboardCards() {
 
             <div class="card-icon inventory">
 
-                📚
+                ðŸ“š
 
             </div>
 
@@ -60,7 +60,7 @@ export function loadDashboardCards() {
 
             <div class="card-icon orders">
 
-                🛒
+                ðŸ›’
 
             </div>
 
@@ -86,7 +86,7 @@ export function loadDashboardCards() {
 
             <div class="card-icon revenue">
 
-                💰
+                ðŸ’°
 
             </div>
 
@@ -100,7 +100,7 @@ export function loadDashboardCards() {
 
                 <h2 id="today-revenue">
 
-                    ₹0
+                    â‚¹0
 
                 </h2>
 
@@ -112,7 +112,7 @@ export function loadDashboardCards() {
 
             <div class="card-icon festival">
 
-                🎉
+                ðŸŽ‰
 
             </div>
 

@@ -1,4 +1,4 @@
-import { state } from './orderData.js';
+﻿import { state } from './orderData.js';
 import { updateOrderStatus } from '../api/orderApi.js';
 
 let currentOrder = null;
@@ -208,7 +208,7 @@ async function renderOrderItems(order) {
         if (rawImg && rawImg.includes('amazonaws.com')) {
             try {
                 const parsed = new URL(rawImg);
-                rawImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                rawImg = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
             } catch (e) {}
         }
 
@@ -226,14 +226,14 @@ async function renderOrderItems(order) {
                     </div>
                 </div>
             </td>
-            <td style="text-align: right; font-weight: 600;">₹${Number(price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+            <td style="text-align: right; font-weight: 600;">â‚¹${Number(price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
             <td style="text-align: center; font-weight: 600;">${qty}</td>
         `;
         tbody.appendChild(tr);
     });
 
     const totalEl = document.getElementById('modal-order-total');
-    if (totalEl) totalEl.textContent = '₹' + Number(order.amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
+    if (totalEl) totalEl.textContent = 'â‚¹' + Number(order.amount).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2});
 }
 
 function openUpdateStatusModal() {
@@ -348,7 +348,7 @@ function downloadInvoice() {
         <tr>
             <td style="padding: 10px; border-bottom: 1px solid #ddd;">${item.name || item.productId || 'Unknown Item'}</td>
             <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: center;">${item.quantity || 1}</td>
-            <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">₹${Number(item.price || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
+            <td style="padding: 10px; border-bottom: 1px solid #ddd; text-align: right;">â‚¹${Number(item.price || 0).toLocaleString('en-US', {minimumFractionDigits: 2})}</td>
         </tr>
     `).join('');
     
@@ -412,7 +412,7 @@ function downloadInvoice() {
                 <div style="width: 300px; background: #f8fafc; padding: 24px; border-radius: 12px; border: 1px solid #f1f5f9;">
                     <div style="display: flex; justify-content: space-between; align-items: center;">
                         <span style="color: #475569; font-size: 16px; font-weight: 600;">Total Amount: &nbsp; </span>
-                        <span style="font-weight: 800; font-size: 24px; color: #0f172a;">₹${Number(currentOrder.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
+                        <span style="font-weight: 800; font-size: 24px; color: #0f172a;">â‚¹${Number(currentOrder.amount).toLocaleString('en-US', {minimumFractionDigits: 2})}</span>
                     </div>
                 </div>
             </div>

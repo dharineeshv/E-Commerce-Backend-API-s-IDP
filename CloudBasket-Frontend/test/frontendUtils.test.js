@@ -1,4 +1,4 @@
-import { test, describe } from 'node:test';
+﻿import { test, describe } from 'node:test';
 import assert from 'node:assert/strict';
 
 // Helper utilities replicated from frontend logic for testing
@@ -13,7 +13,7 @@ function escapeXml(str) {
 
 function formatINR(amount) {
   const num = Number(amount || 0);
-  return `₹${num.toLocaleString('en-IN')}`;
+  return `â‚¹${num.toLocaleString('en-IN')}`;
 }
 
 function calculateActivePercentage(activeCount, totalCount) {
@@ -27,7 +27,7 @@ function sanitizeUrl(url) {
   try {
     if (url.includes('amazonaws.com')) {
       const parsed = new URL(url);
-      return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+      return `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
     }
   } catch (e) {}
   return url;
@@ -103,9 +103,9 @@ describe('Frontend Utility Functions Unit Tests', () => {
   });
 
   test('formatINR should format numbers into Indian Rupee format', () => {
-    assert.equal(formatINR(1500), '₹1,500');
-    assert.equal(formatINR(100000), '₹1,00,000');
-    assert.equal(formatINR(0), '₹0');
+    assert.equal(formatINR(1500), 'â‚¹1,500');
+    assert.equal(formatINR(100000), 'â‚¹1,00,000');
+    assert.equal(formatINR(0), 'â‚¹0');
   });
 
   test('calculateActivePercentage should compute correct percentage text', () => {
@@ -116,7 +116,7 @@ describe('Frontend Utility Functions Unit Tests', () => {
 
   test('sanitizeUrl should convert S3 domain URLs to CloudFront domain URLs', () => {
     const s3Url = 'https://cloudbasket-products-images.s3.ap-southeast-1.amazonaws.com/products/24c75566-0044-45ca.webp';
-    const expectedCloudFront = 'https://d2vghmouksu39n.cloudfront.net/products/24c75566-0044-45ca.webp';
+    const expectedCloudFront = 'https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com/products/24c75566-0044-45ca.webp';
     assert.equal(sanitizeUrl(s3Url), expectedCloudFront);
 
     const normalUrl = 'https://images.unsplash.com/photo-1511707171634';

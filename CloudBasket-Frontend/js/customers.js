@@ -1,4 +1,4 @@
-import { initializeLogout } from "./logout.js";
+﻿import { initializeLogout } from "./logout.js";
 import { initializeProfileCard } from "./profile.js";
 import { initializeSidebar } from "./sidebar.js";
 import { API } from "./config.js";
@@ -263,9 +263,9 @@ function updateStats(customers) {
     const totalLtv = customers.reduce((sum, c) => sum + Number(c.totalSpent || 0), 0);
     if (ltvEl) {
         if (totalLtv >= 100000) {
-            ltvEl.innerText = `₹${(totalLtv / 100000).toFixed(1)}L`;
+            ltvEl.innerText = `â‚¹${(totalLtv / 100000).toFixed(1)}L`;
         } else {
-            ltvEl.innerText = `₹${totalLtv.toLocaleString('en-IN')}`;
+            ltvEl.innerText = `â‚¹${totalLtv.toLocaleString('en-IN')}`;
         }
     }
 
@@ -291,7 +291,7 @@ function renderCustomerTable(customers) {
 
     customers.forEach(cust => {
         const tr = document.createElement('tr');
-        const formattedSpent = `₹${Number(cust.totalSpent).toLocaleString('en-IN')}`;
+        const formattedSpent = `â‚¹${Number(cust.totalSpent).toLocaleString('en-IN')}`;
 
         tr.innerHTML = `
             <td class="cust-id">${cust.id}</td>
@@ -585,7 +585,7 @@ function openCustomerModal(customer) {
     document.getElementById('modal-cust-location').innerText = customer.location;
     document.getElementById('modal-cust-regdate').innerText = customer.regDate;
     document.getElementById('modal-cust-orders').innerText = customer.ordersCount;
-    document.getElementById('modal-cust-spent').innerText = `₹${Number(customer.totalSpent).toLocaleString('en-IN')}`;
+    document.getElementById('modal-cust-spent').innerText = `â‚¹${Number(customer.totalSpent).toLocaleString('en-IN')}`;
     
     const cancelledEl = document.getElementById('modal-cust-cancelled');
     if (cancelledEl) cancelledEl.innerText = customer.cancelledCount || 0;

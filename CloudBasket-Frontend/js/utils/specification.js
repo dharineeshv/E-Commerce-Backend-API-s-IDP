@@ -1,4 +1,4 @@
-export function getSpecifications() {
+﻿export function getSpecifications() {
 
     const specifications = {};
 

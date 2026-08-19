@@ -1,4 +1,4 @@
-import { API } from "./config.js";
+﻿import { API } from "./config.js";
 import { apiFetch } from './api/apiClient.js';
 import { getActiveFestivalSale } from './api/marketingApi.js';
 document.addEventListener('DOMContentLoaded', () => {
@@ -34,7 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (url.includes('amazonaws.com')) {
                 const parsed = new URL(url);
-                return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                return `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
             }
         } catch (e) {}
         return url;

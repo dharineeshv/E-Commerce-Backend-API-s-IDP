@@ -1,4 +1,4 @@
-const toastContainer = document.getElementById("toastContainer");
+﻿const toastContainer = document.getElementById("toastContainer");
 
 function showToast(type, title, message) {
 

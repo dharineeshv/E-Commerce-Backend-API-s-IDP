@@ -1,4 +1,4 @@
-import { getAllAdminPayments, refundPayment } from "./api/paymentApi.js?v=2";
+﻿import { getAllAdminPayments, refundPayment } from "./api/paymentApi.js?v=2";
 import { getAllOrders } from "./api/orderApi.js?v=2";
 import { initializeProfileCard } from "./profile.js?v=2";
 import { initializeLogout } from "./logout.js?v=2";
@@ -209,7 +209,7 @@ function renderTable() {
                 </td>
                 <td class="font-bold">${payment.amountFormatted}</td>
                 <td class="text-gray">${payment.paymentMethod || 'N/A'}</td>
-                <td><span class="status-pill ${statusClass}">● ${statusText}</span></td>
+                <td><span class="status-pill ${statusClass}">â— ${statusText}</span></td>
                 <td class="text-gray text-sm">${payment.dateFormatted}</td>
             </tr>
         `;
@@ -642,7 +642,7 @@ async function openPaymentPanel(paymentId) {
             if (rawImg && rawImg.includes('amazonaws.com')) {
                 try {
                     const parsed = new URL(rawImg);
-                    rawImg = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                    rawImg = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
                 } catch (e) {}
             }
 

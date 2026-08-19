@@ -1,4 +1,4 @@
-let selectedImage = null;
+﻿let selectedImage = null;
 
 export function setSelectedImage(file) {
     selectedImage = file;

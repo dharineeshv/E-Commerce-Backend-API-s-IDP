@@ -1,4 +1,4 @@
-import { initializeLogout } from "./logout.js";
+﻿import { initializeLogout } from "./logout.js";
 import { API } from "./config.js";
 import { uploadProductImage } from "./imageUpload.js";
 
@@ -31,7 +31,7 @@ document.addEventListener("DOMContentLoaded", () => {
         if (type === "percentage" || type === "PERCENTAGE") {
             discountText = `${val}% OFF`;
         } else {
-            discountText = `₹${val} OFF`;
+            discountText = `â‚¹${val} OFF`;
         }
 
         previewDiscountDisplay.innerHTML = `${discountText} <span style="color:#ef4444; font-size:0.9rem; margin-left: 10px;"><i class="icon-clock"></i> Limited Time</span>`;

@@ -1,4 +1,4 @@
-import { getInventoryById, updateInventory } from "../api/inventoryApi.js";
+﻿import { getInventoryById, updateInventory } from "../api/inventoryApi.js";
 import { updateProductApi } from "../api/productApi.js";
 
 let currentInventoryData = [];
@@ -79,7 +79,7 @@ async function openViewModal(inventoryId) {
     if (img && img.includes('amazonaws.com')) {
         try {
             const parsed = new URL(img);
-            img = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            img = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
         } catch (e) {}
     }
     let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';

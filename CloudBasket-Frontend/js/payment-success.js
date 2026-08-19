@@ -1,4 +1,4 @@
-import { API } from "./config.js";
+﻿import { API } from "./config.js";
 import { apiFetch } from "./api/apiClient.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     if (!orderId) {
         if (displayOrderId) displayOrderId.textContent = "#UNKNOWN";
-        if (displayAmount) displayAmount.textContent = "₹0.00";
+        if (displayAmount) displayAmount.textContent = "â‚¹0.00";
         if (displayDate) displayDate.textContent = new Date().toLocaleDateString("en-US", { month: 'short', day: 'numeric', year: 'numeric' });
         return;
     }
@@ -62,7 +62,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // Amount Calculation
     const rawAmount = order ? (order.orderTotal || order.calculatedTotal || order.totalAmount || order.amount || 0) : 0;
     const amountNum = Number(rawAmount) || 0;
-    const formattedAmount = `₹${amountNum.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    const formattedAmount = `â‚¹${amountNum.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
 
     if (displayAmount) {
         displayAmount.textContent = formattedAmount;
@@ -149,7 +149,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (subtotalEl) subtotalEl.textContent = formattedAmount;
 
     const taxEl = document.getElementById('pdf-tax-amount');
-    if (taxEl) taxEl.textContent = `₹0.00`;
+    if (taxEl) taxEl.textContent = `â‚¹0.00`;
 
     const totalEl = document.getElementById('pdf-total-amount');
     if (totalEl) totalEl.textContent = formattedAmount;
@@ -188,8 +188,8 @@ document.addEventListener('DOMContentLoaded', async () => {
                 row.innerHTML = `
                     <td style="padding: 12px 0; color: #334155; font-size: 13px; font-weight: 500;">${escapeXml(prodName)}</td>
                     <td style="padding: 12px 0; text-align: center; color: #334155; font-size: 13px;">${itemQty}</td>
-                    <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">₹${itemPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
-                    <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">₹${itemTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td style="padding: 12px 0; text-align: right; color: #334155; font-size: 13px;">â‚¹${itemPrice.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
+                    <td style="padding: 12px 0; text-align: right; color: #1e293b; font-size: 13px; font-weight: bold;">â‚¹${itemTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</td>
                 `;
                 pdfItemsContainer.appendChild(row);
             });

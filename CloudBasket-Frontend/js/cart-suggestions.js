@@ -1,4 +1,4 @@
-import { apiFetch } from "./api/apiClient.js";
+﻿import { apiFetch } from "./api/apiClient.js";
 import { fetchProductReviews } from "./api/reviewApi.js";
 
 let userWishlistIds = new Set();
@@ -35,10 +35,10 @@ function renderStarRating(rating) {
     const fullStars = Math.floor(r);
     const hasHalf = (r - fullStars) >= 0.5;
     let stars = '';
-    for (let i = 0; i < fullStars; i++) stars += '★';
-    if (hasHalf && fullStars < 5) stars += '★';
+    for (let i = 0; i < fullStars; i++) stars += 'â˜…';
+    if (hasHalf && fullStars < 5) stars += 'â˜…';
     const emptyCount = 5 - fullStars - (hasHalf ? 1 : 0);
-    for (let i = 0; i < emptyCount; i++) stars += '☆';
+    for (let i = 0; i < emptyCount; i++) stars += 'â˜†';
     return stars;
 }
 
@@ -219,7 +219,7 @@ async function loadSuggestedProducts() {
             if (imageUrl && imageUrl.includes('amazonaws.com')) {
                 try {
                     const parsed = new URL(imageUrl);
-                    imageUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                    imageUrl = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
                 } catch (e) {}
             }
             if (!imageUrl || imageUrl.includes('placeholder')) {

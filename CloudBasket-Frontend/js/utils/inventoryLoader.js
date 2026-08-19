@@ -1,4 +1,4 @@
-export function showSkeletons() {
+﻿export function showSkeletons() {
     const tableBody = document.getElementById("inventory-table-body");
     if (tableBody) {
         tableBody.innerHTML = `

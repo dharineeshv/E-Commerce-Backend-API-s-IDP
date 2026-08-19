@@ -1,4 +1,4 @@
-export function renderInventoryTable(inventoryItems) {
+﻿export function renderInventoryTable(inventoryItems) {
     const tableBody = document.getElementById("inventory-table-body");
     if (!tableBody) return;
 
@@ -27,7 +27,7 @@ export function renderInventoryTable(inventoryItems) {
         if (image && image.includes('amazonaws.com')) {
             try {
                 const parsed = new URL(image);
-                image = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                image = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
             } catch (e) {}
         }
         let fallbackImg = 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
@@ -39,7 +39,7 @@ export function renderInventoryTable(inventoryItems) {
         }
 
         const pVal = product.sellingPrice != null ? product.sellingPrice : product.price;
-        const price = pVal != null ? `₹${Number(pVal).toFixed(2)}` : "N/A";
+        const price = pVal != null ? `â‚¹${Number(pVal).toFixed(2)}` : "N/A";
         
         const sku = item.sku || product.sku || "N/A";
         const warehouse = item.location || item.warehouse || "Main Warehouse";

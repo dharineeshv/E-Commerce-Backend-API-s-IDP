@@ -1,4 +1,4 @@
-import { getWishlist, removeProductFromWishlist } from './api/wishlistApi.js';
+﻿import { getWishlist, removeProductFromWishlist } from './api/wishlistApi.js';
 import { apiFetch } from './api/apiClient.js';
 
 let customerId = null;
@@ -34,7 +34,7 @@ function sanitizeUrl(url) {
     try {
         if (url.includes('amazonaws.com')) {
             const parsed = new URL(url);
-            return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+            return `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
         }
     } catch (e) {}
     return url;
@@ -282,7 +282,7 @@ async function loadSuggestedProducts(currentWishlist) {
             const category = (product.category || 'ELECTRONICS').toUpperCase();
             let imageUrl = product.imageUrl || product.image || 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?auto=format&fit=crop&w=500&q=80';
             if (imageUrl.includes('cloudbasket-products-images.s3.ap-southeast-1.amazonaws.com')) {
-                imageUrl = imageUrl.replace('cloudbasket-products-images.s3.ap-southeast-1.amazonaws.com', 'd2vghmouksu39n.cloudfront.net');
+                imageUrl = imageUrl.replace('cloudbasket-products-images.s3.ap-southeast-1.amazonaws.com', 'cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com');
             }
             const formattedPrice = Number(product.sellingPrice || product.price || 0).toLocaleString('en-IN', {
                 style: 'currency',

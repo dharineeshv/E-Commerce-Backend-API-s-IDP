@@ -1,4 +1,4 @@
-// ==========================================================
+﻿// ==========================================================
 // CloudBasket Admin Panel
 // Add Product Module
 // Part 1
@@ -287,7 +287,7 @@ function renderThumbnails() {
     existingProductImages.forEach((img, index) => {
         const item = document.createElement('div');
         item.className = 'image-preview-item';
-        item.innerHTML = `<img src="${img.imageUrl}" alt="Existing image"><button type="button" class="remove-image show" onclick="removeExistingImage(${index})">×</button>`;
+        item.innerHTML = `<img src="${img.imageUrl}" alt="Existing image"><button type="button" class="remove-image show" onclick="removeExistingImage(${index})">Ã—</button>`;
         if(previewsGrid) previewsGrid.appendChild(item);
         if (index === 0) previewImage.src = img.imageUrl;
     });
@@ -298,7 +298,7 @@ function renderThumbnails() {
         reader.onload = (e) => {
             const item = document.createElement('div');
             item.className = 'image-preview-item';
-            item.innerHTML = `<img src="${e.target.result}" alt="New image"><button type="button" class="remove-image show" onclick="removeSelectedImage(${index})">×</button>`;
+            item.innerHTML = `<img src="${e.target.result}" alt="New image"><button type="button" class="remove-image show" onclick="removeSelectedImage(${index})">Ã—</button>`;
             if(previewsGrid) previewsGrid.appendChild(item);
             
             if (existingProductImages.length === 0 && index === 0) {

@@ -1,4 +1,4 @@
-export function showEmptyState(containerId) {
+﻿export function showEmptyState(containerId) {
     const container = document.getElementById(containerId);
     if (!container) return;
     container.innerHTML = `

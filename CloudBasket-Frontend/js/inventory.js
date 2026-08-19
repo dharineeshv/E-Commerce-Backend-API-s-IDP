@@ -1,4 +1,4 @@
-import { initializeSidebar } from "./sidebar.js?v=6";
+﻿import { initializeSidebar } from "./sidebar.js?v=6";
 import { initializeProfileCard } from "./profile.js?v=6";
 import { initializeLogout } from "./logout.js?v=6";
 

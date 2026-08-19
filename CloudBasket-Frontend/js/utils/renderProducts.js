@@ -1,4 +1,4 @@
-export function renderProducts(products, tableBodyId) {
+﻿export function renderProducts(products, tableBodyId) {
     const tbody = document.getElementById(tableBodyId);
     if (!tbody) return;
     if (!products || products.length === 0) return;
@@ -47,7 +47,7 @@ export function renderProducts(products, tableBodyId) {
         if (imgUrl && imgUrl.includes('amazonaws.com')) {
             try {
                 const parsed = new URL(imgUrl);
-                imgUrl = `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                imgUrl = `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
             } catch (e) {}
         }
         const prodTitle = name || 'Product';
@@ -71,7 +71,7 @@ export function renderProducts(products, tableBodyId) {
                     </div>
                 </td>
                 <td>
-                    <strong>₹${Number(sellingPrice || 0).toFixed(2)}</strong>
+                    <strong>â‚¹${Number(sellingPrice || 0).toFixed(2)}</strong>
                 </td>
                 <td>
                     <span class="stock-badge ${dotClass}"><span class="dot"></span> ${qty}</span>

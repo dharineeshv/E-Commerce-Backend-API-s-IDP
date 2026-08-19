@@ -1,4 +1,4 @@
-import { apiFetch } from "./api/apiClient.js";
+﻿import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
 document.addEventListener('DOMContentLoaded', () => {
     let cartItems = [];
@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             if (url.includes('amazonaws.com')) {
                 const parsed = new URL(url);
-                return `https://d2vghmouksu39n.cloudfront.net${parsed.pathname}`;
+                return `https://cloudbasket-products-personal-dhari.s3.ap-southeast-1.amazonaws.com${parsed.pathname}`;
             }
         } catch (e) {}
         return url;
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="item-actions">
                         <div class="quantity-adjuster">
-                            <button class="btn-minus" data-id="${id}">−</button>
+                            <button class="btn-minus" data-id="${id}">âˆ’</button>
                             <span>${quantity}</span>
                             <button class="btn-plus" data-id="${id}">+</button>
                         </div>
