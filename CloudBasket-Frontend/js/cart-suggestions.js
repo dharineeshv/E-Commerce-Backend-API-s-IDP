@@ -15,7 +15,7 @@ try {
 
 if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
     const safeCustomerId = encodeURIComponent(String(CUSTOMER_ID).replace(/[^a-zA-Z0-9_-]/g, ''));
-    apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${safeCustomerId}`)
+    apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${safeCustomerId}`)
         .then(res => res.ok ? res.json() : null)
         .then(wishData => {
             if (wishData && wishData.items) {
@@ -55,7 +55,7 @@ window.toggleWishlist = async function(event, id, btnElement) {
         if (isAdded) {
             const safeCustomerId = encodeURIComponent(String(CUSTOMER_ID).replace(/[^a-zA-Z0-9_-]/g, ''));
             const safeProdId = encodeURIComponent(String(id).replace(/[^a-zA-Z0-9_-]/g, ''));
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${safeCustomerId}/${safeProdId}`, {
+            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${safeCustomerId}/${safeProdId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
@@ -68,7 +68,7 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 }
             }
         } else {
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
+            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ customerId: CUSTOMER_ID, productId: id })
@@ -97,7 +97,7 @@ window.viewProduct = function(productIdOrObj) {
 
 async function addToCart(productId, productName) {
     try {
-        const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`, {
+        const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart`, {
             method: 'POST',
             body: JSON.stringify({
                 productId: productId,
@@ -132,7 +132,7 @@ async function loadSuggestedProducts() {
         // 1. Fetch Cart to know what's inside
         let cartItems = [];
         try {
-            const cartRes = await apiFetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart');
+            const cartRes = await apiFetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart');
             if (cartRes && cartRes.ok) {
                 const data = await cartRes.json();
                 cartItems = data.data && data.data.items ? data.data.items : (data.items || []);
@@ -144,7 +144,7 @@ async function loadSuggestedProducts() {
         const cartProductIds = cartItems.map(item => item.productId || item.id);
 
         // 2. Fetch all products
-        const productsRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        const productsRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
         if (!productsRes.ok) throw new Error("Failed to fetch products");
         
         const productsData = await productsRes.json();

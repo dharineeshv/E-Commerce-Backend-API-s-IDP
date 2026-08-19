@@ -46,7 +46,7 @@ async function loadWishlist() {
     const suggestedSection = document.getElementById('suggested-section');
     
     try {
-        const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
         const prodData = await prodRes.json();
         const list = prodData.products || prodData.data || prodData || [];
         if (Array.isArray(list)) {
@@ -175,7 +175,7 @@ function renderWishlistItems(items) {
                 try {
                     cartBtn.style.opacity = '0.5';
                     
-                    const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`, {
+                    const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart`, {
                         method: 'POST',
                         body: JSON.stringify({
                             productId: id,
@@ -232,7 +232,7 @@ async function loadSuggestedProducts(currentWishlist) {
     if (!suggestedGrid) return;
     
     try {
-        const response = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        const response = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
         const data = await response.json();
         
         let allProducts = data.success ? data.products : (data || []);
@@ -350,14 +350,14 @@ async function loadSuggestedProducts(currentWishlist) {
                                         svgFill === 'rgb(239, 68, 68)';
 
                         if (isAdded) {
-                            const res = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${customerId}/${id}`, { method: 'DELETE' });
+                            const res = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${customerId}/${id}`, { method: 'DELETE' });
                             if (res.ok) {
                                 wishBtn.style.color = '#64748b';
                                 wishBtn.style.fill = 'none';
                                 if (svg) { svg.setAttribute('fill', 'none'); svg.style.fill = 'none'; }
                             }
                         } else {
-                            const res = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
+                            const res = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist`, {
                                 method: 'POST',
                                 headers: { 'Content-Type': 'application/json' },
                                 body: JSON.stringify({ customerId, productId: id })
@@ -381,7 +381,7 @@ async function loadSuggestedProducts(currentWishlist) {
                     e.stopPropagation();
                     try {
                         cartBtn.style.opacity = '0.5';
-                        const res = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`, {
+                        const res = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart`, {
                             method: 'POST',
                             body: JSON.stringify({ productId: id, quantity: 1 })
                         });

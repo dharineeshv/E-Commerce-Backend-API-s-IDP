@@ -164,7 +164,7 @@ async function fetchCartData() {
     if (!token) return [];
 
     try {
-        const response = await fetch("https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart", {
+        const response = await fetch("https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart", {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -201,7 +201,7 @@ async function fetchWishlistData() {
     if (!customerId) return [];
 
     try {
-        const response = await fetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${customerId}`, {
+        const response = await fetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${customerId}`, {
             headers: {
                 "Authorization": `Bearer ${token}`,
                 "Content-Type": "application/json"
@@ -364,7 +364,7 @@ async function respondToMessage(text) {
         try {
             const marketingEndpoint = (window.API && window.API.marketingService) 
                 ? `${window.API.marketingService}/api/v1/marketing/coupons` 
-                : 'https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/coupons';
+                : 'https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/marketing/coupons';
                 
             const response = await fetch(marketingEndpoint);
             const data = await response.json();

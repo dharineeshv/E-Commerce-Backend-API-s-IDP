@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fetch products to map UUIDs to actual names and S3 images
         let allProducts = [];
         try {
-            const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+            const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
             if (prodRes.ok) {
                 const pData = await prodRes.json();
                 allProducts = pData.products || pData.data || pData || [];
