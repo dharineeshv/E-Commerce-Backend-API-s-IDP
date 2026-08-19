@@ -2,11 +2,11 @@
 // CloudBasket API Configuration
 // ==========================================
 
-const API_BASE_URL = "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com";
+const API_BASE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api";
 
 // Cognito OAuth Configuration
 const COGNITO_DOMAIN = "https://ap-southeast-1npoiper2z.auth.ap-southeast-1.amazoncognito.com";
-const COGNITO_CLIENT_ID = "4i9ucuisno2545vd77lngcps27";
+const COGNITO_CLIENT_ID = "1k7mhcnrgulj3hidoklf431g0h";
 const getRedirectUri = () => window.location.origin + window.location.pathname;
 
 // Clean raw stack trace text from error messages

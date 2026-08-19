@@ -39,3 +39,10 @@ scratch/
 # AWS / credentials
 *.pem
 *.key
+
+secrets.env
+
+*.tfstate
+*.tfstate.*
+.terraform/
+.terraform.lock.hcl

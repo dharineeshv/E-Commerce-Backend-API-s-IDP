@@ -1,16 +1,14 @@
-name: CloudBasket Frontend & Microservices CI/CD Pipeline
+name: Personal AWS Clone CI/CD Pipeline
 
 on:
   push:
     branches:
+      - backup
       - main
-      - master
-      - customer-service-frontend-implementation
   pull_request:
     branches:
+      - backup
       - main
-      - master
-      - customer-service-frontend-implementation
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.ref }}
@@ -40,50 +38,20 @@ jobs:
           node --test CloudBasket-Frontend/test/frontendUtils.test.js
           (cd backend/product-service && node --test test/productService.test.js)
 
-      - name: Snyk Security Scan & Report Generation
-        continue-on-error: true
-        run: |
-          npx --yes snyk test --json-file-output=snyk-report.json || echo "Snyk security scan complete"
-          npx --yes snyk test --sarif-file-output=snyk.sarif || echo "Snyk SARIF report complete"
-        env:
-          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
-
-      - name: Upload Snyk Security Scan Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: snyk-security-report
-          path: |
-            snyk-report.json
-            snyk.sarif
-          retention-days: 7
-
-      - name: SonarQube Cloud Analysis (Non-blocking)
-        continue-on-error: true
-        run: |
-          npx --yes sonarqube-scanner \
-            -Dsonar.organization=dharineeshv \
-            -Dsonar.projectKey=dharineeshv_E-Commerce-Backend-API-s-IDP \
-            -Dsonar.host.url=https://sonarcloud.io || echo "SonarQube scan complete"
-        env:
-          SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
-
-      - name: Configure AWS Credentials
+      - name: Configure AWS Credentials (Personal Account)
         uses: aws-actions/configure-aws-credentials@v4
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-session-token: ${{ secrets.AWS_SESSION_TOKEN }}
           aws-region: ap-southeast-1
 
-      - name: Deploy Frontend to AWS S3 Buckets
+      - name: Deploy Frontend to Personal AWS S3 Bucket
         run: |
-          aws s3 sync ./CloudBasket-Frontend s3://cloudbasket-frontend --delete
-          aws s3 sync ./CloudBasket-Frontend s3://dharineesh-frontend --delete
+          aws s3 sync ./CloudBasket-Frontend s3://cloudbasket-frontend-personal-dhari --delete
 
       - name: Invalidate CloudFront CDN Cache
         run: |
-          aws cloudfront create-invalidation --distribution-id E3SHU2W3OPM84E --paths "/*"
-          aws cloudfront create-invalidation --distribution-id E3NI79AATXTTJN --paths "/*"
+          aws cloudfront create-invalidation --distribution-id E1ZPNG1ZR4U649 --paths "/*"
 
       - name: Package & Deploy Microservices to AWS Lambda
         run: |

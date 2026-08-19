@@ -5,30 +5,30 @@
 export const API = {
 
     productService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     inventoryService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     orderService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     paymentService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     marketingService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     userProfileService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     wishlistService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     cartService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com",
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api",
 
     reviewService:
-        "https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com"
+        "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
 
 };
