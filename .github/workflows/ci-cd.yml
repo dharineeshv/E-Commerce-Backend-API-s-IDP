@@ -55,7 +55,7 @@ jobs:
 
       - name: Package & Deploy Microservices to AWS Lambda
         run: |
-          sudo apt-get update && sudo apt-get install -y zip
+          echo "Skipping apt-get update, zip is pre-installed"
           for svc in authentication-service cart-service inventory-service marketing-service notification-service order-service payment-service product-service review-service user-profile-service wishlist-service; do
             if [ -d "backend/$svc" ]; then
               echo "Installing production deps for $svc..."
