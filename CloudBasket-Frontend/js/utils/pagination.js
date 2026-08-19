@@ -1,4 +1,4 @@
-﻿export function renderPaginationControls(totalItems, currentPage, itemsPerPage, onPageChange) {
+export function renderPaginationControls(totalItems, currentPage, itemsPerPage, onPageChange) {
     const wrapper = document.querySelector('.pagination-wrapper');
     if (!wrapper) return;
     

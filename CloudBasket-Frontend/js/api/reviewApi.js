@@ -1,4 +1,4 @@
-﻿import { API } from "../config.js";
+import { API } from "../config.js";
 
 function getAuthHeaders() {
   const token = localStorage.getItem("accessToken") || localStorage.getItem("idToken");

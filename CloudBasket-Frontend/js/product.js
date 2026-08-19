@@ -1,4 +1,4 @@
-﻿import { apiFetch } from "./api/apiClient.js";
+import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
 import { fetchProductReviews, postReview, deleteReviewApi } from "./api/reviewApi.js";
 
@@ -22,7 +22,7 @@ async function initProductPage() {
 
     // Try fetching from API
     try {
-        const response = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
+        const response = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
         const data = await response.json();
         
         if (data.success && data.products) {
@@ -333,13 +333,13 @@ function renderProductDetails(product) {
     document.getElementById('pd-title').innerText = title;
 
     // Pricing
-    document.getElementById('pd-price').innerText = `â‚¹${Number(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+    document.getElementById('pd-price').innerText = `₹${Number(currentPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
     
     const mrpEl = document.getElementById('pd-mrp');
     const discEl = document.getElementById('pd-discount');
     
     if (isFestivalDiscounted) {
-        mrpEl.innerText = `â‚¹${Number(originalPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        mrpEl.innerText = `₹${Number(originalPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         mrpEl.style.display = 'inline';
         
         discEl.innerText = `Festival Sale`;
@@ -347,7 +347,7 @@ function renderProductDetails(product) {
         discEl.style.backgroundColor = '#ef4444';
         discEl.style.color = '#fff';
     } else if (discount > 0) {
-        mrpEl.innerText = `â‚¹${Number(originalPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+        mrpEl.innerText = `₹${Number(originalPrice).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
         mrpEl.style.display = 'inline';
         
         discEl.innerText = `-${discount}%`;
@@ -410,7 +410,7 @@ try {
 
 if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
     const safeCustomerId = encodeURIComponent(String(CUSTOMER_ID).replace(/[^a-zA-Z0-9_-]/g, ''));
-    apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${safeCustomerId}`)
+    apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${safeCustomerId}`)
         .then(res => res.ok ? res.json() : null)
         .then(wishData => {
             if (wishData && wishData.items) {
@@ -438,7 +438,7 @@ window.toggleWishlist = async function(event, id, btnElement) {
         if (isAdded) {
             const safeCustomerId = encodeURIComponent(String(CUSTOMER_ID).replace(/[^a-zA-Z0-9_-]/g, ''));
             const safeProdId = encodeURIComponent(String(id).replace(/[^a-zA-Z0-9_-]/g, ''));
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${safeCustomerId}/${safeProdId}`, {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${safeCustomerId}/${safeProdId}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
@@ -451,7 +451,7 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 }
             }
         } else {
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist`, {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ customerId: CUSTOMER_ID, productId: id })
@@ -653,7 +653,7 @@ async function renderSimilarProducts(currentProduct, allProducts) {
 
 async function addToCart(productId, productName) {
     try {
-        const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart`, {
+        const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`, {
             method: 'POST',
             body: JSON.stringify({
                 productId: productId,
@@ -680,7 +680,7 @@ async function addToCart(productId, productName) {
 function getDefaultSpecs() {
     return {
         "CPU ARCHITECTURE": "Sapphire Rapids-SP (10nm Enhanced SuperFin)",
-        "L3 CACHE": "210MB Shared IntelÂ® Smart Cache",
+        "L3 CACHE": "210MB Shared Intel® Smart Cache",
         "TDP / POWER DRAW": "350W Base / 420W Peak per Socket",
         "MEMORY TYPE": "8-Channel DDR5-4800 ECC RDIMM",
         "MTBF RATING": "2,500,000 Hours (Industrial Grade)",
@@ -734,7 +734,7 @@ function getMockProducts() {
             sku: "CB-TTX9-INFRA",
             specifications: {
                 "CPU ARCHITECTURE": "Sapphire Rapids-SP (10nm Enhanced SuperFin)",
-                "L3 CACHE": "210MB Shared IntelÂ® Smart Cache",
+                "L3 CACHE": "210MB Shared Intel® Smart Cache",
                 "TDP / POWER DRAW": "350W Base / 420W Peak per Socket",
                 "MEMORY TYPE": "8-Channel DDR5-4800 ECC RDIMM",
                 "MTBF RATING": "2,500,000 Hours (Industrial Grade)",
@@ -766,7 +766,7 @@ async function loadAndRenderReviews(productId) {
         const headerTextEl = document.getElementById('pd-rating-header-text');
         if (headerStarsEl) headerStarsEl.innerHTML = renderStarRating(summary.averageRating);
         if (headerTextEl) headerTextEl.innerText = summary.totalReviews > 0 
-            ? `(${summary.averageRating}â˜… â€¢ ${summary.totalReviews} ${summary.totalReviews === 1 ? 'review' : 'reviews'})`
+            ? `(${summary.averageRating}★ • ${summary.totalReviews} ${summary.totalReviews === 1 ? 'review' : 'reviews'})`
             : `(No reviews yet)`;
 
         // 2. Tab Count
@@ -848,7 +848,7 @@ async function loadAndRenderReviews(productId) {
                         <p style="margin: 8px 0 12px 0; color: #334155; font-size: 14px; line-height: 1.6;">${escapeHtml(rev.comment)}</p>
                         <div style="display: flex; align-items: center; gap: 8px; font-size: 13px; color: #64748b;">
                             <span style="font-weight: 600; color: #475569;">${escapeHtml(authorName)}</span>
-                            <span>â€¢</span>
+                            <span>•</span>
                             <span style="color: #16a34a; font-weight: 500; display: inline-flex; align-items: center; gap: 4px;">
                                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"></polyline></svg>
                                 Verified Purchase
@@ -897,10 +897,10 @@ function renderStarRating(rating) {
     const fullStars = Math.floor(r);
     const hasHalf = (r - fullStars) >= 0.5;
     let stars = '';
-    for (let i = 0; i < fullStars; i++) stars += 'â˜…';
-    if (hasHalf && fullStars < 5) stars += 'Â½';
+    for (let i = 0; i < fullStars; i++) stars += '★';
+    if (hasHalf && fullStars < 5) stars += '½';
     const emptyCount = 5 - fullStars - (hasHalf ? 1 : 0);
-    for (let i = 0; i < emptyCount; i++) stars += 'â˜†';
+    for (let i = 0; i < emptyCount; i++) stars += '☆';
     return stars;
 }
 

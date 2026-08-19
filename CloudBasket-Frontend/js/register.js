@@ -1,4 +1,4 @@
-﻿// ==============================
+// ==============================
 // Elements
 // ==============================
 
@@ -124,13 +124,13 @@ function checkPasswordMatch() {
 
         passwordMatch.style.color = "#22C55E";
 
-        passwordMatch.innerHTML = "âœ“ Passwords match";
+        passwordMatch.innerHTML = "✓ Passwords match";
 
     } else {
 
         passwordMatch.style.color = "#EF4444";
 
-        passwordMatch.innerHTML = "âœ— Passwords do not match";
+        passwordMatch.innerHTML = "✗ Passwords do not match";
 
     }
 
@@ -166,12 +166,8 @@ registerForm.addEventListener("submit", async (e) => {
 
         });
 
-        if (!response.success) {
-            throw new Error(response.message || 'Registration failed.');
-        }
-
         showToast(
-      "success",
+    "success",
     "Registration Successful",
     response.message
 );
@@ -200,4 +196,3 @@ registerForm.addEventListener("submit", async (e) => {
     }
 
 });
-

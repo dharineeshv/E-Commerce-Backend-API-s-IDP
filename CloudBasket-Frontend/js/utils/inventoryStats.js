@@ -1,4 +1,4 @@
-﻿import { animateCounter } from "../cardAnimation.js";
+import { animateCounter } from "../cardAnimation.js";
 
 export function updateInventoryStats(inventoryItems) {
     if (!inventoryItems || !Array.isArray(inventoryItems)) return;
@@ -55,10 +55,10 @@ export function updateInventoryStats(inventoryItems) {
 
     // Formatting total value
     const formattedValue = totalValue >= 1000000 
-        ? 'â‚¹' + (totalValue / 1000000).toFixed(1) + 'M' 
+        ? '₹' + (totalValue / 1000000).toFixed(1) + 'M' 
         : totalValue >= 1000 
-            ? 'â‚¹' + (totalValue / 1000).toFixed(1) + 'k' 
-            : 'â‚¹' + totalValue.toFixed(2);
+            ? '₹' + (totalValue / 1000).toFixed(1) + 'k' 
+            : '₹' + totalValue.toFixed(2);
             
     const valEl = document.getElementById("stat-total-value");
     if (valEl) valEl.textContent = formattedValue;

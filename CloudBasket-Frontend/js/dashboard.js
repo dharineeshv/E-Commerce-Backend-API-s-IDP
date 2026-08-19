@@ -1,4 +1,4 @@
-﻿import { initializeSidebar } from "./sidebar.js";
+import { initializeSidebar } from "./sidebar.js";
 import { initializeProfileCard } from "./profile.js";
 import { initializeLogout } from "./logout.js";
 import { initializeHero } from "./hero.js";
@@ -50,7 +50,7 @@ async function loadFestivalSale() {
     const festivalStatus = document.getElementById("festival-status");
 
     if (festivalStatus) {
-        festivalStatus.innerHTML = `<span style="display: block; font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2; word-break: break-word; overflow-wrap: break-word;" title="${festival.title}">${festival.title}</span><span style="display: inline-block; margin-top: 3px; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">â— Active</span>`;
+        festivalStatus.innerHTML = `<span style="display: block; font-size: 13px; font-weight: 800; color: #0f172a; line-height: 1.2; word-break: break-word; overflow-wrap: break-word;" title="${festival.title}">${festival.title}</span><span style="display: inline-block; margin-top: 3px; background: #dcfce7; color: #166534; padding: 2px 8px; border-radius: 12px; font-size: 11px; font-weight: 700;">● Active</span>`;
     }
 
     if (titleElement) titleElement.textContent = `${festival.title} Live`;
@@ -59,7 +59,7 @@ async function loadFestivalSale() {
         discountElement.textContent =
             festival.discountType === "PERCENTAGE" || festival.discountType === "percentage"
                 ? `${festival.discountValue}% OFF`
-                : `â‚¹${festival.discountValue} OFF`;
+                : `₹${festival.discountValue} OFF`;
     }
 
     if (durationElement) {
@@ -340,7 +340,7 @@ async function loadOrders() {
                 <tr>
                     <td>${customerName}</td>
                     <td>${orderIdVal}</td>
-                    <td>â‚¹${Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? order.grandTotal ?? 0).toFixed(2)}</td>
+                    <td>₹${Number(order.orderTotal ?? order.totalAmount ?? order.amount ?? order.grandTotal ?? 0).toFixed(2)}</td>
                     <td>
                         <span class="payment-badge ${payBadgeClass}">
                             ${displayPayStatus}

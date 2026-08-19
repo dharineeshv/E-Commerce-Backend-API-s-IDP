@@ -1,4 +1,4 @@
-﻿import { getInventoryById, updateInventory } from "../api/inventoryApi.js";
+import { getInventoryById, updateInventory } from "../api/inventoryApi.js";
 import { updateProductApi } from "../api/productApi.js";
 
 let currentInventoryData = [];

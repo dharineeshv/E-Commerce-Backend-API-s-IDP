@@ -1,4 +1,4 @@
-﻿import { fetchProducts, deleteProductApi } from './api/productApi.js';
+import { fetchProducts, deleteProductApi } from './api/productApi.js';
 import { renderProducts, updateSummaryCards } from './utils/renderProducts.js';
 import { showLoadingSkeleton, hideLoadingSkeleton } from './utils/loader.js';
 import { showEmptyState, showErrorState } from './utils/emptyState.js';
@@ -114,7 +114,7 @@ function handleViewProduct(id) {
     setElemText('viewProductDesc', product.description || 'No description available.');
     
     // Pricing & Inventory
-    const formatCurrency = (val) => 'â‚¹' + (Number(val) || 0).toFixed(2);
+    const formatCurrency = (val) => '₹' + (Number(val) || 0).toFixed(2);
     setElemText('viewProductPrice', formatCurrency(product.sellingPrice));
     setElemText('viewProductMrp', formatCurrency(product.mrp));
     setElemText('viewProductDiscount', `${product.discountPercentage || 0}% OFF`);

@@ -1,4 +1,4 @@
-﻿// JS for CloudBasket Home Page (storefront)
+// JS for CloudBasket Home Page (storefront)
 import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
 import { fetchProductReviews } from "./api/reviewApi.js";
@@ -111,7 +111,7 @@ async function loadProducts() {
     if (!grid) return;
     
     try {
-        const response = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
+        const response = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
         if (!response.ok) {
             throw new Error(`HTTP ${response.status}: Failed to fetch products`);
         }
@@ -136,7 +136,7 @@ async function loadProducts() {
 
         if (CUSTOMER_ID && CUSTOMER_ID !== 'cust-001') {
             try {
-                const wishRes = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${CUSTOMER_ID}`);
+                const wishRes = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}`);
                 if (wishRes.ok) {
                     const wishData = await wishRes.json();
                     if (wishData.items) {
@@ -548,7 +548,7 @@ function renderProducts(products) {
 
 async function addToCart(productId, productName) {
     try {
-        const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart`, {
+        const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`, {
             method: 'POST',
             body: JSON.stringify({
                 productId: productId,
@@ -575,10 +575,10 @@ function renderStars(rating) {
     const fullStars = Math.floor(r);
     const hasHalf = (r - fullStars) >= 0.5;
     let stars = '';
-    for (let i = 0; i < fullStars; i++) stars += 'â˜…';
-    if (hasHalf && fullStars < 5) stars += 'â˜…';
+    for (let i = 0; i < fullStars; i++) stars += '★';
+    if (hasHalf && fullStars < 5) stars += '★';
     const emptyCount = 5 - fullStars - (hasHalf ? 1 : 0);
-    for (let i = 0; i < emptyCount; i++) stars += 'â˜†';
+    for (let i = 0; i < emptyCount; i++) stars += '☆';
     return stars;
 }
 
@@ -635,7 +635,7 @@ async function loadMarketingBanner() {
         
         // 1. Fetch Coupons for Top Orange Banner
         try {
-            const couponRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/marketing/coupons');
+            const couponRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/coupons');
             let bannerShown = false;
             if (couponRes.ok) {
                 const couponData = await couponRes.json();
@@ -670,7 +670,7 @@ async function loadMarketingBanner() {
 
         // 2. Fetch Festival Sales for Hero Slider
         try {
-            const festRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/marketing/festival-sales/active');
+            const festRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/festival-sales/active');
             const sliderWrapper = document.getElementById('store-slider');
             let festSlideInjected = false;
 
@@ -716,7 +716,7 @@ async function loadMarketingBanner() {
                                     </div>
                                     
                                     <h2 style="font-size: 1.5rem; font-weight: 700; color: white; margin-bottom: 15px; display: flex; align-items: center; gap: 8px;">
-                                        ðŸŽ‰ ${sale.festivalName || sale.title || 'Special Offer'}
+                                        🎉 ${sale.festivalName || sale.title || 'Special Offer'}
                                     </h2>
                                     
                                     <p style="font-size: 1.25rem; color: #f8fafc; line-height: 1.5; margin-bottom: 30px; margin-top: 0;">
@@ -832,7 +832,7 @@ window.toggleWishlist = async function(event, id, btnElement) {
                         svgFill === 'rgb(239, 68, 68)';
 
         if (isAdded) {
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist/${CUSTOMER_ID}/${id}`, {
                 method: 'DELETE'
             });
             if (response.ok) {
@@ -845,7 +845,7 @@ window.toggleWishlist = async function(event, id, btnElement) {
                 }
             }
         } else {
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/wishlist`, {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/wishlist`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ customerId: CUSTOMER_ID, productId: id })

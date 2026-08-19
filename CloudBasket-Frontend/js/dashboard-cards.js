@@ -1,4 +1,4 @@
-﻿export function loadDashboardCards() {
+export function loadDashboardCards() {
 
     return `
 
@@ -8,7 +8,7 @@
 
             <div class="card-icon products">
 
-                ðŸ“¦
+                📦
 
             </div>
 
@@ -34,7 +34,7 @@
 
             <div class="card-icon inventory">
 
-                ðŸ“š
+                📚
 
             </div>
 
@@ -60,7 +60,7 @@
 
             <div class="card-icon orders">
 
-                ðŸ›’
+                🛒
 
             </div>
 
@@ -86,7 +86,7 @@
 
             <div class="card-icon revenue">
 
-                ðŸ’°
+                💰
 
             </div>
 
@@ -100,7 +100,7 @@
 
                 <h2 id="today-revenue">
 
-                    â‚¹0
+                    ₹0
 
                 </h2>
 
@@ -112,7 +112,7 @@
 
             <div class="card-icon festival">
 
-                ðŸŽ‰
+                🎉
 
             </div>
 

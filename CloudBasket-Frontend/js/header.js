@@ -1,4 +1,4 @@
-﻿export function loadHeader() {
+export function loadHeader() {
 
     return `
 
@@ -8,7 +8,7 @@
 
         <button id="menu-toggle">
 
-            â˜°
+            ☰
 
         </button>
 
@@ -39,7 +39,7 @@
             class="notification-btn"
         >
 
-            ðŸ””
+            🔔
 
             <span class="notification-dot"></span>
 
@@ -71,7 +71,7 @@
 
             <span class="dropdown-arrow">
 
-                â–¼
+                ▼
 
             </span>
 

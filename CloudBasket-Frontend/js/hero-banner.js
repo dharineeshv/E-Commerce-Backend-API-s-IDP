@@ -1,4 +1,4 @@
-﻿export function loadHeroBanner() {
+export function loadHeroBanner() {
 
     return `
 
@@ -8,7 +8,7 @@
 
                 <h1 id="greeting">
 
-                    Good Morning, Dharineesh â˜€ï¸
+                    Good Morning, Dharineesh ☀️
 
                 </h1>
 

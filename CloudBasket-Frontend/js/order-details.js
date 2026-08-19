@@ -1,4 +1,4 @@
-﻿import { API } from "./config.js";
+import { API } from "./config.js";
 import { apiFetch } from "./api/apiClient.js";
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -29,7 +29,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         // Fetch products to map UUIDs to actual names and S3 images
         let allProducts = [];
         try {
-            const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
+            const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
             if (prodRes.ok) {
                 const pData = await prodRes.json();
                 allProducts = pData.products || pData.data || pData || [];
@@ -189,9 +189,9 @@ function renderOrderDetails(order, allProducts = []) {
                 </div>
                 <div class="item-info">
                     <div class="item-name" style="font-weight: 600; font-size: 16px; margin-bottom: 8px;">${escapeXml(item.name)}</div>
-                    <div class="item-qty-price">Qty: ${item.qty} &nbsp;&nbsp; â‚¹${Number(item.price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                    <div class="item-qty-price">Qty: ${item.qty} &nbsp;&nbsp; ₹${Number(item.price).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
                 </div>
-                <div class="item-total">â‚¹${Number(item.itemTotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
+                <div class="item-total">₹${Number(item.itemTotal).toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}</div>
             `;
             itemsList.appendChild(itemDiv);
         });
@@ -208,8 +208,8 @@ function renderOrderDetails(order, allProducts = []) {
     const taxEl = document.getElementById('summary-tax');
     const totalEl = document.getElementById('summary-total');
 
-    if (subtotalEl) subtotalEl.textContent = `â‚¹${displaySubtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
-    if (shippingEl) shippingEl.textContent = `â‚¹30.00`;
+    if (subtotalEl) subtotalEl.textContent = `₹${displaySubtotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (shippingEl) shippingEl.textContent = `₹30.00`;
     
     // Hide Estimated Tax row completely per user instruction
     if (taxEl) {
@@ -217,7 +217,7 @@ function renderOrderDetails(order, allProducts = []) {
         if (taxRow) taxRow.style.display = 'none';
     }
 
-    if (totalEl) totalEl.textContent = `â‚¹${displayTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
+    if (totalEl) totalEl.textContent = `₹${displayTotal.toLocaleString('en-IN', {minimumFractionDigits: 2, maximumFractionDigits: 2})}`;
     
     const points = Math.floor(displayTotal);
     document.getElementById('summary-points').innerHTML = `

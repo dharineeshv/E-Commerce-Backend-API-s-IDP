@@ -1,4 +1,4 @@
-﻿export function showLoadingSkeleton(tableBodyId) {
+export function showLoadingSkeleton(tableBodyId) {
     const tbody = document.getElementById(tableBodyId);
     if (!tbody) return;
     let skeletonHTML = '';

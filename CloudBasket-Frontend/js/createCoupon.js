@@ -1,4 +1,4 @@
-﻿import { initializeLogout } from "./logout.js";
+import { initializeLogout } from "./logout.js";
 import { API } from "./config.js";
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -42,8 +42,8 @@ document.addEventListener("DOMContentLoaded", () => {
             summaryValue.textContent = val + '%';
             summaryOff.innerHTML = `<strong>${val}% off</strong> all eligible items.`;
         } else {
-            summaryValue.textContent = 'â‚¹' + val;
-            summaryOff.innerHTML = `<strong>â‚¹${val} off</strong> all eligible items.`;
+            summaryValue.textContent = '₹' + val;
+            summaryOff.innerHTML = `<strong>₹${val} off</strong> all eligible items.`;
         }
     }
 

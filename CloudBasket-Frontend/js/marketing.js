@@ -1,4 +1,4 @@
-﻿import { initializeLogout } from "./logout.js";
+import { initializeLogout } from "./logout.js";
 import { initializeProfileCard } from "./profile.js";
 import { initializeSidebar } from "./sidebar.js";
 import { API } from "./config.js";
@@ -181,7 +181,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const typeUpper = (activeFestival.discountType || '').toUpperCase();
                     const discountText = (typeUpper === 'PERCENTAGE' || typeUpper === 'PERCENT') 
                         ? `${activeFestival.discountValue}% OFF` 
-                        : `â‚¹${activeFestival.discountValue} OFF`;
+                        : `₹${activeFestival.discountValue} OFF`;
                     discount.textContent = activeFestival.offerText || discountText;
                 }
                 if (endsText) {
@@ -212,7 +212,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     const typeUpper = (activeCoupon.discountType || '').toUpperCase();
                     const discountText = (typeUpper === 'PERCENTAGE' || typeUpper === 'PERCENT') 
                         ? `${activeCoupon.discountValue}% OFF` 
-                        : `â‚¹${activeCoupon.discountValue} OFF`;
+                        : `₹${activeCoupon.discountValue} OFF`;
                     discount.textContent = activeCoupon.offerText || discountText;
                 }
                 if (endsText) {
@@ -261,7 +261,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #e2e8f0';
             
-            const discountText = fest.discountType === 'PERCENTAGE' ? `${fest.discountValue}%` : `â‚¹${fest.discountValue}`;
+            const discountText = fest.discountType === 'PERCENTAGE' ? `${fest.discountValue}%` : `₹${fest.discountValue}`;
             
             const startDateObj = fest.startDate ? new Date(fest.startDate) : null;
             const endDateObj = fest.endDate ? new Date(fest.endDate) : null;
@@ -279,7 +279,7 @@ document.addEventListener("DOMContentLoaded", () => {
             } else if (isNotStarted) {
                 festStatusBadgeHtml = `<span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Scheduled</span>`;
             } else if (isStatusActive) {
-                festStatusBadgeHtml = `<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">â€¢ Active</span>`;
+                festStatusBadgeHtml = `<span style="background: #dcfce7; color: #166534; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">• Active</span>`;
             } else {
                 festStatusBadgeHtml = `<span style="background: #f1f5f9; color: #64748b; padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; font-weight: 600;">Inactive</span>`;
             }
@@ -318,7 +318,7 @@ document.addEventListener("DOMContentLoaded", () => {
             const tr = document.createElement('tr');
             tr.style.borderBottom = '1px solid #e2e8f0';
             
-            const discountText = coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}% Off` : `â‚¹${coupon.discountValue} Off`;
+            const discountText = coupon.discountType === 'PERCENTAGE' ? `${coupon.discountValue}% Off` : `₹${coupon.discountValue} Off`;
             
             const expDateObj = coupon.expiryDate ? new Date(coupon.expiryDate) : null;
             const startDateObj = coupon.startDate ? new Date(coupon.startDate) : null;
@@ -346,7 +346,7 @@ document.addEventListener("DOMContentLoaded", () => {
             tr.innerHTML = `
                 <td style="padding: 14px;"><span style="background: #e0f2fe; color: #0369a1; padding: 4px 10px; border-radius: 4px; font-weight: 600; font-family: monospace;">${coupon.couponCode}</span></td>
                 <td style="padding: 14px; font-weight: 700; color: #b45309;">${discountText}</td>
-                <td style="padding: 14px;">â‚¹${coupon.minimumOrderAmount || 0}</td>
+                <td style="padding: 14px;">₹${coupon.minimumOrderAmount || 0}</td>
                 <td style="padding: 14px;">${coupon.usedCount || 0} / ${coupon.usageLimit || 'Unlimited'}</td>
                 <td style="padding: 14px;">${expiryDateStr}</td>
                 <td style="padding: 14px;">${statusBadgeHtml}</td>

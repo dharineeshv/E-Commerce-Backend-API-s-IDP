@@ -1,4 +1,4 @@
-﻿import { apiFetch } from "./apiClient.js";
+import { apiFetch } from "./apiClient.js";
 import { API } from "../config.js";
 
 /**

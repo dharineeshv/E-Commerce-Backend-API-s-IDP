@@ -1,4 +1,4 @@
-﻿import { apiFetch } from "./api/apiClient.js";
+import { apiFetch } from "./api/apiClient.js";
 import { getActiveFestivalSale } from "./api/marketingApi.js";
 document.addEventListener('DOMContentLoaded', () => {
     let cartItems = [];
@@ -23,7 +23,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function loadCart() {
         try {
-            const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
+            const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
             const prodData = await prodRes.json();
             const list = prodData.products || prodData.data || prodData || [];
             if (Array.isArray(list)) {
@@ -37,7 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (e) {}
 
         try {
-            const response = await apiFetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart');
+            const response = await apiFetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart');
             
             if (response.status === 401 || response.status === 403) {
                 window.location.href = "login.html";
@@ -88,7 +88,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function updateQuantity(cartItemId, quantity) {
         try {
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart/${cartItemId}`, {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart/${cartItemId}`, {
                 method: 'PUT',
                 body: JSON.stringify({ quantity })
             });
@@ -108,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function removeItem(cartItemId) {
         try {
-            const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart/${cartItemId}`, {
+            const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart/${cartItemId}`, {
                 method: 'DELETE'
             });
             const data = await response.json();
@@ -181,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     
                     <div class="item-actions">
                         <div class="quantity-adjuster">
-                            <button class="btn-minus" data-id="${id}">âˆ’</button>
+                            <button class="btn-minus" data-id="${id}">−</button>
                             <span>${quantity}</span>
                             <button class="btn-plus" data-id="${id}">+</button>
                         </div>
@@ -254,7 +254,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         try {
             // Fetch all coupons from the public endpoint
-            const response = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/marketing/coupons');
+            const response = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/marketing/coupons');
             const data = await response.json();
             
             if (!response.ok || !data || !data.data) {

@@ -1,4 +1,4 @@
-﻿import { API } from "./config.js";
+import { API } from "./config.js";
 import { apiFetch } from './api/apiClient.js';
 import { getActiveFestivalSale } from './api/marketingApi.js';
 document.addEventListener('DOMContentLoaded', () => {
@@ -64,7 +64,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // 2. Fetch products map for detail enrichment
         try {
-            const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
+            const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
             const prodData = await prodRes.json();
             const list = prodData.products || prodData.data || prodData || [];
             if (Array.isArray(list)) {
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // 3. If not Direct Buy Now, load full cart from backend
         if (!isDirectBuyNow) {
             try {
-                const response = await apiFetch(`https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart`);
+                const response = await apiFetch(`https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/cart`);
                 
                 if (response.status === 401 || response.status === 403) {
                     window.location.href = "index.html";

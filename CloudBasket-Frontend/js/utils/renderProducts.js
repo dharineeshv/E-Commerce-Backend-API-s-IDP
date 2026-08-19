@@ -1,4 +1,4 @@
-﻿export function renderProducts(products, tableBodyId) {
+export function renderProducts(products, tableBodyId) {
     const tbody = document.getElementById(tableBodyId);
     if (!tbody) return;
     if (!products || products.length === 0) return;
@@ -71,7 +71,7 @@
                     </div>
                 </td>
                 <td>
-                    <strong>â‚¹${Number(sellingPrice || 0).toFixed(2)}</strong>
+                    <strong>₹${Number(sellingPrice || 0).toFixed(2)}</strong>
                 </td>
                 <td>
                     <span class="stock-badge ${dotClass}"><span class="dot"></span> ${qty}</span>

@@ -1,4 +1,4 @@
-﻿export function renderInventoryTable(inventoryItems) {
+export function renderInventoryTable(inventoryItems) {
     const tableBody = document.getElementById("inventory-table-body");
     if (!tableBody) return;
 
@@ -39,7 +39,7 @@
         }
 
         const pVal = product.sellingPrice != null ? product.sellingPrice : product.price;
-        const price = pVal != null ? `â‚¹${Number(pVal).toFixed(2)}` : "N/A";
+        const price = pVal != null ? `₹${Number(pVal).toFixed(2)}` : "N/A";
         
         const sku = item.sku || product.sku || "N/A";
         const warehouse = item.location || item.warehouse || "Main Warehouse";

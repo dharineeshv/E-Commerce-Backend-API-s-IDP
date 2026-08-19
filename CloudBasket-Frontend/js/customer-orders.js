@@ -1,4 +1,4 @@
-﻿import { API } from "./config.js";
+import { API } from "./config.js";
 import { apiFetch } from "./api/apiClient.js";
 
 const allProductsMap = new Map();
@@ -22,7 +22,7 @@ async function init() {
     renderSkeletons(listContainer);
 
     try {
-        const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
+        const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
         const prodData = await prodRes.json();
         const list = prodData.products || prodData.data || prodData || [];
         if (Array.isArray(list)) {
@@ -125,7 +125,7 @@ function renderOrders(container, orders) {
         const itemText = numItems === 1 ? "1 Item" : `${numItems} Items`;
         
         const amount = order.orderTotal || order.totalAmount || order.amount || 0;
-        const formattedAmount = 'â‚¹' + Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+        const formattedAmount = '₹' + Number(amount).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 });
         
         const status = order.status || 'PENDING';
         let statusClass = 'status-processing';
@@ -187,7 +187,7 @@ function updateSummaryCards(orders) {
 
     if (!orders || !Array.isArray(orders) || orders.length === 0) {
         if (totalOrdersEl) totalOrdersEl.innerText = '0';
-        if (totalSpentEl) totalSpentEl.innerText = 'â‚¹0.00';
+        if (totalSpentEl) totalSpentEl.innerText = '₹0.00';
         return;
     }
 
@@ -203,6 +203,6 @@ function updateSummaryCards(orders) {
     });
 
     if (totalOrdersEl) totalOrdersEl.innerText = count;
-    if (totalSpentEl) totalSpentEl.innerText = 'â‚¹' + totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+    if (totalSpentEl) totalSpentEl.innerText = '₹' + totalSpent.toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 }
 
