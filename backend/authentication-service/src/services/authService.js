@@ -32,7 +32,7 @@ const register = async ({ email, password, name }) => {
     const clientId = process.env.COGNITO_CLIENT_ID || "vsuddgu9b60grfe3cj41hoiku";
     const secretHash = generateSecretHash(cleanEmail);
 
-    const userAttributes = [];
+    const userAttributes = [ { Name: "email", Value: cleanEmail } ];
 
     if (name && name.trim()) {
       userAttributes.push({
