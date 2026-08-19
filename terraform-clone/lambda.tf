@@ -30,6 +30,12 @@ locals {
     RAZORPAY_KEY_SECRET = var.razorpay_key_secret
     GMAIL_EMAIL = var.gmail_email
     GMAIL_APP_PASSWORD = var.gmail_app_password
+    USER_PROFILE_SERVICE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
+    PRODUCT_SERVICE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
+    INVENTORY_SERVICE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
+    ORDER_SERVICE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
+    NOTIFICATION_SERVICE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
+    CART_SERVICE_URL = "https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api"
   }
 }
 
@@ -39,6 +45,10 @@ resource "aws_lambda_function" "auth" {
   handler       = "authentication-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -50,6 +60,10 @@ resource "aws_lambda_function" "cart" {
   handler       = "cart-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -61,6 +75,10 @@ resource "aws_lambda_function" "inventory" {
   handler       = "inventory-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -72,6 +90,10 @@ resource "aws_lambda_function" "marketing" {
   handler       = "marketing-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -83,6 +105,10 @@ resource "aws_lambda_function" "notification" {
   handler       = "notification-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -94,6 +120,10 @@ resource "aws_lambda_function" "order" {
   handler       = "order-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -105,6 +135,10 @@ resource "aws_lambda_function" "payment" {
   handler       = "payment-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -116,6 +150,10 @@ resource "aws_lambda_function" "product" {
   handler       = "product-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -127,6 +165,10 @@ resource "aws_lambda_function" "review" {
   handler       = "review-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment {
     variables = local.env_vars
   }
@@ -138,6 +180,10 @@ resource "aws_lambda_function" "user_profile" {
   handler       = "user-profile-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment { variables = local.env_vars }
 }
 
@@ -147,5 +193,9 @@ resource "aws_lambda_function" "wishlist" {
   handler       = "wishlist-service/lambda.handler"
   runtime       = "nodejs20.x"
   filename      = data.archive_file.dummy.output_path
+  lifecycle {
+    ignore_changes = [filename, source_code_hash, last_modified]
+  }
+
   environment { variables = local.env_vars }
 }
