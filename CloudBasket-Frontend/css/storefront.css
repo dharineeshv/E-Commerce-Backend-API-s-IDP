@@ -938,13 +938,19 @@ a {
         width: 100% !important;
         justify-content: space-between !important;
         align-items: center !important;
-        overflow-x: auto !important;
-        -webkit-overflow-scrolling: touch !important;
-        scrollbar-width: none !important;
-        -ms-overflow-style: none !important;
+        overflow: visible !important;
         padding: 6px 0 2px 0 !important;
         gap: 4px !important;
         border-top: 1px solid #f1f5f9 !important;
+    }
+
+    .profile-dropdown {
+        position: fixed !important;
+        top: 140px !important;
+        right: 15px !important;
+        z-index: 999999 !important;
+        width: 220px !important;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.15) !important;
     }
 
     .header-nav::-webkit-scrollbar {
