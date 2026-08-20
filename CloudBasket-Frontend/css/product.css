@@ -356,6 +356,10 @@
         box-sizing: border-box !important;
     }
 
+    .reviews-container {
+        grid-template-columns: 1fr !important;
+    }
+
     .pd-title {
         font-size: 1.6rem !important;
         line-height: 1.25 !important;
