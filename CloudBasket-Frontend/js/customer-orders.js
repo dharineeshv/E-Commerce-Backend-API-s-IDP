@@ -22,7 +22,7 @@ async function init() {
     renderSkeletons(listContainer);
 
     try {
-        const prodRes = await fetch('https://5g4locecl2.execute-api.ap-southeast-1.amazonaws.com/api/v1/products');
+        const prodRes = await fetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/products');
         const prodData = await prodRes.json();
         const list = prodData.products || prodData.data || prodData || [];
         if (Array.isArray(list)) {
