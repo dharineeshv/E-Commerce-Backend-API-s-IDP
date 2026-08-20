@@ -14,7 +14,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 function checkAuth() {
     const token = localStorage.getItem('accessToken');
     if (!token) {
-        window.location.href = 'login.html';
+        window.location.href = "index.html";
         return;
     }
     
@@ -23,7 +23,7 @@ function checkAuth() {
         customerId = payload.sub;
     } catch (e) {
         console.error("Failed to parse token", e);
-        window.location.href = 'login.html';
+        window.location.href = "index.html";
     }
 }
 

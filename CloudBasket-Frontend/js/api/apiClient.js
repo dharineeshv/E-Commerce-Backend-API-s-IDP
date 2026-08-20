@@ -48,7 +48,7 @@ function initProfileDropdown() {
     if (!idTokenStr) {
         profileLink.addEventListener('click', (e) => {
             e.preventDefault();
-            window.location.href = 'login.html';
+            window.location.href = "index.html";
         });
         return;
     }

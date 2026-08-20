@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const response = await apiFetch('https://rua1bnesw8.execute-api.ap-southeast-1.amazonaws.com/api/api/v1/cart');
             
             if (response.status === 401 || response.status === 403) {
-                window.location.href = "login.html";
+                window.location.href = "index.html";
                 return;
             }
             
